@@ -65,7 +65,7 @@ Extract at least:
 - Risk points for generation: heavy LaTeX or math, Greek-letter figure labels, other non-ASCII text.
 - Obvious gaps in methods or reporting. Do not invent missing experimental results.
 
-**TODO:** whether to classify the paper as established, emergent, or interdisciplinary, and whether that should change linguistic strategy in v1, or only guide testing.
+Classify **field maturity** (established, emergent, interdisciplinary, or mixed) using the rubric and lightweight literature sample in [`resources/field-maturity.md`](resources/field-maturity.md). Record the class, evidence, and which vocabulary-onboarding notebook components are required (glossary, disambiguation, terminology in flux).
 
 **TODO:** whether to classify the paper as algorithm-like (coding exercises, reverse-engineer the method) vs. concept-like (agent-written explainer widgets). Chemistry examples used in discussion: mass balance, reaction kinetics, a new kinetic model.
 
@@ -79,7 +79,7 @@ Suggested spine (adjust per paper):
 
 1. Why this paper matters.
 2. Intuition or a toy example before heavy notation.
-3. Setup: notation, assumptions, terms.
+3. Setup: notation, assumptions, terms, and field vocabulary onboarding (glossary; disambiguation or terminology-in-flux when required—see [`resources/field-maturity.md`](resources/field-maturity.md)).
 4. Core idea, tied to an equation or figure.
 5. Step-through aligned with the paper.
 6. Informal checks after segments, matched to the explanation level: explain, predict, apply, or critique (not formal assessment — formal assessment is out of scope).
@@ -102,7 +102,7 @@ Hard requirements for the prose:
 
 - Intelligible and representative of the paper's core ideas.
 - Not generic “AI slop.” If a sentence could have been written about any paper, rewrite it.
-- Define symbols and field terms when they first matter, or point to a glossary / tooltip / highlight-to-explain aid. **TODO:** which of those reader aids to ship first. “Marimo Lens” was mentioned as a possible fit for highlight-to-explain; confirm the actual feature name and host support.
+- Define symbols and field terms when they first matter, or point to a glossary / tooltip / highlight-to-explain aid. Follow [`resources/field-maturity.md`](resources/field-maturity.md) for maturity-specific onboarding sections. **TODO:** which of those reader aids to ship first. “Marimo Lens” was mentioned as a possible fit for highlight-to-explain; confirm the actual feature name and host support.
 
 Other generation rules:
 
@@ -137,6 +137,7 @@ Tell the user:
 - Core concepts and metadata terms actually get explained.
 - No fabricated numbers or claims.
 - Every ladder explains the same mechanism spine at every level; every ledger simplification is corrected at a later level; the analogy's limit is stated.
+- **Vocabulary onboarding:** for established, emergent, and interdisciplinary case studies, verify glossary coverage and—where required—disambiguation or terminology-in-flux sections per [`resources/field-maturity.md`](resources/field-maturity.md) §8.
 - **TODO:** assertion- or gold-question evals; multi-model runs (Chinese open-weight and Claude models were offered); LLM-as-judge only as a first filter that is more trustworthy on “this is bad” than on “this is good”; a human try-on-an-unfamiliar-paper pass; domain-expert review after an own-field smoke test.
 - **TODO:** a shared test-paper set that covers established, emergent, and interdisciplinary work, and subdomains, not just one field. A 2016 influenza paper was offered as one possible case; the list is not chosen.
 
@@ -179,7 +180,7 @@ Rules:
 ## Folder reference
 
 - **`assets/`** — templates and snippets to copy or fill in.
-- **`resources/`** — material the agent should read (pedagogy, format-specific ingest notes, writing and eval guidance). Do not paste these wholesale into notebooks. Includes [`explanation-levels.md`](resources/explanation-levels.md) (prerequisite-defined explanation ladders, checks, and a worked example) and [`examples/`](resources/examples/) (complete ladders for UMAP and influenza reassortment).
+- **`resources/`** — material the agent should read (pedagogy, format-specific ingest notes, writing and eval guidance). Do not paste these wholesale into notebooks. Includes [`explanation-levels.md`](resources/explanation-levels.md) (prerequisite-defined explanation ladders, checks, and a worked example), [`field-maturity.md`](resources/field-maturity.md) (field-maturity rubric, vocabulary onboarding, and literature-sampling procedure), [`field-maturity-research-notes.md`](resources/field-maturity-research-notes.md) (auditable sampling for three case-study fields), and [`examples/`](resources/examples/) (ladders for UMAP and influenza reassortment; field-maturity notebook mocks).
 - **`scripts/`** — helpers, run with `uv run`. `validate_notebook.py` checks syntax, runs `marimo check --strict`, and smoke-runs the notebook with `--run`. Future: per-input-format ingest, metadata fetch, figure extraction.
 
 ## Open decisions
@@ -187,7 +188,7 @@ Rules:
 - Default audience and the default direction of adaptive explanation.
 - Which components ship in the first version (progressive explanation, visualizations, glossary/highlight-to-explain, informal checks, experimental critique, results analysis, figure reproduction, extra-source grounding).
 - One mega-skill with internal components (the shape described in design discussion) vs. splitting later (ingest, pedagogy, build, eval).
-- How to classify domain type and paper “mode” (algorithm vs. concept; established vs. emergent vs. interdisciplinary).
+- How to classify domain type and paper “mode” (algorithm vs. concept). Field maturity (established vs. emergent vs. interdisciplinary) is sketched in [`resources/field-maturity.md`](resources/field-maturity.md); algorithm vs. concept remains TODO.
 - Ingest details per input format; figure handling when data are missing.
 - Eval suite, criteria scaffold, and test-paper list.
 - License for the skill and for generated notebooks.
