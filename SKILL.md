@@ -182,63 +182,16 @@ Rules:
 
 ## Final quiz
 
-Every notebook ends with **5 multiple-choice questions about the paper itself**. Do not quiz on the notebook's own demos or toy simulations.
+Every notebook ends with **5 multiple-choice questions about the paper itself**, rendered by the `PaperQuiz` anywidget in `assets/paper_quiz.py`.
 
-**Quiz the substance, not the machinery.** Questions should be about what the paper claims, what it found, why those findings follow, what they mean beyond the specific system, and what the paper says it cannot conclude. A reader who understood the paper should get them right; one who skimmed the abstract should not.
-
-Ask about a method **only when understanding it is needed to understand what the result means** — for example, when a result is a comparison against a baseline and the reader would misread the number without knowing that. Do not ask about implementation detail: software names and versions, parameter values, thresholds, database download dates, sample sizes, or the order of processing steps. If the answer is a fact a reader could copy from the Methods section without understanding the paper, cut the question.
-
-Across the 5, aim to cover: the central claim, a main finding and its direction, why a finding follows (mechanism or reasoning), an exception or a boundary of the claim, and what the paper cannot conclude.
-
-- Each question has **4 options, exactly one correct**.
-- **Distractors are plausible** given the paper: built from its real terms, numbers and findings, and each one targets a specific misconception a reader could plausibly hold (e.g. confusing correlation with the causal claim, mixing up what was measured vs. inferred, overstating the scope of a result, swapping which group showed the effect, reversing the direction of an effect, treating a well-explained exception as a contradiction). Avoid joke answers or options that are wrong on their face.
-- Every option gets a short explanation: for the answer, why it is right with a pointer to the paper section or figure; for each distractor, the misconception it reflects and why the paper does not support it.
-- Correct-answer positions vary across the 5 questions. Use the widget below and it handles this: write the answer separately from the distractors and it places them.
-
-Use **`assets/paper_quiz.py`** (an anywidget). Copy it next to the notebook, add `anywidget` and `traitlets` to the PEP 723 dependencies, and import it in the cell that imports `marimo`:
-
-```python
-from paper_quiz import PaperQuiz
-```
-
-Then the final cells:
-
-```python
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    ## Check yourself
-
-    Five questions on the paper. Pick an answer to see why it is or isn't right.
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(PaperQuiz, mo):
-    quiz = mo.ui.anywidget(PaperQuiz(questions=[
-        {
-            "question": "...",
-            "answer": "...",
-            "explain": "Why this is right (Fig. N / Section N).",
-            "distractors": {
-                "Plausible wrong answer 1": "Misconception it targets, and why the paper does not support it.",
-                "Plausible wrong answer 2": "...",
-                "Plausible wrong answer 3": "...",
-            },
-        },
-        # 5 questions total
-    ]))
-    quiz
-    return
-```
+Read **`resources/final-quiz.md`** before writing them: it covers what to ask (the paper's claims and findings, not its implementation detail), how to build distractors, and the cells to add.
 
 ---
 
 ## Folder reference
 
 - **`assets/`** — templates and snippets to copy or fill in. Includes [`paper_quiz.py`](assets/paper_quiz.py), the widget for the required final quiz.
-- **`resources/`** — material the agent should read (pedagogy, format-specific ingest notes, writing and eval guidance). Do not paste these wholesale into notebooks. Includes [`explanation-levels.md`](resources/explanation-levels.md) (prerequisite-defined explanation ladders, checks, and a worked example), [`field-maturity.md`](resources/field-maturity.md) (field-maturity rubric, vocabulary onboarding, and literature-sampling procedure), [`field-maturity-research-notes.md`](resources/field-maturity-research-notes.md) (auditable sampling for three case-study fields), [`dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md) (interactive figure walkthroughs), and [`examples/`](resources/examples/) (ladders for UMAP and influenza reassortment; field-maturity notebook mocks).
+- **`resources/`** — material the agent should read (pedagogy, format-specific ingest notes, writing and eval guidance). Do not paste these wholesale into notebooks. Includes [`explanation-levels.md`](resources/explanation-levels.md) (prerequisite-defined explanation ladders, checks, and a worked example), [`field-maturity.md`](resources/field-maturity.md) (field-maturity rubric, vocabulary onboarding, and literature-sampling procedure), [`field-maturity-research-notes.md`](resources/field-maturity-research-notes.md) (auditable sampling for three case-study fields), [`dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md) (interactive figure walkthroughs), [`final-quiz.md`](resources/final-quiz.md) (what to ask in the end-of-notebook quiz), and [`examples/`](resources/examples/) (ladders for UMAP and influenza reassortment; field-maturity notebook mocks).
 - **`scripts/`** — helpers, run with `uv run`. `validate_notebook.py` checks syntax, runs `marimo check --strict`, and smoke-runs the notebook with `--run`. Future: per-input-format ingest, metadata fetch, figure extraction.
 
 ## Open decisions
