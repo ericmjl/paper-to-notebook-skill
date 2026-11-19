@@ -1,0 +1,8 @@
+.env
+.env.*
+!.env.example
+node_modules/
+.venv/
+.promptfoo/
+__pycache__/
+__marimo__/

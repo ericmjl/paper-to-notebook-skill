@@ -1,0 +1,3 @@
+__description,prompt,paper_id,notebook,expected_a,expected_b
+Positive control: the estimate updates correctly,Create an interactive summary of Table 1.,dummy-paper,reactive,12 seconds,8 seconds
+Negative control: the estimate stays stale (intentional failure),Create an interactive summary of Table 1.,dummy-paper,stale,12 seconds,8 seconds
