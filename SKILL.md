@@ -58,7 +58,7 @@ Build an intermediate picture of the paper before writing any notebook. **TODO:*
 Extract at least:
 
 - Problem and contribution, in your own words.
-- Prerequisites a reader likely needs.
+- Prerequisite profile: what a reader at each level knows, doesn't know, and must be taught (see [Explaining at multiple levels](#explaining-at-multiple-levels)).
 - Key concepts and **terms the paper uses but does not define** (core metadata or field terms). Example raised in design discussion: a paper about heart attacks that never explains “myocardial infarction.”
 - Key equations, numbered as in the paper, with variables.
 - Key figures: what each encodes, how it is labeled, and whether underlying data appear to be available.
@@ -73,7 +73,7 @@ Extract at least:
 
 Design a path a human can follow in one sitting. **TODO:** target duration.
 
-Do not lock the whole notebook to a single reading level. Plan for **adaptive explanation**: the reader should be able to get a simpler or more advanced account of a hard passage. **TODO:** default direction — start simple and add complexity, or start high and step down when the reader is confused. Both were proposed; neither was chosen.
+Do not lock the whole notebook to a single reading level. Plan for **adaptive explanation**: the reader should be able to get a simpler or more advanced account of a hard passage. **TODO:** default direction — start simple and add complexity, or start high and step down when the reader is confused. Both were proposed; neither was chosen. Core concepts get a full ladder (see [Explaining at multiple levels](#explaining-at-multiple-levels)).
 
 Suggested spine (adjust per paper):
 
@@ -82,7 +82,7 @@ Suggested spine (adjust per paper):
 3. Setup: notation, assumptions, terms.
 4. Core idea, tied to an equation or figure.
 5. Step-through aligned with the paper.
-6. Informal checks after segments (not formal assessment — formal assessment is out of scope).
+6. Informal checks after segments, matched to the explanation level: explain, predict, apply, or critique (not formal assessment — formal assessment is out of scope).
 7. For graduate-and-above readers, critique beats: does the experimental design address the stated question; is the statistical framework an appropriate choice; what is missing; what assumptions is the reader making.
 8. Wrap-up: limitations, what to read next, citation.
 
@@ -108,7 +108,8 @@ Other generation rules:
 
 - Equations: LaTeX in `mo.md`; widgets on parameters when that builds intuition.
 - Figures: reproduce or simplify when data allow; link back to the paper's figure number. If data are not available, say so — do not invent plots. **TODO:** how far to go with vision-based estimates or reader-written figure interpretations in v1.
-- Informal checks: short questions, not graded assessment. **TODO:** patterns (dropdown, text plus reveal, numeric tolerance).
+- Core concepts (1–3 per notebook) get an explanation ladder ([Explaining at multiple levels](#explaining-at-multiple-levels)).
+- Informal checks: short questions, not graded assessment. Use the `show_check` pattern in `resources/explanation-levels.md` §9 (radio, a numeric answer with tolerance, or an open answer with a model answer).
 - Domain mode from step 2: coding exercises and method reconstruction for algorithm-like papers; agent-written visualization/widget explainers for concept-like papers (for example, a mechanism in a cell).
 - Label anything that goes beyond the paper (“Our demo,” “Simplified assumption”).
 - Include paper metadata and citations.
@@ -135,13 +136,50 @@ Tell the user:
 - Writing is intelligible and representative, not slop.
 - Core concepts and metadata terms actually get explained.
 - No fabricated numbers or claims.
+- Every ladder explains the same mechanism spine at every level; every ledger simplification is corrected at a later level; the analogy's limit is stated.
 - **TODO:** assertion- or gold-question evals; multi-model runs (Chinese open-weight and Claude models were offered); LLM-as-judge only as a first filter that is more trustworthy on “this is bad” than on “this is good”; a human try-on-an-unfamiliar-paper pass; domain-expert review after an own-field smoke test.
 - **TODO:** a shared test-paper set that covers established, emergent, and interdisciplinary work, and subdomains, not just one field. A 2016 influenza paper was offered as one possible case; the list is not chosen.
+
+## Explaining at multiple levels
+
+Core ideas get an **explanation ladder**: one mechanism explained at five levels, each written for a reader with specific prerequisites. It is modeled on WIRED's [5 Levels](https://www.wired.com/video/series/5-levels/) series. The level names are **shorthand**. What defines a level is the subject knowledge and math the reader brings, and the precision the level adds.
+
+| Level (shorthand) | Subject knowledge assumed | Math assumed | Adds to the mechanism |
+|---|---|---|---|
+| 1 · Child | Everyday experience | Counting and comparison | Cause and effect, in everyday terms |
+| 2 · Teen | General science literacy | Arithmetic, percentages, simple charts | A toy example with real, small numbers |
+| 3 · Undergrad | An introductory course in the field | The field's introductory tools | The exact equation or algorithm, every symbol defined |
+| 4 · Grad student | An adjacent area's standard methods | Follows the paper's derivations | Assumptions, when it holds, what breaks, and how it compares with the standard approach |
+| 5 · Expert | This subfield's literature | Full formalism | What's new, trade-offs, limits, and open questions |
+
+Rules:
+
+1. **Profile prerequisites per paper** (Phase 1): for each level, what the reader knows, what they don't, and what the notebook must teach. Map the user's stated background (from the optional inputs under Contract) onto a level.
+2. **One mechanism at every level.** Write a one-sentence *mechanism spine* first; each level adds precision to it. No level substitutes a vaguer or different mechanism.
+3. **Accurate at every level.** Simplify by leaving things out, never by saying something false. Record each simplification in a ledger and correct it at a later level.
+4. **Map the analogy and state its limit.** Carry one anchor up to Level 3, map its parts onto the method's parts, and say where it breaks by Level 3.
+5. **Checks matched to the level:**
+   - Child: explain.
+   - Teen: predict.
+   - Undergrad: apply.
+   - Grad student: apply and critique assumptions.
+   - Expert: critique.
+
+   Each check has an expected answer, the reasoning, and the paper location.
+6. **Ladders are for the core:** 1–3 concepts per notebook.
+7. **Grounded:** cite locations from the text you read in, and never guess. Mark gaps `[cite: …]` while drafting, and resolve them before shipping.
+8. **Numbers carry their conditions:** the table, cohort, feature set, or range goes in the same sentence. In testing on real papers, both misconceptions the ladders caused came from a number stripped of its condition.
+
+**In the notebook:** add one level picker near the top. Each ladder gets `mo.ui.tabs` that open on the reader's level, with that level's check underneath.
+
+**Read before writing:** [`resources/explanation-levels.md`](resources/explanation-levels.md) has the profile and ledger templates, a worked example, tested marimo cells, and pitfalls. [`resources/examples/`](resources/examples/) has two more complete ladders, for a method paper (UMAP) and an analysis paper (influenza reassortment).
+
+---
 
 ## Folder reference
 
 - **`assets/`** — templates and snippets to copy or fill in.
-- **`resources/`** — material the agent should read (pedagogy, format-specific ingest notes, writing and eval guidance). Do not paste these wholesale into notebooks.
+- **`resources/`** — material the agent should read (pedagogy, format-specific ingest notes, writing and eval guidance). Do not paste these wholesale into notebooks. Includes [`explanation-levels.md`](resources/explanation-levels.md) (prerequisite-defined explanation ladders, checks, and a worked example) and [`examples/`](resources/examples/) (complete ladders for UMAP and influenza reassortment).
 - **`scripts/`** — helpers, run with `uv run`. `validate_notebook.py` checks syntax, runs `marimo check --strict`, and smoke-runs the notebook with `--run`. Future: per-input-format ingest, metadata fetch, figure extraction.
 
 ## Open decisions

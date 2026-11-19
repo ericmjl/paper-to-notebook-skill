@@ -82,6 +82,20 @@ Issues and PRs welcome during and after the hackathon.
 - Default audience level (undergrad, grad, practitioner).
 - Licensing for generated notebooks vs. skill metadata.
 
+## Acknowledgments
+
+Specific adaptations are credited in each resource file's **Credits** section.
+
+- [WIRED, 5 Levels](https://www.wired.com/video/series/5-levels/): the format behind explanation ladders.
+- [marimo-team/skills](https://github.com/marimo-team/skills) (Apache-2.0): `implement-paper`'s reader-background step, which the prerequisite profile extends.
+- [Eric Ma's skills](https://github.com/ericmjl/skills) (MIT): `marimo` patterns and naming conventions.
+- [K-Dense claude-scientific-skills](https://github.com/K-Dense-AI/claude-scientific-skills) (MIT): the anthropomorphism rule.
+- Anderson & Krathwohl (2001): the revised Bloom's taxonomy behind the per-level checks.
+- **Worked-example papers:**
+  - Vaswani et al. (2017);
+  - McInnes, Healy & Melville (2018), arXiv:1802.03426;
+  - Ma, E. J. et al. (2016), PNAS 113:5335–5339.
+
 ## License
 
 **TODO:** choose license (Eric's other skills often use MIT — confirm for this repo).
