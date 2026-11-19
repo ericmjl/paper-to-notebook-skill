@@ -1,6 +1,6 @@
 # Field-maturity example: scRNA-seq integration / batch correction
 
-**Illustrative paper type:** A single-cell genomics paper correcting **batch effects** or performing **atlas integration** before clustering cell types (benchmark context: [Lahnemann et al., 2020](https://doi.org/10.1186/s13059-019-1850-9); best practices: [Luecken & Theis, 2019](https://doi.org/10.1186/s13059-019-00621-z)).
+**Illustrative paper type:** A single-cell genomics paper correcting **batch effects** or performing **atlas integration** before clustering cell types (benchmark: [Tran et al., 2020](https://doi.org/10.1186/s13059-019-1850-9); tutorial: [Luecken & Theis, 2019](https://doi.org/10.15252/msb.20188746); atlas integration: [Luecken et al., 2021](https://doi.org/10.1038/s41592-021-01336-8)).
 
 **Classification:** **Interdisciplinary** (primary; biology + statistics + ML). **Evidence:** overloaded *cluster*, *feature*, *batch*, *integration*, *embedding* in OpenAlex/arXiv samples; benchmark papers exist explicitly to compare **batch-effect correction** methods; annotation guides define workflows for non-specialists.
 
@@ -12,8 +12,8 @@
 field_maturity_primary: interdisciplinary
 field_maturity_secondary: null
 maturity_evidence:
-  - OpenAlex scRNA sample: cluster 66 hits, batch correction 20, batch effect 9 (n=25, 2026-11-19)
-  - Integration benchmark Nat Methods 2021 (10.1038/s41592-021-01336-8)
+  - OpenAlex scRNA sample: 66 mentions of "cluster" and 20 of "batch correction" in 25 works (2026-11-19)
+  - Luecken et al. 2021, Nature Methods, 10.1038/s41592-021-01336-8
 vocabulary_onboarding_plan:
   - glossary: required
   - disambiguation: required
@@ -60,7 +60,7 @@ def _(mo):
             """
             | Term (paper) | Definition | Link |
             |---|---|---|
-            | **scRNA-seq** | Single-cell RNA sequencing; counts mRNA per cell | Luecken & Theis best practices |
+            | **scRNA-seq** | Single-cell RNA sequencing; counts mRNA per cell | Luecken & Theis 2019 tutorial (MSB) |
             | **Cell type** | Biologically defined class; may require markers + manual annotation | Paper's marker list / reference atlas |
             | **Pseudotime** | Ordered axis of continuous state change (optional in paper) | Distinct from clinical timepoint |
             """

@@ -29,7 +29,7 @@ Score each **signal** as **low / medium / high** from (a) the paper and (b) a **
 | **Surveys / textbooks** | Standard texts cite stable defs | "Survey" papers organize competing frameworks | Best-practice / benchmark papers spend pages on definitions |
 | **Venue spread** | Single discipline dominates | Often cs.AI / cs.CL + application verticals | Nature Methods + Bioinformatics + NeurIPS-style methods |
 | **Citation spread** | Citations stay in one field cluster | Fast-moving preprint + product blog ecosystem | Citations bridge ≥2 Citation Cluster IDs (OpenAlex) or journal scopes |
-| **Explicit disambiguation in paper** | Rare ("we use Gibbs…") | Occasional ("following ReAct…") | Frequent ("batch effect as in Luecken…", "clusters of cells") |
+| **Explicit disambiguation in paper** | Rare ("we use Gibbs…") | Occasional ("following ReAct…") | Frequent ("batch effect as in Tran et al.", "clusters of cells") |
 | **"We use X to mean Y"** | Low except notation | Medium (framework branding) | High (overload resolution) |
 
 **Mixed-field rule:** If emergent **and** interdisciplinary signals are both medium+, include both **flux** and **disambiguation** sections.
