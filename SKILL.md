@@ -107,6 +107,7 @@ Write the plan in the agent transcript or a scratch file; **TODO:** optional `re
    - Import `marimo as mo` in **one** cell only; use `mo` elsewhere.
    - Unique top-level names across cells; no private `_names` needed downstream.
    - Prefer reactive widgets that **drive** exploration, not decoration.
+   - Declare dependencies in a [PEP 723](https://peps.python.org/pep-0723/) inline script metadata block at the top of the file (`# /// script` … `# ///`), listing `marimo` and every package the notebook imports, each with a lower-bound version (e.g. `numpy>=2.0`). This lets `uv run` and `marimo edit --sandbox` install them.
 3. **Explanations:** short paragraphs; define symbols when introduced.
 4. **Equations:** LaTeX in `mo.md`; consider sliders tied to parameters in key formulas.
 5. **Figures:** reproduce or simplify; link back to paper figure number; interactive where it aids understanding.
@@ -118,13 +119,13 @@ Label any extension beyond the paper ("Our demo", "Simplified assumption") expli
 
 ## Phase 4 — Validate
 
-1. Run helper scripts from **`scripts/`** when available:
+1. Run the validator:
 
    ```bash
-   uv run scripts/validate_notebook.py path/to/notebook.py
+   uv run scripts/validate_notebook.py path/to/notebook.py --run
    ```
 
-   **TODO:** implement validator (syntax, `marimo check`, optional dry-run).
+   It checks Python syntax, runs `marimo check --strict`, and with `--run` executes the notebook top to bottom. Fix every reported problem before delivery.
 
 2. Mental checklist:
    - [ ] Notebook runs top-to-bottom without errors.
@@ -140,7 +141,7 @@ Label any extension beyond the paper ("Our demo", "Simplified assumption") expli
 
 Tell the user:
 
-- Path to the notebook and command to open it (`uv run marimo edit …`).
+- Path to the notebook and command to open it (`uvx marimo edit --sandbox …`).
 - Assumed audience and what was simplified.
 - **TODOs** left in the notebook or skill.
 - Paper reference (title, authors, year, link).
@@ -165,7 +166,7 @@ Material the agent should **read**, not paste wholesale into notebooks:
 
 Automation with documented `uv` usage:
 
-- `validate_notebook.py` — confirm generated notebook is healthy (**TODO**).
+- `validate_notebook.py` — confirm generated notebook is healthy (syntax, `marimo check --strict`, smoke run with `--run`).
 - Future: fetch paper metadata, extract figures, etc.
 
 ---
