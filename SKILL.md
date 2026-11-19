@@ -1,184 +1,162 @@
 ---
 name: paper-to-notebook
 description: >
-  Turn a published research paper into a guided marimo learning notebook:
-  plain-language explanations, interactive widgets for key equations and figures,
-  and comprehension checks. Use when asked to make a paper explainer notebook,
-  teach a paper interactively, or build a marimo walkthrough of a publication.
-metadata:
-  author: ericmjl
-  version: "0.1.0"
+  Turn a research paper — provided as a PDF, HTML, or plain-text source
+  (LaTeX, Markdown, or similar) — into a guided, runnable marimo learning
+  notebook. Use when asked to make a paper explainer notebook, teach a paper
+  interactively, or build a marimo walkthrough of a publication. Do not use
+  for multi-paper literature reviews or non-marimo outputs unless the user
+  explicitly changes the format.
 ---
 
 # Paper to notebook
 
-Guide an agent from **source paper** to **runnable marimo notebook** that teaches the paper step by step—not a summary page, but an interactive lesson.
+Steer an agent from **one paper** to a **runnable marimo notebook** that helps a reader understand that paper. The notebook is a lesson, not a summary page: plain-language explanation, interactive widgets where they help, and informal checks along the way. The writing must be intelligible and representative of the paper, not generic AI prose.
 
-This skill lives in a small repo layout:
+This file is a skeleton. Lots of details will be filled in later. Items marked **TODO** are still undecided or only sketched.
 
-- **`SKILL.md`** (this file) — workflow and rules.
-- **`assets/`** — templates and static files to copy or fill in.
-- **`resources/`** — reference docs to read before writing (marimo patterns, pedagogy).
-- **`scripts/`** — validation and other helpers (`uv run …`).
+## Contract
 
-For deep marimo craft, also load Eric's skills when available: `marimo`, `marimo-notebook-patterns`, `awesome-marimo-notebook` ([github.com/ericmjl/skills](https://github.com/ericmjl/skills)).
+| | |
+|---|---|
+| **Input** | A paper as PDF, HTML, or plain-text source (LaTeX, Markdown, etc.). Path, URL, or identifier is fine as long as full text can be obtained. |
+| **Output** | A runnable marimo notebook (`*.py`) the reader can open with `uvx marimo edit --sandbox …`. |
 
----
+Optional inputs to ask for if they are missing (do not block if the user only gives the paper):
 
-## When to use
+- Starting audience or “adapt as I go.” Default working assumption: undergrad through graduate student, plus working professionals new to this paper or field, with some general scientific knowledge. **TODO:** tighten the default.
+- Extra context: supporting information, cited papers, or other sources the user wants treated as grounding (not just general knowledge).
+- Depth: full walkthrough vs. methods, results, or one figure.
+- Output path and runtime constraints.
 
-- User names a paper (PDF, URL, arXiv, DOI) and wants a **learning notebook**.
-- User wants **widgets** around specific equations or figures from a paper.
-- User wants **checks for understanding** (questions, mini-exercises) while reading.
+Do **not** treat this skill as a tool for reviewing a large literature. That is a different job.
 
-Do **not** use for: literature review only, slide decks, or non-marimo outputs (unless the user explicitly changes format).
-
----
-
-## Inputs to gather
-
-| Input | Notes |
-|-------|--------|
-| Paper source | File path, URL, or identifier. **TODO:** standardize fetch/parse steps. |
-| Audience | **TODO:** default if unspecified (suggest "graduate-level STEM reader"). |
-| Depth | Full walkthrough vs. highlights (methods only, one figure, etc.). |
-| Output path | Where to write `*.py` marimo notebook. |
-| Constraints | GPU, runtime limits, offline, etc. |
-
----
-
-## Workflow overview
+## Workflow
 
 ```
-1. Ingest paper
-2. Select learning objectives + key artifacts (concepts, equations, figures)
-3. Plan narrative path (hook → intuition → formalism → checks)
-4. Draft notebook structure from assets/templates
-5. Implement cells: prose, math, widgets, checks
-6. Validate (scripts + manual read-through)
-7. Hand off: how to run, known gaps, citations
+1. Ingest the paper (PDF / HTML / plain-text source)
+2. Extract structure, terms, equations, figures, and gaps
+3. Plan the learning path
+4. Generate the marimo notebook
+5. Validate it runs with `uv run`, then hand off
 ```
 
----
+### 1. Ingest the paper
 
-## Phase 1 — Read and understand the paper
+Obtain the **full text**, not an abstract only. Branch on the input type; put format-specific notes in `resources/` and any helpers in `scripts/` (always `uv run`, never a global `pip install`).
 
-1. Obtain full text (not abstract-only).
-2. Extract:
-   - **Problem** and **contribution** (one paragraph each, in your own words).
-   - **Prerequisites** the reader needs.
-   - **Key concepts** (3–8 terms with short definitions).
-   - **Key equations** (numbered as in paper; note variables).
-   - **Key figures** (what each encodes; what to interact with).
-3. Flag **TODO** items where the paper is ambiguous or you lack domain context; do not invent experimental results.
+- **PDF:** **TODO:** how to fetch and parse (text, math, figures, reading order). Flag failures rather than guessing.
+- **HTML:** **TODO:** how to fetch and parse (main text vs. navigation/chrome, MathJax/MathML, figures).
+- **Plain-text source (LaTeX, Markdown, etc.):** **TODO:** how to follow includes, bibliography, and figure files; how to keep equation and figure labels.
 
-**Resources:** add domain cheat-sheets to `resources/` as you find them; read any pedagogy notes there before planning.
+Record the paper's title, authors, year, and a stable link or identifier when available.
 
----
+### 2. Extract structure, equations, and figures
 
-## Phase 2 — Plan the learning path
+Build an intermediate picture of the paper before writing any notebook. **TODO:** settle the data shapes for this step (see also the idea that sound intermediate structures make the rest easier).
 
-Design a linear path a human can follow in one sitting (**TODO:** target duration, e.g. 30–60 minutes).
+Extract at least:
+
+- Problem and contribution, in your own words.
+- Prerequisites a reader likely needs.
+- Key concepts and **terms the paper uses but does not define** (core metadata or field terms). Example raised in design discussion: a paper about heart attacks that never explains “myocardial infarction.”
+- Key equations, numbered as in the paper, with variables.
+- Key figures: what each encodes, how it is labeled, and whether underlying data appear to be available.
+- Risk points for generation: heavy LaTeX or math, Greek-letter figure labels, other non-ASCII text.
+- Obvious gaps in methods or reporting. Do not invent missing experimental results.
+
+**TODO:** whether to classify the paper as established, emergent, or interdisciplinary, and whether that should change linguistic strategy in v1, or only guide testing.
+
+**TODO:** whether to classify the paper as algorithm-like (coding exercises, reverse-engineer the method) vs. concept-like (agent-written explainer widgets). Chemistry examples used in discussion: mass balance, reaction kinetics, a new kinetic model.
+
+### 3. Plan the learning path
+
+Design a path a human can follow in one sitting. **TODO:** target duration.
+
+Do not lock the whole notebook to a single reading level. Plan for **adaptive explanation**: the reader should be able to get a simpler or more advanced account of a hard passage. **TODO:** default direction — start simple and add complexity, or start high and step down when the reader is confused. Both were proposed; neither was chosen.
 
 Suggested spine (adjust per paper):
 
-1. **Why this paper matters** — motivating question.
-2. **Intuition** — metaphor or toy example **before** heavy notation.
-3. **Setup** — notation table, assumptions.
-4. **Core idea** — one central mechanism, linked to an equation or figure.
-5. **Step-through** — 2–4 segments aligned with paper sections.
-6. **Checks** — short questions after each segment.
-7. **Wrap-up** — limitations, what to read next, citation.
+1. Why this paper matters.
+2. Intuition or a toy example before heavy notation.
+3. Setup: notation, assumptions, terms.
+4. Core idea, tied to an equation or figure.
+5. Step-through aligned with the paper.
+6. Informal checks after segments (not formal assessment — formal assessment is out of scope).
+7. For graduate-and-above readers, critique beats: does the experimental design address the stated question; is the statistical framework an appropriate choice; what is missing; what assumptions is the reader making.
+8. Wrap-up: limitations, what to read next, citation.
 
-For each segment, specify:
+**TODO:** how far critique, results-section analysis, and figure-interpretation prompts go in the first version, versus a plain guided walkthrough.
 
-- Learning objective (one sentence).
-- Marimo cell types: `mo.md`, code, `mo.ui.*` / anywidget, plot.
-- Comprehension check (question type: recall, apply, interpret figure).
+If the user supplied extra sources, plan where those will be cited in the notebook and how sourced evidence will be distinguished from general knowledge. **TODO:** the mechanism for that distinction, and whether a small concept map or “knowledge wiki” belongs here later.
 
-Write the plan in the agent transcript or a scratch file; **TODO:** optional `resources/learning-path-template.md`.
+### 4. Generate the marimo notebook
 
----
+Start from an `assets/` template when one exists (**TODO:** add `assets/notebook_template.py`). Write a marimo notebook that can be opened with `uvx marimo edit --sandbox`.
 
-## Phase 3 — Generate the marimo notebook
+Follow marimo conventions in `resources/` when they are present (one `import marimo as mo` cell; unique top-level names; widgets that drive exploration, not decoration).
 
-1. Start from **`assets/`** notebook template when present (**TODO:** add `assets/notebook_template.py`).
-2. Follow marimo conventions (see `resources/` and `marimo-notebook-patterns`):
-   - Import `marimo as mo` in **one** cell only; use `mo` elsewhere.
-   - Unique top-level names across cells; no private `_names` needed downstream.
-   - Prefer reactive widgets that **drive** exploration, not decoration.
-3. **Explanations:** short paragraphs; define symbols when introduced.
-4. **Equations:** LaTeX in `mo.md`; consider sliders tied to parameters in key formulas.
-5. **Figures:** reproduce or simplify; link back to paper figure number; interactive where it aids understanding.
-6. **Comprehension checks:** **TODO:** pick patterns (dropdown quiz, `mo.ui.text` + reveal, numeric input with tolerance).
+Declare dependencies in a [PEP 723](https://peps.python.org/pep-0723/) inline script metadata block at the top of the file (`# /// script` … `# ///`), listing `marimo` and every package the notebook imports, each with a lower-bound version (e.g. `numpy>=2.0`). This lets `uv run` and `marimo edit --sandbox` install them.
 
-Label any extension beyond the paper ("Our demo", "Simplified assumption") explicitly.
+Hard requirements for the prose:
 
----
+- Intelligible and representative of the paper's core ideas.
+- Not generic “AI slop.” If a sentence could have been written about any paper, rewrite it.
+- Define symbols and field terms when they first matter, or point to a glossary / tooltip / highlight-to-explain aid. **TODO:** which of those reader aids to ship first. “Marimo Lens” was mentioned as a possible fit for highlight-to-explain; confirm the actual feature name and host support.
 
-## Phase 4 — Validate
+Other generation rules:
 
-1. Run helper scripts from **`scripts/`** when available:
+- Equations: LaTeX in `mo.md`; widgets on parameters when that builds intuition.
+- Figures: reproduce or simplify when data allow; link back to the paper's figure number. If data are not available, say so — do not invent plots. **TODO:** how far to go with vision-based estimates or reader-written figure interpretations in v1.
+- Informal checks: short questions, not graded assessment. **TODO:** patterns (dropdown, text plus reveal, numeric tolerance).
+- Domain mode from step 2: coding exercises and method reconstruction for algorithm-like papers; agent-written visualization/widget explainers for concept-like papers (for example, a mechanism in a cell).
+- Label anything that goes beyond the paper (“Our demo,” “Simplified assumption”).
+- Include paper metadata and citations.
 
-   ```bash
-   uv run scripts/validate_notebook.py path/to/notebook.py
-   ```
+### 5. Validate and hand off
 
-   **TODO:** implement validator (syntax, `marimo check`, optional dry-run).
+**Minimum (v1 skeleton): the notebook must run.**
 
-2. Mental checklist:
-   - [ ] Notebook runs top-to-bottom without errors.
-   - [ ] Citations and paper metadata present.
-   - [ ] Checks have documented expected answers or reveal cells.
-   - [ ] No fabricated numbers or claims.
+```bash
+uv run scripts/validate_notebook.py path/to/notebook.py --run
+```
 
-3. If validation fails, fix and re-run before delivery.
-
----
-
-## Phase 5 — Deliver
+It checks Python syntax, runs `marimo check --strict`, and with `--run` executes the notebook top to bottom. Fix every reported problem before delivery.
 
 Tell the user:
 
-- Path to the notebook and command to open it (`uv run marimo edit …`).
+- Path to the notebook and the command to open it (`uvx marimo edit --sandbox …`).
 - Assumed audience and what was simplified.
-- **TODOs** left in the notebook or skill.
+- TODOs and known gaps (including missing data or undefined terms).
 - Paper reference (title, authors, year, link).
 
----
+**Planned validation beyond “it runs” (not all required for a first sketch):**
+
+- Writing is intelligible and representative, not slop.
+- Core concepts and metadata terms actually get explained.
+- No fabricated numbers or claims.
+- **TODO:** assertion- or gold-question evals; multi-model runs (Chinese open-weight and Claude models were offered); LLM-as-judge only as a first filter that is more trustworthy on “this is bad” than on “this is good”; a human try-on-an-unfamiliar-paper pass; domain-expert review after an own-field smoke test.
+- **TODO:** a shared test-paper set that covers established, emergent, and interdisciplinary work, and subdomains, not just one field. A 2016 influenza paper was offered as one possible case; the list is not chosen.
 
 ## Folder reference
 
-### `assets/`
+- **`assets/`** — templates and snippets to copy or fill in.
+- **`resources/`** — material the agent should read (pedagogy, format-specific ingest notes, writing and eval guidance). Do not paste these wholesale into notebooks.
+- **`scripts/`** — helpers, run with `uv run`. `validate_notebook.py` checks syntax, runs `marimo check --strict`, and smoke-runs the notebook with `--run`. Future: per-input-format ingest, metadata fetch, figure extraction.
 
-Templates: starter marimo app, banner markdown, check-for-understanding snippets, shared CSS/SVG if needed.
+## Open decisions
 
-### `resources/`
-
-Material the agent should **read**, not paste wholesale into notebooks:
-
-- Marimo widget notes and gotchas.
-- Pedagogy guidelines (scaffolding, cognitive load).
-- Links to sibling hackathon ideas (e.g. Visual LaTeX).
-
-### `scripts/`
-
-Automation with documented `uv` usage:
-
-- `validate_notebook.py` — confirm generated notebook is healthy (**TODO**).
-- Future: fetch paper metadata, extract figures, etc.
-
----
-
-## Open decisions (TODO)
-
-- PDF vs. LaTeX vs. HTML ingestion pipeline.
+- Default audience and the default direction of adaptive explanation.
+- Which components ship in the first version (progressive explanation, visualizations, glossary/highlight-to-explain, informal checks, experimental critique, results analysis, figure reproduction, extra-source grounding).
+- One mega-skill with internal components (the shape described in design discussion) vs. splitting later (ingest, pedagogy, build, eval).
+- How to classify domain type and paper “mode” (algorithm vs. concept; established vs. emergent vs. interdisciplinary).
+- Ingest details per input format; figure handling when data are missing.
+- Eval suite, criteria scaffold, and test-paper list.
+- License for the skill and for generated notebooks.
 - Whether to mandate `wigglystuff.CellTour` for every notebook.
 - Standard library set for math plots (plotly vs. matplotlib).
-- i18n / accessibility requirements.
-
----
+- i18n and accessibility requirements.
 
 ## Related work at hackathon
 
-Pairs with **Visual LaTeX** for equation-heavy papers. Collaborators listed in repo `README.md`.
+Pairs with **Visual LaTeX** for equation-heavy papers. Collaborators are listed in the repo `README.md`.

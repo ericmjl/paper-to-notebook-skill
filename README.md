@@ -56,7 +56,7 @@ Placeholder workflow:
 6. Open the notebook:
 
    ```bash
-   uv run marimo edit path/to/notebook.py
+   uvx marimo edit --sandbox path/to/notebook.py
    ```
 
 ## Help wanted
