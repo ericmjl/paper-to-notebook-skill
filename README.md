@@ -35,7 +35,7 @@ Style and patterns for marimo work also live in Eric's skill collection: [github
 
 ## Run the notebook eval
 
-The [eval setup](evals/README.md) runs two hand-written notebooks against a synthetic paper. The reactive notebook should pass and the deliberately stale notebook should fail. This checks the evaluator before connecting it to an agent and needs no API keys.
+The [eval setup](evals/README.md) includes two local checks for table accuracy and widget behavior. An optional model judge compares the notebook's explanation with the paper to catch unsupported interpretations.
 
 ## Try it with an agent
 

@@ -12,8 +12,11 @@ const require = createRequire(import.meta.url);
 const execFileAsync = promisify(execFile);
 const host = '127.0.0.1';
 const fixtures = new Map([
-  ['reactive', 'reactive.py'],
-  ['stale', 'stale.py'],
+  ['reactive', { notebook: 'reactive.py', check: 'widget' }],
+  ['stale', { notebook: 'stale.py', check: 'widget' }],
+  ['table-copy', { notebook: 'table-copy.py', check: 'table' }],
+  ['table-swapped', { notebook: 'table-swapped.py', check: 'table' }],
+  ['table-causal', { notebook: 'table-causal.py', check: 'table' }],
 ]);
 
 function fixturePath(name) {
@@ -29,13 +32,13 @@ function notebookEnvironment(home) {
   };
 }
 
-async function inspectProgrammatically(notebook) {
+async function inspectProgrammatically(notebook, check) {
   const home = await mkdtemp(join(tmpdir(), 'marimo-fixture-'));
   try {
     const script = fileURLToPath(new URL('./inspect-programmatically.py', import.meta.url));
     const report = join(home, 'report.json');
     await execFileAsync(process.env.MARIMO_PYTHON || 'python3', [
-      script, notebook, report,
+      script, notebook, report, check,
     ], { cwd: home, env: notebookEnvironment(home), timeout: 90_000 });
     return JSON.parse(await readFile(report, 'utf8'));
   } finally {
@@ -150,16 +153,17 @@ export default class NotebookProvider {
       const paper = await readFile(fixturePath('dummy-paper.md'), 'utf8');
       // The stub selects checked-in output. A real generator receives this same request.
       const request = { prompt, paper };
-      const notebook = fixtures.get(variant);
-      const useBrowser = process.env.MARIMO_CHECK_MODE === 'browser';
+      const { notebook, check } = fixtures.get(variant);
+      const useBrowser = check === 'widget' && process.env.MARIMO_CHECK_MODE === 'browser';
       const inspect = useBrowser ? inspectInBrowser : inspectProgrammatically;
-      const observed = await inspect(fixturePath(notebook));
+      const observed = await inspect(fixturePath(notebook), check);
       return {
         output: {
           paper_id: paperId,
           notebook,
           mode: useBrowser ? 'browser' : 'programmatic',
           ...observed,
+          ...(check === 'table' && { source_paper: paper }),
         },
         metadata: { generation: 'fixture', prompt: request.prompt, paper_bytes: Buffer.byteLength(request.paper) },
       };

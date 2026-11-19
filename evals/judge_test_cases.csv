@@ -1,0 +1,3 @@
+__description,prompt,paper_id,notebook
+Explanation preserves the paper's limitation,Reproduce Table 1 and explain what the findings support.,dummy-paper,table-copy
+Explanation claims causation (intentional failure),Reproduce Table 1 and explain what the findings support.,dummy-paper,table-causal
