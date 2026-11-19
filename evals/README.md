@@ -10,8 +10,7 @@ These evals check three things a notebook should do when teaching a paper. The c
 
 ## Set up the evals
 
-1. Install [Node.js 24](https://nodejs.org/en/download) and [uv](https://docs.astral.sh/uv/getting-started/installation/). Check that `node --version`, `npx --version`, and `uv --version` work in your terminal.
-2. Clone the repository and enter it. If you already have a checkout, open a terminal at its root.
+1. Clone the repository and enter it. If you already have a checkout, open a terminal at its root.
 
    ```sh
    git clone https://github.com/ericmjl/paper-to-notebook-skill.git
@@ -19,6 +18,19 @@ These evals check three things a notebook should do when teaching a paper. The c
    ```
 
    If the evals are on a branch, check out the branch your teammate shared. Confirm that `evals/table-eval.yaml` exists.
+2. Choose a setup for Node.js and uv:
+
+   - **Direct install:** Install [Node.js 24](https://nodejs.org/en/download) and [uv](https://docs.astral.sh/uv/getting-started/installation/).
+   - **Pixi on macOS or Linux:** With [Pixi](https://pixi.prefix.dev/latest/installation/) installed, open a shell with Node.js 24 and uv available:
+
+     ```sh
+     pixi exec --channel conda-forge --spec 'nodejs=24' --spec uv -- bash --noprofile --norc
+     ```
+
+     Run the remaining commands in that shell. Use `exit` to return to your original shell. Pixi uses a temporary environment and needs no workspace manifest.
+
+   Check that `node --version`, `npx --version`, and `uv --version` work before continuing.
+
 3. Set the local results directory. Run this from the repo root in each terminal you use for the evals or the viewer.
 
    ```sh
