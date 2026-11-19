@@ -34,7 +34,7 @@ def _(mo):
         ### Vocabulary for this paper (established field)
 
         This paper sits in **Bayesian hierarchical modeling**. Terms below follow
-        Gelman et al., *Bayesian Data Analysis*, and contemporary MCMC practice.
+        Gelman et al. (2013), *Bayesian Data Analysis* (10.1201/b16018), and contemporary MCMC practice.
         The paper's own wording is kept when we quote results.
         """
     )

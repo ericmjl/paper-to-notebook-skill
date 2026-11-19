@@ -38,7 +38,7 @@ def _(mo):
         | Concept | Also called | Common in recent preprints (2025 sample) | This paper says |
         |---|---|---|---|
         | LLM-driven loop of think → act → observe | **ReAct** (proper noun; Yao et al., 2022), tool-use workflow, tool-learning agent | *agentic* workflows; *multi-agent* orchestration | *(fill from paper)* |
-        | Calling APIs / plugins from the model | **function calling** (vendor docs), **tool calling** (surveys), tool learning (Qin et al., 2024) | Mixed; surveys separate planning / selection / calling / response | *(fill from paper)* |
+        | Calling APIs / plugins from the model | **function calling** (vendor docs), **tool calling** (surveys), tool learning (Qu et al., 2024) | Mixed; the Qu et al. abstract says the literature is fragmented | *(fill from paper)* |
         | Single model vs many | LLM agent, language agent, autonomous agent | **LLM agent** still frequent; **agentic** rising in titles | *(fill from paper)* |
 
         We **keep the paper's terms** when describing their system. Search terms below help you find *related* work, not rename their modules.
@@ -61,7 +61,7 @@ def _(mo):
         - Architecture-specific: `ReAct` only when you mean interleaved reasoning and actions
 
         **Anchors:** [ReAct (2022)](https://arxiv.org/abs/2210.03629);
-        [Tool learning survey (2024)](https://arxiv.org/abs/2405.17935).
+        [Tool learning survey, Qu et al. (2024)](https://arxiv.org/abs/2405.17935).
         """
     )
     return
