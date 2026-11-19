@@ -182,9 +182,11 @@ Rules:
 
 ## Final quiz
 
-Every notebook ends with **5 multiple-choice questions about the paper itself**, rendered by the `PaperQuiz` anywidget in `assets/paper_quiz.py`.
+Every notebook ends with **five multiple-choice questions about the paper itself**, rendered by the `PaperQuiz` anywidget in [`assets/paper_quiz.py`](assets/paper_quiz.py). It shuffles the options, marks the answer right or wrong, shows an explanation for whichever option the reader picked, and keeps a score.
 
-Read **`resources/final-quiz.md`** before writing them: it covers what to ask (the paper's claims and findings, not its implementation detail), how to build distractors, and the cells to add.
+Quiz the substance, not the machinery: the paper's claims, what it found, why those findings follow, and what it says it cannot conclude. Ask about a method only when the reader needs it to read a result correctly. These are informal checks like the rest, not formal assessment.
+
+**Read before writing:** [`resources/final-quiz.md`](resources/final-quiz.md) has what to ask, how to build distractors that target real misconceptions, and the cells to add.
 
 ---
 
