@@ -38,12 +38,41 @@ function notebookEnvironment(home) {
   };
 }
 
-async function inspectProgrammatically(notebook, check) {
+async function candidatePython(notebook, home) {
+  const source = await readFile(notebook, 'utf8');
+  if (!/^# \/\/\/ script\s*$/m.test(source)) {
+    return process.env.MARIMO_PYTHON || 'python3';
+  }
+
+  const options = {
+    cwd: home,
+    env: {
+      ...notebookEnvironment(home),
+      HOME: process.env.HOME,
+      XDG_CACHE_HOME: process.env.XDG_CACHE_HOME,
+      UV_CACHE_DIR: process.env.UV_CACHE_DIR,
+      UV_PYTHON_INSTALL_DIR: process.env.UV_PYTHON_INSTALL_DIR,
+      UV_SYSTEM_CERTS: process.env.UV_SYSTEM_CERTS,
+      UV_OFFLINE: process.env.UV_OFFLINE,
+      HTTPS_PROXY: process.env.HTTPS_PROXY || process.env.https_proxy,
+      HTTP_PROXY: process.env.HTTP_PROXY || process.env.http_proxy,
+      ALL_PROXY: process.env.ALL_PROXY || process.env.all_proxy,
+      NO_PROXY: process.env.NO_PROXY || process.env.no_proxy,
+    },
+    timeout: 180_000,
+  };
+  await execFileAsync('uv', ['sync', '--quiet', '--script', notebook], options);
+  const { stdout } = await execFileAsync('uv', ['python', 'find', '--script', notebook], options);
+  return stdout.trim();
+}
+
+async function inspectProgrammatically(notebook, check, isCandidate) {
   const home = await mkdtemp(join(tmpdir(), 'marimo-fixture-'));
   try {
     const script = fileURLToPath(new URL('./inspect-programmatically.py', import.meta.url));
     const report = join(home, 'report.json');
-    await execFileAsync(process.env.MARIMO_PYTHON || 'python3', [
+    const python = isCandidate ? await candidatePython(notebook, home) : process.env.MARIMO_PYTHON || 'python3';
+    await execFileAsync(python, [
       script, notebook, report, check,
     ], { cwd: home, env: notebookEnvironment(home), timeout: 90_000 });
     return JSON.parse(await readFile(report, 'utf8'));
@@ -82,7 +111,7 @@ export default class NotebookProvider {
         const { inspectInBrowser } = await import('./browser-inspector.mjs');
         observed = await inspectInBrowser(notebookFile, notebookEnvironment);
       } else {
-        observed = await inspectProgrammatically(notebookFile, check);
+        observed = await inspectProgrammatically(notebookFile, check, Boolean(candidate));
       }
       return {
         output: {
