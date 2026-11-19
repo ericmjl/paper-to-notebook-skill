@@ -13,16 +13,21 @@ tests: file://table_test_cases.csv
 defaultTest:
   assert:
     - type: javascript
-      metric: Table 1 matches the source
+      metric: Table accuracy verdict is correct
       value: |
-        const expected = JSON.parse(context.vars.expected_table);
+        if (!output.tables.length) {
+          return { pass: false, score: 0, reason: 'No supported table output found' };
+        }
+        const expected = context.metadata.answer_key;
+        const expectsMatch = String(context.vars.expected_match) === 'true';
         const matches = output.tables.some(
           (table) => JSON.stringify(table) === JSON.stringify(expected)
         );
-        return {
-          pass: matches,
-          score: matches ? 1 : 0,
-          reason: matches
-            ? 'Table headers, labels, values, and units match'
-            : 'Expected ' + JSON.stringify(expected) + '; observed ' + JSON.stringify(output.tables),
-        };
+        if (matches === expectsMatch) {
+          const reason = expectsMatch ? 'Table matches the answer key' : 'Swapped group values correctly rejected';
+          return { pass: true, score: 1, reason };
+        }
+        const reason = expectsMatch
+          ? 'Expected ' + JSON.stringify(expected) + '; observed ' + JSON.stringify(output.tables)
+          : 'Negative control unexpectedly matched the answer key';
+        return { pass: false, score: 0, reason };

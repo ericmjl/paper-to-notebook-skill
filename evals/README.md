@@ -6,7 +6,7 @@ These evals check three things a notebook should do when teaching a paper. The c
 | --- | --- | --- |
 | [Table accuracy](table-eval.yaml) | Are the headings, group labels, values, and units the same as in the paper? | None |
 | [Explanation fidelity](judge-eval.yaml) | Does the notebook draw conclusions that the paper supports? | OpenAI |
-| [Widget behavior](promptfooconfig.yaml) | Does changing the input produce the expected output? | None |
+| [Widget behavior](OPTIONAL.md) | Does changing the input produce the expected output? | None |
 
 ## Set up the evals
 
@@ -45,21 +45,37 @@ These evals check three things a notebook should do when teaching a paper. The c
 
 1. Promptfoo reads a case from a CSV. The row identifies a paper and the notebook to run.
 2. [The notebook provider](notebook-provider.mjs) loads those files. [The Python runner](inspect-programmatically.py) executes the notebook through marimo and extracts the emitted table, prose, or widget result.
-3. The table and widget checks compare the outputs with expected values in their CSVs. The judge check sends the paper, emitted prose, and table to a model with a rubric. Promptfoo records the verdict and its reason.
+3. The table check compares the output with an answer key. The widget check reads its expected values from the case CSV. The judge sends the paper, emitted prose, and table to a model with a rubric. Promptfoo records the verdict and its reason.
 
 ## Start with table accuracy
 
-The table check compares the column headings and ordered cells with the expected table in [table_test_cases.csv](table_test_cases.csv). It ignores styling and normalizes whitespace.
+The table check compares the column headings and ordered cells with the [answer key](fixtures/table-1.json). It reads Markdown or HTML tables and native `mo.ui.table` widgets emitted directly from notebook cells. It normalizes whitespace and compares the recorded cell text, including units.
 
-- [table-copy.py](fixtures/table-copy.py) shows Group A at 12 seconds and Group B at 8 seconds. It should pass.
-- [table-swapped.py](fixtures/table-swapped.py) has the same numbers but assigns them to the wrong groups. It should fail.
+- [table-copy.py](fixtures/table-copy.py) shows Group A at 12 seconds and Group B at 8 seconds. The evaluator should accept it.
+- [table-swapped.py](fixtures/table-swapped.py) assigns those numbers to the wrong groups. The evaluator should reject it.
 
 ```sh
 uv run --no-project --python 3.12 --with-requirements evals/requirements.txt -- \
   npx --yes promptfoo@0.126.0 eval -c evals/table-eval.yaml --no-cache
 ```
 
-Expect **1 passed, 1 intentional failure, 0 errors**. The deliberately bad notebook triggers a nonzero exit status. Look for a reason showing the swapped Group A and Group B values.
+Expect **2 passed, 0 failed, 0 errors**, with exit status **0**. The second case passes because the evaluator correctly rejects the swapped values.
+
+## Evaluate a generated notebook
+
+Save the generated marimo notebook as a `.py` file. Create a JSON answer key from the source paper, using [the sample key](fixtures/table-1.json) as a template. The first row contains headers. Every remaining row contains cell values as strings, with the same number of cells as the header. Keep the order and units you expect to see in the notebook.
+
+Run the same eval with paths to your notebook and answer key:
+
+```sh
+NOTEBOOK_PATH="path/to/notebook.py" TABLE_ANSWER_KEY="path/to/answer-key.json" \
+  uv run --no-project --python 3.12 --with-requirements evals/requirements.txt -- \
+  npx --yes promptfoo@0.126.0 eval -c evals/table-eval.yaml --no-cache
+```
+
+The candidate replaces the accurate fixture. The swapped-value control still runs against the bundled key. A candidate passes when one of its emitted tables matches the key exactly. A failure shows the expected and observed tables or reports that no supported table was found. Both paths can be relative to the repo root or absolute. Use a self-contained notebook that can run with the marimo dependency listed in `evals/requirements.txt`.
+
+Run notebooks you trust. For untrusted generated code, use an isolated environment with no credentials or writable access to your checkout.
 
 ## Judge the notebook's explanation
 
@@ -74,23 +90,7 @@ uv run --no-project --python 3.12 --with-requirements evals/requirements.txt -- 
 
 The run sends the synthetic source and notebook output to OpenAI for two model judgments. Expect a pass for the faithful explanation and a fail for the causal claim. In the viewer, expand the rubric assertion for each case to see what the judge relied on. If both rows show an API authentication or quota message, the requests ended before grading.
 
-## Check widget output
-
-The widget smoke test reads two cases from [test_cases.csv](test_cases.csv). The runner executes each notebook with marimo's `app.run()`, first with its default input and then with Group B supplied programmatically. Promptfoo compares the emitted values with the CSV.
-
-| Case | Group A | Group B | Expected result |
-| --- | --- | --- | --- |
-| Reactive notebook | 12 seconds | 8 seconds | Pass |
-| Deliberately stale notebook | 12 seconds | 12 seconds | Fail the Group B assertion |
-
-### Run from the repository root
-
-```sh
-uv run --no-project --python 3.12 --with-requirements evals/requirements.txt -- \
-  npx --yes promptfoo@0.126.0 eval -c evals/promptfooconfig.yaml --no-cache
-```
-
-Expect **1 passed, 1 failed, 0 errors**. The deliberate failure produces a nonzero exit status. The stale notebook should produce an estimate and pass the Group A assertion before failing Group B.
+## View results
 
 To open the viewer, keep the same results directory and run:
 
@@ -98,34 +98,4 @@ To open the viewer, keep the same results directory and run:
 npx --yes promptfoo@0.126.0 view
 ```
 
-## Check the browser interaction
-
-The default run checks the two outputs through Python. To check that clicking Group B updates the rendered page, install the additional dependencies:
-
-```sh
-cd evals
-npm install
-npx playwright install chromium --only-shell
-cd ..
-
-MARIMO_CHECK_MODE=browser uv run --no-project --python 3.12 \
-  --with-requirements evals/requirements.txt -- \
-  npx --yes promptfoo@0.126.0 eval -c evals/promptfooconfig.yaml --no-cache
-```
-
-## Test model credentials
-
-The fixture eval needs no API keys. For a separate live provider check, use the same root `.env` file and set the key for one provider. Git ignores the local `.env` and the eval results.
-
-```sh
-npx --yes promptfoo@0.126.0 eval -c evals/providers-smoke.yaml \
-  --env-file .env --filter-providers openai --no-cache
-```
-
-Use `anthropic` or `google` in place of `openai` to test another configured provider.
-
-## Connect the notebook-generation skill
-
-To evaluate the skill itself, replace fixture selection with a call to the team's generator that receives the prompt and paper contents. Then run the generated notebook through the same checks. Keep the expected values on the evaluation side. For the widget fixture, the Python mode supplies Group B directly and the browser mode clicks the Group B control. Both read an estimate marked with `data-testid="estimate"`.
-
-Run generated notebooks in an isolated environment with no credentials or writable access to your checkout. The fixture runner gives the two hand-written notebooks a temporary working directory and a limited set of environment variables.
+See [optional checks](OPTIONAL.md) for widget behavior, browser interaction, and model credential checks.

@@ -1,3 +1,3 @@
-__description,prompt,paper_id,notebook,expected_table
-Table 1 reproduced accurately,"Create a marimo notebook that reproduces Table 1 from the supplied paper. Preserve the group labels, values, and units.",dummy-paper,table-copy,"[[""Group"",""Mean completion time""],[""Group A"",""12 seconds""],[""Group B"",""8 seconds""]]"
-Group values swapped (intentional failure),"Create a marimo notebook that reproduces Table 1 from the supplied paper. Preserve the group labels, values, and units.",dummy-paper,table-swapped,"[[""Group"",""Mean completion time""],[""Group A"",""12 seconds""],[""Group B"",""8 seconds""]]"
+__description,prompt,paper_id,notebook,expected_match
+Notebook table matches the answer key,Reproduce Table 1 from the supplied paper.,dummy-paper,table-copy,true
+Swapped group values are rejected,Reproduce Table 1 from the supplied paper.,dummy-paper,table-swapped,false

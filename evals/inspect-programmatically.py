@@ -7,6 +7,8 @@ from html.parser import HTMLParser
 from pathlib import Path
 from types import SimpleNamespace
 
+import marimo as mo
+
 
 def read_estimate(outputs):
     pattern = r'<output data-testid="estimate">([^<]+)</output>'
@@ -59,12 +61,26 @@ def read_notebook_output(outputs):
     tables = []
     text = []
     for output in outputs:
+        if isinstance(output, mo.ui.table):
+            # Use the same formatted data as the table widget in pinned marimo.
+            columns = [str(column) for column in output._manager.get_column_names()]
+            rows = json.loads(output._manager.to_json_str(output._format_mapping))
+            cells = [
+                [normalize_cell(row.get(column)) for column in columns]
+                for row in rows
+            ]
+            tables.append([[normalize_cell(column) for column in columns], *cells])
+            continue
         parser = NotebookHTML()
         parser.feed(getattr(output, "text", "") or "")
         parser.close()
         tables.extend(parser.tables)
         text.append(" ".join("".join(parser.text).split()))
     return {"tables": tables, "notebook_text": "\n".join(part for part in text if part)}
+
+
+def normalize_cell(value):
+    return "" if value is None else " ".join(str(value).split())
 
 
 def inspect(notebook, check):

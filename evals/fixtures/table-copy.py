@@ -15,15 +15,23 @@ def _(mo):
     mo.md("""
     ## Table 1. Mean completion time
 
-    | Group | Mean completion time |
-    | --- | ---: |
-    | Group A | 12 seconds |
-    | Group B | 8 seconds |
-
     Source: Table 1 of *A simulated comparison of two study groups*.
     The times are descriptive means from simulated data. They do not establish
     a causal effect.
     """)
+    return
+
+
+@app.cell
+def _(mo):
+    mo.ui.table(
+        [
+            {"Group": "Group A", "Mean completion time": 12},
+            {"Group": "Group B", "Mean completion time": 8},
+        ],
+        format_mapping={"Mean completion time": "{} seconds"},
+        selection=None,
+    )
     return
 
 
