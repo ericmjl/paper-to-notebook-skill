@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+description: Marimo notebook runner with positive and negative controls
+sharing: false
+
+providers:
+  - file://notebook-provider.mjs
+
+prompts:
+  - '{{prompt}}'
+
+tests: file://test_cases.csv
+
+defaultTest:
+  assert:
+    - type: javascript
+      metric: Notebook produced an estimate
+      value: 'output.rendered === true'
+    - type: javascript
+      metric: Group A matches the paper
+      value: 'output.observed_a === context.vars.expected_a'
+    - type: javascript
+      metric: Group B matches the paper
+      value: 'output.observed_b === context.vars.expected_b'

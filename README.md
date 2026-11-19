@@ -29,8 +29,13 @@ Build a skill an AI agent can follow to:
 | [`assets/`](assets/) | Templates and static files (e.g. notebook starter). |
 | [`resources/`](resources/) | Reference material the agent should read (marimo widgets, pedagogy). |
 | [`scripts/`](scripts/) | Helper scripts (e.g. validate a generated notebook). |
+| [`evals/`](evals/) | Promptfoo test cases, a synthetic paper, and runnable marimo fixtures. |
 
 Style and patterns for marimo work also live in Eric's skill collection: [github.com/ericmjl/skills](https://github.com/ericmjl/skills) (e.g. `marimo`, `marimo-notebook-patterns`, `awesome-marimo-notebook`).
+
+## Run the notebook eval
+
+The [eval setup](evals/README.md) runs two hand-written notebooks against a synthetic paper. The reactive notebook should pass and the deliberately stale notebook should fail. This checks the evaluator before connecting it to an agent and needs no API keys.
 
 ## Try it with an agent
 

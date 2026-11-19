@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+description: Model provider connectivity smoke test
+sharing: false
+
+providers:
+  - openai:chat:gpt-4.1-mini
+  - anthropic:messages:claude-haiku-4-5-20251001
+  - google:gemini-3.8-flash
+
+prompts:
+  - 'Reply with exactly this single word in lowercase, without punctuation: marimo'
+
+tests:
+  - description: Each provider returns a short text response
+    assert:
+      - type: equals
+        value: marimo
