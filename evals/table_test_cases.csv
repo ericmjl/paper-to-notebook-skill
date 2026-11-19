@@ -1,0 +1,3 @@
+__description,prompt,paper_id,notebook,expected_table
+Table 1 reproduced accurately,"Create a marimo notebook that reproduces Table 1 from the supplied paper. Preserve the group labels, values, and units.",dummy-paper,table-copy,"[[""Group"",""Mean completion time""],[""Group A"",""12 seconds""],[""Group B"",""8 seconds""]]"
+Group values swapped (intentional failure),"Create a marimo notebook that reproduces Table 1 from the supplied paper. Preserve the group labels, values, and units.",dummy-paper,table-swapped,"[[""Group"",""Mean completion time""],[""Group A"",""12 seconds""],[""Group B"",""8 seconds""]]"
