@@ -1,0 +1,30 @@
+name: Future idea
+description: Ideas to explore after the snake_case hackathon
+title: "[Future idea]: "
+labels:
+  - future ideas
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: Idea
+      description: What should we explore or build?
+      placeholder: Describe the future idea in a few sentences.
+    validations:
+      required: true
+  - type: textarea
+    id: why-it-matters
+    attributes:
+      label: Why it matters
+      description: Optional — what problem does this address?
+      placeholder: Who struggles with what today?
+    validations:
+      required: false
+  - type: textarea
+    id: links
+    attributes:
+      label: Links or related papers
+      description: Optional — references, prior art, or related repos.
+      placeholder: URLs, DOIs, or @mentions
+    validations:
+      required: false
