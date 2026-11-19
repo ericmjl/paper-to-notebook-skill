@@ -8,6 +8,27 @@ These evals check three things a notebook should do when teaching a paper. The c
 | [Explanation fidelity](judge-eval.yaml) | Does the notebook draw conclusions that the paper supports? | OpenAI |
 | [Widget behavior](promptfooconfig.yaml) | Does changing the input produce the expected output? | None |
 
+## Set up the evals
+
+1. Install [Node.js 24](https://nodejs.org/en/download) and [uv](https://docs.astral.sh/uv/getting-started/installation/). Check that `node --version`, `npx --version`, and `uv --version` work in your terminal.
+2. Clone the repository and enter it. If you already have a checkout, open a terminal at its root.
+
+   ```sh
+   git clone https://github.com/ericmjl/paper-to-notebook-skill.git
+   cd paper-to-notebook-skill
+   ```
+
+   If the evals are on a branch, check out the branch your teammate shared. Confirm that `evals/table-eval.yaml` exists.
+3. Set the local results directory. Run this from the repo root in each terminal you use for the evals or the viewer.
+
+   ```sh
+   export PROMPTFOO_CONFIG_DIR="$PWD/evals/.promptfoo"
+   ```
+
+4. Run the [table accuracy check](#start-with-table-accuracy) below. It runs without an API key.
+
+`npx` runs the pinned Promptfoo CLI with Node.js. The notebooks use Python, so `uv run` selects Python 3.12 and installs marimo from [`evals/requirements.txt`](requirements.txt) for the run. This setup uses `uv run --no-project` and needs no `pyproject.toml`. [`evals/package.json`](package.json) lists Playwright for the optional browser check.
+
 ## How a case runs
 
 1. Promptfoo reads a case from a CSV. The row identifies a paper and the notebook to run.
@@ -21,10 +42,7 @@ The table check compares the column headings and ordered cells with the expected
 - [table-copy.py](fixtures/table-copy.py) shows Group A at 12 seconds and Group B at 8 seconds. It should pass.
 - [table-swapped.py](fixtures/table-swapped.py) has the same numbers but assigns them to the wrong groups. It should fail.
 
-Install Node 24 and [uv](https://docs.astral.sh/uv/getting-started/installation/). Run the commands from the repo root. uv selects Python 3.12 and can download it if needed.
-
 ```sh
-export PROMPTFOO_CONFIG_DIR="$PWD/evals/.promptfoo"
 uv run --no-project --python 3.12 --with-requirements evals/requirements.txt -- \
   npx --yes promptfoo@0.126.0 eval -c evals/table-eval.yaml --no-cache
 ```
@@ -38,7 +56,6 @@ Both [judge cases](judge_test_cases.csv) reproduce the table correctly. [The fai
 If the repo root has no `.env` file, copy [the template](.env.example) there with `cp evals/.env.example .env`. Set `OPENAI_API_KEY` in that local file. Git ignores the file. From the repo root:
 
 ```sh
-export PROMPTFOO_CONFIG_DIR="$PWD/evals/.promptfoo"
 uv run --no-project --python 3.12 --with-requirements evals/requirements.txt -- \
   npx --yes promptfoo@0.126.0 eval -c evals/judge-eval.yaml --env-file .env --no-cache
 ```
@@ -57,7 +74,6 @@ The widget smoke test reads two cases from [test_cases.csv](test_cases.csv). The
 ### Run from the repository root
 
 ```sh
-export PROMPTFOO_CONFIG_DIR="$PWD/evals/.promptfoo"
 uv run --no-project --python 3.12 --with-requirements evals/requirements.txt -- \
   npx --yes promptfoo@0.126.0 eval -c evals/promptfooconfig.yaml --no-cache
 ```

@@ -35,7 +35,7 @@ Style and patterns for marimo work also live in Eric's skill collection: [github
 
 ## Run the notebook eval
 
-The [eval setup](evals/README.md) includes two local checks for table accuracy and widget behavior. An optional model judge compares the notebook's explanation with the paper to catch unsupported interpretations.
+Start with the [eval setup instructions](evals/README.md#set-up-the-evals). The first run checks table accuracy and needs no API key. A separate local check covers widget behavior, and an optional model judge checks whether the paper supports the notebook's explanation.
 
 ## Try it with an agent
 
