@@ -47,10 +47,10 @@ Placeholder workflow:
 2. Point your agent at `SKILL.md` when you want a guided learning notebook for a paper.
 3. Provide the paper (PDF, URL, or arXiv id).
 4. Ask the agent to follow the skill and write the notebook to a path you choose.
-5. Run validation when available:
+5. Validate and run the notebook:
 
    ```bash
-   uv run scripts/validate_notebook.py path/to/notebook.py
+   uv run scripts/validate_notebook.py path/to/notebook.py --run
    ```
 
 6. Open the notebook:

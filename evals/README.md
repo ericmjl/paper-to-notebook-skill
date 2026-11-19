@@ -1,6 +1,6 @@
 # Notebook evaluation
 
-These evals check three things a notebook should do when teaching a paper. The current cases use a [synthetic paper](fixtures/dummy-paper.md) and prepared notebooks with known good and bad outputs. They provide examples for testing the evaluator before connecting it to the notebook-generation skill.
+These optional evals check specific outputs from a notebook. The bundled cases use a [synthetic paper](fixtures/dummy-paper.md) and prepared notebooks with known good and bad outputs. The [skill's notebook validator](../scripts/README.md) checks syntax, marimo lint rules, and execution. The evals add checks for table accuracy, explanation, and widget output.
 
 | Check | What it asks | API key |
 | --- | --- | --- |
@@ -39,7 +39,7 @@ These evals check three things a notebook should do when teaching a paper. The c
 
 4. Run the [table accuracy check](#start-with-table-accuracy) below. It runs without an API key.
 
-`npx` runs the pinned Promptfoo CLI with Node.js. The notebooks use Python, so `uv run` selects Python 3.12 and installs marimo from [`evals/requirements.txt`](requirements.txt) for the run. This setup uses `uv run --no-project` and needs no `pyproject.toml`. [`evals/package.json`](package.json) lists Playwright for the optional browser check.
+`npx` runs the pinned Promptfoo CLI with Node.js. The fixture commands use `uv run --no-project` to select Python 3.12 and install marimo from [`evals/requirements.txt`](requirements.txt). Candidate notebooks can use their own inline dependencies. This eval setup needs no `pyproject.toml`. [`evals/package.json`](package.json) lists Playwright for the optional browser check.
 
 ## How a case runs
 
@@ -63,7 +63,7 @@ Expect **2 passed, 0 failed, 0 errors**, with exit status **0**. The second case
 
 ## Evaluate a generated notebook
 
-Save the generated marimo notebook as a `.py` file. Create a JSON answer key from the source paper, using [the sample key](fixtures/table-1.json) as a template. The first row contains headers. Every remaining row contains cell values as strings, with the same number of cells as the header. Keep the order and units you expect to see in the notebook.
+Save the generated notebook as a `.py` file and validate it using the command in [the skill](../SKILL.md#5-validate-and-hand-off). Create a JSON answer key from the source paper, using [the sample key](fixtures/table-1.json) as a template. The first row contains headers. Every remaining row contains cell values as strings, with the same number of cells as the header. Keep the order and units you expect to see in the notebook.
 
 Run the same eval with paths to your notebook and answer key:
 
@@ -73,13 +73,15 @@ NOTEBOOK_PATH="path/to/notebook.py" TABLE_ANSWER_KEY="path/to/answer-key.json" \
   npx --yes promptfoo@0.126.0 eval -c evals/table-eval.yaml --no-cache
 ```
 
-The candidate replaces the accurate fixture. The swapped-value control still runs against the bundled key. A candidate passes when one of its emitted tables matches the key exactly. A failure shows the expected and observed tables or reports that no supported table was found. Both paths can be relative to the repo root or absolute. Use a self-contained notebook that can run with the marimo dependency listed in `evals/requirements.txt`.
+The candidate replaces the accurate fixture. The swapped-value control still runs against the bundled key. A candidate passes when one of its emitted tables matches the key exactly. A failure shows the expected and observed tables or reports that no supported table was found. Both paths can be relative to the repo root or absolute.
+
+The runner uses uv to honor the candidate's PEP 723 inline dependencies and Python requirement. Candidates without inline metadata use the fixture environment. Execution uses a temporary working directory, so use a self-contained notebook or resolve asset paths relative to the notebook file. Native table extraction is verified with the marimo version pinned in `evals/requirements.txt`. Markdown tables are the simplest format to use when testing a candidate with a different marimo version.
 
 Run notebooks you trust. For untrusted generated code, use an isolated environment with no credentials or writable access to your checkout.
 
 ## Judge the notebook's explanation
 
-Both [judge cases](judge_test_cases.csv) reproduce the table correctly. [The faithful notebook](fixtures/table-copy.py) explains that the numbers are descriptive and cannot establish causation. [The misleading notebook](fixtures/table-causal.py) claims that assignment to Group B caused faster completion. The rubric asks GPT-4.1 mini to identify the wording or omission behind its verdict and point to the relevant statement in the paper.
+This demonstration uses two bundled [judge cases](judge_test_cases.csv). Both reproduce the table correctly. [The faithful notebook](fixtures/table-copy.py) explains that the numbers are descriptive and cannot establish causation. [The misleading notebook](fixtures/table-causal.py) claims that assignment to Group B caused faster completion. The rubric asks GPT-4.1 mini to identify the wording or omission behind its verdict and point to the relevant statement in the paper. Use a human review to assess whether a generated notebook explains the paper well.
 
 If the repo root has no `.env` file, copy [the template](.env.example) there with `cp evals/.env.example .env`. Set `OPENAI_API_KEY` in that local file. Git ignores the file. From the repo root:
 
