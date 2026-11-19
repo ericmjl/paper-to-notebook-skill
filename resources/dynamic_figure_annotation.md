@@ -1,16 +1,4 @@
----
-name: dynamic-figure-annotation
-description: >
-  Annotate scientific figures, mechanistic schemes, and data plots with a
-  responsive, scale-invariant AnyWidget (FigureAnnotatorWidget) in a marimo
-  notebook. Uses a private 100x100 percentage slice grid for visual orientation,
-  glyph and color-channel segment isolation for exact centering, and a mandatory
-  visual crosshair audit sheet before rendering Just-In-Time (JIT) hover
-  spotlights, color-matched explanation badges, click-to-step navigation, and
-  the original figure caption.
----
-
-# Dynamic Figure Annotation Skill
+# Dynamic Figure Annotation
 
 Guide an agent to turn any static figure from a scientific paper (reaction schemes, multi-panel diagrams, chemical structures, or data plots with kinetic traces and insets) into an interactive, step-by-step guided tour using `FigureAnnotatorWidget` inside a [marimo](https://marimo.io) notebook.
 
@@ -18,7 +6,7 @@ Guide an agent to turn any static figure from a scientific paper (reaction schem
 
 ## Dependencies & Related Resources
 
-- **Parent Skill**: [`SKILL.md`](../SKILL.md) (`paper-to-notebook`) — Use this skill during **Step 4 (Generate the marimo notebook)** whenever a key figure needs an interactive walkthrough.
+- **Used from**: [`SKILL.md`](../SKILL.md) — read this during **Step 4 (Generate the marimo notebook)** whenever a key figure needs an interactive walkthrough.
 - **Widget Module**: [`resources/figure_annotator_widget.py`](figure_annotator_widget.py) — Reusable `FigureAnnotatorWidget` (`anywidget.AnyWidget`) implementation.
 - **Runnable Example Notebook**: [`resources/figure_annotator_example.py`](figure_annotator_example.py) — Self-contained Marimo notebook demonstrating full multi-panel diagram (Figure 1, Panels A–C) and data plot + inset (Figure 2) tours.
 - **CLI Helper Script**: [`scripts/figure_annotation_helper.py`](../scripts/figure_annotation_helper.py) — Run via `uv run` for 100×100 percentage grid overlays, ink/color-channel isolation, and visual centering audit contact sheets.

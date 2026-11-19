@@ -8,7 +8,7 @@ Helper scripts for maintainers and agents. Run Python via **`uv run`**, not glob
 uv run scripts/validate_notebook.py ../path/to/paper_explainer.py --run
 ```
 
-- `figure_annotation_helper.py` — CLI helper for [`resources/dynamicAnnotationSkill.md`](../resources/dynamicAnnotationSkill.md): generates a private 100×100 percentage slice grid (`grid`), isolates foreground ink or colored traces to compute centered percentage bounding boxes (`isolate`), and renders a Visual Centering Audit Contact Sheet with center crosshairs (`audit`).
+- `figure_annotation_helper.py` — CLI helper for [`resources/dynamic_figure_annotation.md`](../resources/dynamic_figure_annotation.md): generates a private 100×100 percentage slice grid (`grid`), isolates foreground ink or colored traces to compute centered percentage bounding boxes (`isolate`), and renders a Visual Centering Audit Contact Sheet with center crosshairs (`audit`).
 
 ```bash
 uv run scripts/figure_annotation_helper.py grid --image resources/figures/fig1.webp --output /tmp/fig1_grid.png
