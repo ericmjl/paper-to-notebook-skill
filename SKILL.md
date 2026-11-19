@@ -85,6 +85,7 @@ Suggested spine (adjust per paper):
 6. Informal checks after segments, matched to the explanation level: explain, predict, apply, or critique (not formal assessment — formal assessment is out of scope).
 7. For graduate-and-above readers, critique beats: does the experimental design address the stated question; is the statistical framework an appropriate choice; what is missing; what assumptions is the reader making.
 8. Wrap-up: limitations, what to read next, citation.
+9. Final quiz: five multiple-choice questions on the paper, always the last section (see [Final quiz](#final-quiz)).
 
 **TODO:** how far critique, results-section analysis, and figure-interpretation prompts go in the first version, versus a plain guided walkthrough.
 
@@ -97,6 +98,8 @@ Start from an `assets/` template when one exists (**TODO:** add `assets/notebook
 Follow marimo conventions in `resources/` when they are present (one `import marimo as mo` cell; unique top-level names; widgets that drive exploration, not decoration).
 
 Declare dependencies in a [PEP 723](https://peps.python.org/pep-0723/) inline script metadata block at the top of the file (`# /// script` … `# ///`), listing `marimo` and every package the notebook imports, each with a lower-bound version (e.g. `numpy>=2.0`). This lets `uv run` and `marimo edit --sandbox` install them.
+
+End the notebook with the five-question quiz described under [Final quiz](#final-quiz).
 
 Hard requirements for the prose:
 
@@ -137,6 +140,7 @@ Tell the user:
 - Writing is intelligible and representative, not slop.
 - Core concepts and metadata terms actually get explained.
 - No fabricated numbers or claims.
+- The notebook ends with the five-question quiz, and its questions are about the paper's claims, findings and limits rather than its implementation detail.
 - Every ladder explains the same mechanism spine at every level; every ledger simplification is corrected at a later level; the analogy's limit is stated.
 - **Vocabulary onboarding:** for established, emergent, and interdisciplinary case studies, verify glossary coverage and—where required—disambiguation or terminology-in-flux sections per [`resources/field-maturity.md`](resources/field-maturity.md) §8.
 - **TODO:** assertion- or gold-question evals; multi-model runs (Chinese open-weight and Claude models were offered); LLM-as-judge only as a first filter that is more trustworthy on “this is bad” than on “this is good”; a human try-on-an-unfamiliar-paper pass; domain-expert review after an own-field smoke test.
@@ -176,11 +180,64 @@ Rules:
 
 **Read before writing:** [`resources/explanation-levels.md`](resources/explanation-levels.md) has the profile and ledger templates, a worked example, tested marimo cells, and pitfalls. [`resources/examples/`](resources/examples/) has two more complete ladders, for a method paper (UMAP) and an analysis paper (influenza reassortment).
 
+## Final quiz
+
+Every notebook ends with **5 multiple-choice questions about the paper itself**. Do not quiz on the notebook's own demos or toy simulations.
+
+**Quiz the substance, not the machinery.** Questions should be about what the paper claims, what it found, why those findings follow, what they mean beyond the specific system, and what the paper says it cannot conclude. A reader who understood the paper should get them right; one who skimmed the abstract should not.
+
+Ask about a method **only when understanding it is needed to understand what the result means** — for example, when a result is a comparison against a baseline and the reader would misread the number without knowing that. Do not ask about implementation detail: software names and versions, parameter values, thresholds, database download dates, sample sizes, or the order of processing steps. If the answer is a fact a reader could copy from the Methods section without understanding the paper, cut the question.
+
+Across the 5, aim to cover: the central claim, a main finding and its direction, why a finding follows (mechanism or reasoning), an exception or a boundary of the claim, and what the paper cannot conclude.
+
+- Each question has **4 options, exactly one correct**.
+- **Distractors are plausible** given the paper: built from its real terms, numbers and findings, and each one targets a specific misconception a reader could plausibly hold (e.g. confusing correlation with the causal claim, mixing up what was measured vs. inferred, overstating the scope of a result, swapping which group showed the effect, reversing the direction of an effect, treating a well-explained exception as a contradiction). Avoid joke answers or options that are wrong on their face.
+- Every option gets a short explanation: for the answer, why it is right with a pointer to the paper section or figure; for each distractor, the misconception it reflects and why the paper does not support it.
+- Correct-answer positions vary across the 5 questions. Use the widget below and it handles this: write the answer separately from the distractors and it places them.
+
+Use **`assets/paper_quiz.py`** (an anywidget). Copy it next to the notebook, add `anywidget` and `traitlets` to the PEP 723 dependencies, and import it in the cell that imports `marimo`:
+
+```python
+from paper_quiz import PaperQuiz
+```
+
+Then the final cells:
+
+```python
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Check yourself
+
+    Five questions on the paper. Pick an answer to see why it is or isn't right.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(PaperQuiz, mo):
+    quiz = mo.ui.anywidget(PaperQuiz(questions=[
+        {
+            "question": "...",
+            "answer": "...",
+            "explain": "Why this is right (Fig. N / Section N).",
+            "distractors": {
+                "Plausible wrong answer 1": "Misconception it targets, and why the paper does not support it.",
+                "Plausible wrong answer 2": "...",
+                "Plausible wrong answer 3": "...",
+            },
+        },
+        # 5 questions total
+    ]))
+    quiz
+    return
+```
+
 ---
 
 ## Folder reference
 
-- **`assets/`** — templates and snippets to copy or fill in.
+- **`assets/`** — templates and snippets to copy or fill in. Includes [`paper_quiz.py`](assets/paper_quiz.py), the widget for the required final quiz.
 - **`resources/`** — material the agent should read (pedagogy, format-specific ingest notes, writing and eval guidance). Do not paste these wholesale into notebooks. Includes [`explanation-levels.md`](resources/explanation-levels.md) (prerequisite-defined explanation ladders, checks, and a worked example), [`field-maturity.md`](resources/field-maturity.md) (field-maturity rubric, vocabulary onboarding, and literature-sampling procedure), [`field-maturity-research-notes.md`](resources/field-maturity-research-notes.md) (auditable sampling for three case-study fields), [`dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md) (interactive figure walkthroughs), and [`examples/`](resources/examples/) (ladders for UMAP and influenza reassortment; field-maturity notebook mocks).
 - **`scripts/`** — helpers, run with `uv run`. `validate_notebook.py` checks syntax, runs `marimo check --strict`, and smoke-runs the notebook with `--run`. Future: per-input-format ingest, metadata fetch, figure extraction.
 
