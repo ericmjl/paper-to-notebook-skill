@@ -1864,20 +1864,20 @@ def method_graph():
             },
             {
                 "id": "delta_eps",
-                "label": "Calibrate delta-eps of PC radical",
+                "label": "Calibrate Δε of PC radical",
                 "group": "Quantify cage escape at low and high Q",
                 "ref": "SI S2.1",
                 "what": (
                     "Biphenyl was the reference quencher. After 355 nm "
-                    "excitation, the concentration of BP•+ came from Delta-A "
-                    "at 385 nm (literature Delta-eps 27000 M-1 cm-1). PC•+ "
-                    "and BP•+ form 1:1, and Delta-A at 450 nm (no BP•+ there) "
-                    "gave Delta-eps450(PC•+) = 13600 ± 700 M-1 cm-1, averaged "
+                    "excitation, the concentration of BP•+ came from ΔA "
+                    "at 385 nm (literature Δε 27000 M⁻¹ cm⁻¹). PC•+ "
+                    "and BP•+ form 1:1, and ΔA at 450 nm (no BP•+ there) "
+                    "gave Δε₄₅₀(PC•+) = 13600 ± 700 M⁻¹ cm⁻¹, averaged "
                     "over five laser intensities."
                 ),
                 "params": [
                     "5 µM PC2+, 197 mM biphenyl, MeCN",
-                    "Delta-eps450 = 13600 ± 700 M-1 cm-1",
+                    "Δε₄₅₀ = 13600 ± 700 M⁻¹ cm⁻¹",
                 ],
             },
             {
@@ -1891,7 +1891,7 @@ def method_graph():
                     "air-equilibrated acetonitrile. T1 quenching was TAS of "
                     "the 405 nm triplet absorption in argon-saturated "
                     "acetonitrile (20 min of bubbling). Those rate constants "
-                    "are what Table 1 uses for eta_q and Phi_q."
+                    "are what Table 1 uses for ηq and Φq."
                 ),
                 "params": [
                     "S1: TCSPC 446 nm, 525-575 nm, 200 kHz",
@@ -1907,7 +1907,7 @@ def method_graph():
                     "Relative actinometry used an iso-absorbing aqueous "
                     "[Ru(bpy)3]Cl2 solution under the same 355 nm pulses. "
                     "The ground-state bleach at 455 nm supplied the number "
-                    "of *PC2+ per pulse for Phi_r,tot in eqn (1)."
+                    "of *PC2+ per pulse for Φᵣ,ₜₒₜ in eqn (1)."
                 ),
                 "params": [
                     "iso-absorbing [Ru(bpy)3]2+ in water",
@@ -1916,13 +1916,13 @@ def method_graph():
             },
             {
                 "id": "phi_r",
-                "label": "Measure Phi_r,tot versus Q",
+                "label": "Measure Φᵣ,ₜₒₜ versus Q",
                 "group": "Quantify cage escape at low and high Q",
                 "ref": "SI S2.4; Fig. 2; Results, spectroscopic evidence",
                 "what": (
-                    "Phi_r,tot is free radicals per excited state (eqn 1). "
+                    "Φᵣ,ₜₒₜ is free radicals per excited state (eqn 1). "
                     "[PC•+] came from Beer-Lambert with the calibrated "
-                    "Delta-eps and the 450 nm Delta-A in a few-microsecond "
+                    "Δε and the 450 nm ΔA in a few-microsecond "
                     "window after cage escape, before bulk recombination "
                     "(hundreds of microseconds, Fig. S16). Phenol and "
                     "naphthalene were scanned over 0.1-200 mM."
@@ -1934,54 +1934,54 @@ def method_graph():
             },
             {
                 "id": "eta_t",
-                "label": "Get eta_ce,T at low Q",
+                "label": "Get ηce,T at low Q",
                 "group": "Quantify cage escape at low and high Q",
                 "ref": "SI S2.5-S2.7; Table 1 series 1a/2a",
                 "what": (
                     "Low quencher (0.22 mM phenol; 0.12 mM naphthalene) makes "
-                    "quenching almost all triplet. Phi_r,T with the known "
-                    "eta_isc and eta_q,T gives eta_ce,T = 0.42 ± 0.02 "
+                    "quenching almost all triplet. Φᵣ,T with the known "
+                    "ηisc and ηq,T gives ηce,T = 0.42 ± 0.02 "
                     "(phenol) and 0.46 ± 0.03 (naphthalene). Three pulse "
                     "energies stayed linear (Fig. S15), which they use to "
                     "rule out two-photon chemistry."
                 ),
                 "params": [
                     "phenol 0.22 mM; naphthalene 0.12 mM",
-                    "eta_ce,T phenol 0.42 ± 0.02",
+                    "ηce,T phenol 0.42 ± 0.02",
                 ],
             },
             {
                 "id": "eta_s",
-                "label": "Get eta_ce,S at high Q",
+                "label": "Get ηce,S at high Q",
                 "group": "Quantify cage escape at low and high Q",
                 "ref": "SI S2.5-S2.7; Table 1 series 1b/2b",
                 "what": (
-                    "High quencher still leaves residual triplet (eta_isc = "
+                    "High quencher still leaves residual triplet (ηisc = "
                     "0.05 at 132 mM phenol; solubility stops a further "
                     "increase). Equation (2) subtracts that triplet share "
-                    "before equation (3) reports eta_ce,S = 0.028 ± 0.005 "
+                    "before equation (3) reports ηce,S = 0.028 ± 0.005 "
                     "(phenol) and 0.07 ± 0.01 (naphthalene at 120 mM)."
                 ),
                 "params": [
                     "phenol 132 mM; naphthalene 120 mM",
-                    "eta_ce,S phenol 0.028 ± 0.005",
+                    "ηce,S phenol 0.028 ± 0.005",
                 ],
             },
             {
                 "id": "fig4_model",
-                "label": "Predict Phi_r versus Q",
+                "label": "Predict Φᵣ versus Q",
                 "group": "Model the kinetics",
                 "ref": "Fig. 4; Predicting concentration-dependent radical yield",
                 "what": (
                     "Using k_q,S, k_q,T, k_isc, the unquenched lifetimes, "
                     "and the measured cage-escape efficiencies, they plot a "
-                    "quenching-only Phi_q (monotonic) against Phi_r that "
+                    "quenching-only Φq (monotonic) against Φᵣ that "
                     "includes cage escape (a maximum, then a low plateau). "
-                    "Yellow points are the measured Phi_r,tot from 0.1 to "
+                    "Yellow points are the measured Φᵣ,ₜₒₜ from 0.1 to "
                     "200 mM. Rate constants are not printed in the main text."
                 ),
                 "params": [
-                    "uses k_q,S, k_q,T, k_isc, tau_0",
+                    "uses k_q,S, k_q,T, k_isc, τ₀",
                     "yellow dots: 0.1-200 mM",
                 ],
             },
@@ -1993,7 +1993,7 @@ def method_graph():
                 "what": (
                     "Equations (2) and (3) treat the catalyst as non-TADF. "
                     "Section S2.8 adds isc-risc cycling and a recursion "
-                    "factor. eta_ce,S and eta_ce,T come out the same, so the "
+                    "factor. ηce,S and ηce,T come out the same, so the "
                     "first visit to each state dominates at the high "
                     "concentrations used in synthesis."
                 ),
@@ -2010,7 +2010,7 @@ def method_graph():
                     "sacrificial donor and later steps are quantitative "
                     "(Fig. S26). Model b: the substrate itself is the "
                     "quencher. Conditions: [substrate] = 10 mM, [PC2+] = "
-                    "1 mM, epsilon(440 nm) = 1e4 M-1 cm-1, flux 1e-3 "
+                    "1 mM, ε(440 nm) = 1e4 M⁻¹ cm⁻¹, flux 1e-3 "
                     "einstein s-1. Fig. 5 compares initial quencher of 10, "
                     "20, and 100 mM."
                 ),
@@ -2027,14 +2027,14 @@ def method_graph():
                 "what": (
                     "4CzIPN in toluene with DMA as a reversible reductive "
                     "quencher, on the same TAS bench. Relative radical "
-                    "yields versus [DMA] give eta_ce,T / eta_ce,S = 125. "
+                    "yields versus [DMA] give ηce,T / ηce,S = 125. "
                     "The relative radical signal falls almost to zero at "
                     "high DMA; they predict about a tenfold drop in "
                     "reaction quantum yield from 10 mM to 200 mM DMA."
                 ),
                 "params": [
                     "solvent: toluene",
-                    "eta_ce,T / eta_ce,S = 125",
+                    "ηce,T / ηce,S = 125",
                 ],
             },
             {
@@ -2047,12 +2047,12 @@ def method_graph():
                     "ascorbate monoanion in 200 mM phosphate buffer at "
                     "pH 7.2. Relative cage-escape ratio 11.5. They "
                     "reproduced the known radical spectra rather than "
-                    "repeating the absolute Delta-eps calibration used "
+                    "repeating the absolute Δε calibration used "
                     "for PC2+."
                 ),
                 "params": [
                     "200 mM phosphate buffer, pH 7.2",
-                    "eta_ce,T / eta_ce,S = 11.5",
+                    "ηce,T / ηce,S = 11.5",
                 ],
             },
             {
@@ -2109,7 +2109,7 @@ def method_graph():
                 "from": "delta_eps",
                 "to": "phi_r",
                 "ref": "SI S2.4",
-                "data": "Delta-eps450 of PC•+",
+                "data": "Δε₄₅₀ of PC•+",
             },
             {
                 "from": "actinometry",
@@ -2121,65 +2121,65 @@ def method_graph():
                 "from": "quench_sv",
                 "to": "phi_r",
                 "ref": "SI S2.3; Fig. 2",
-                "data": "Phi_q,S and Phi_q,T versus Q",
+                "data": "Φq,S and Φq,T versus Q",
             },
             {
                 "from": "phi_r",
                 "to": "eta_t",
-                "ref": "SI S2.5 general procedure for eta_ce,T",
+                "ref": "SI S2.5 general procedure for ηce,T",
                 "kind": "branch",
                 "label": "low Q, mostly T1",
-                "data": "Phi_r,tot at low Q assigned to T1",
+                "data": "Φᵣ,ₜₒₜ at low Q assigned to T1",
             },
             {
                 "from": "phi_r",
                 "to": "eta_s",
-                "ref": "SI S2.5 general procedure for eta_ce,S",
+                "ref": "SI S2.5 general procedure for ηce,S",
                 "kind": "branch",
                 "label": "high Q, mostly S1",
-                "data": "Phi_r,tot minus residual T1",
+                "data": "Φᵣ,ₜₒₜ minus residual T1",
             },
             {
                 "from": "quench_sv",
                 "to": "eta_t",
                 "ref": "Table 1; SI S2.5",
-                "data": "eta_isc and eta_q,T at low Q",
+                "data": "ηisc and ηq,T at low Q",
             },
             {
                 "from": "quench_sv",
                 "to": "eta_s",
                 "ref": "Table 1; SI S2.5",
-                "data": "eta_isc and eta_q,S at high Q",
+                "data": "ηisc and ηq,S at high Q",
             },
             {
                 "from": "eta_t",
                 "to": "fig4_model",
                 "ref": "Fig. 4; Predicting concentration-dependent radical yield",
-                "data": "eta_ce,T",
+                "data": "ηce,T",
             },
             {
                 "from": "eta_s",
                 "to": "fig4_model",
                 "ref": "Fig. 4",
-                "data": "eta_ce,S",
+                "data": "ηce,S",
             },
             {
                 "from": "quench_sv",
                 "to": "fig4_model",
                 "ref": "Fig. 4",
-                "data": "k_q,S, k_q,T, k_isc, tau_0",
+                "data": "k_q,S, k_q,T, k_isc, τ₀",
             },
             {
                 "from": "fig4_model",
                 "to": "tadf_exact",
                 "ref": "SI S2.8",
-                "data": "same eta_ce values to re-derive",
+                "data": "same ηce values to re-derive",
             },
             {
                 "from": "fig4_model",
                 "to": "cw_sim",
                 "ref": "SI S2.9",
-                "data": "kinetic constants and eta_ce for models a and b",
+                "data": "kinetic constants and ηce for models a and b",
             },
             {
                 "from": "tas_setup",
