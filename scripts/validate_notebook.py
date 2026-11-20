@@ -48,12 +48,18 @@ fail the run. Each one points to a sentence to look at again, not a
 sentence that must be rewritten. Keep clear wording, including ordinary
 scientific terms, even if it stays flagged.
 
+When the notebook has inline ExplainLevels ``name`` / ``text`` dicts, also
+warn, without failing, on :mod:`check_levels` length and voice issues.
+When those level texts, or inline quiz ``question`` strings, contain quoted
+passages, :mod:`check_quotes` warns if none are found. Pass ``--paper`` to
+warn when a quote is missing from the paper's plain text.
+
 Missing ``FigureAnnotatorWidget`` is a **failure** unless the component
 comment opts out of ``figure-walkthroughs``. An explicit opt-out warns
 instead of failing. Other warnings never fail the run.
 
 Usage:
-    uv run scripts/validate_notebook.py path/to/notebook.py [--run]
+    uv run scripts/validate_notebook.py path/to/notebook.py [--run] [--paper paper.txt]
 """
 
 from __future__ import annotations
@@ -65,7 +71,9 @@ import subprocess
 import sys
 from pathlib import Path
 
+from check_levels import issue_lines, levels_from_notebook
 from check_prose import format_warning, prose_warnings
+from check_quotes import CURLY, NO_QUOTES_WARNING, missing_quotes, straight_quoted
 
 _APP_BLOCK_KINDS = frozenset({"cell", "function", "setup"})
 COMPONENT_HEADER = "# paper-to-notebook-skill-components:"
@@ -446,6 +454,95 @@ def check_figure_walkthroughs(source: str) -> tuple[list[str], list[str]]:
     ]
 
 
+def quiz_question_texts(source: str) -> list[str]:
+    """Return string values from dicts that look like quiz questions.
+
+    :param source: notebook source text
+    :return: question, answer, explain, and distractor strings
+    """
+    tree = ast.parse(source)
+    found: list[str] = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Dict):
+            continue
+        fields: dict[str, str] = {}
+        for key_node, value_node in zip(node.keys, node.values, strict=False):
+            if key_node is None or value_node is None:
+                continue
+            key = _string_from_ast(key_node)
+            value = _string_from_ast(value_node)
+            if key is not None and value is not None:
+                fields[key] = value
+        if "question" not in fields:
+            continue
+        for key in ("question", "answer", "explain"):
+            if key in fields:
+                found.append(fields[key])
+        for key_node, value_node in zip(node.keys, node.values, strict=False):
+            if _string_from_ast(key_node) != "distractors" or value_node is None:
+                continue
+            if isinstance(value_node, ast.Dict):
+                for nested_key, nested_value in zip(
+                    value_node.keys, value_node.values, strict=False
+                ):
+                    for item in (nested_key, nested_value):
+                        text = _string_from_ast(item) if item is not None else None
+                        if text:
+                            found.append(text)
+            elif isinstance(value_node, ast.List):
+                for item in value_node.elts:
+                    text = _string_from_ast(item)
+                    if text:
+                        found.append(text)
+    return found
+
+
+def quotes_from_notebook(source: str) -> list[str]:
+    """Return curly quotes in ``source`` plus straight quotes in ladder or quiz copy.
+
+    Python string delimiters are not quotes. Straight-quote pairing runs only
+    on extracted level and quiz strings.
+
+    :param source: notebook source text
+    :return: quoted passages
+    """
+    found = CURLY.findall(source)
+    for _name, body in levels_from_notebook(source):
+        found.extend(straight_quoted(body))
+        found.extend(CURLY.findall(body))
+    for text in quiz_question_texts(source):
+        found.extend(straight_quoted(text))
+        found.extend(CURLY.findall(text))
+    seen: set[str] = set()
+    unique: list[str] = []
+    for quote in found:
+        if quote not in seen:
+            seen.add(quote)
+            unique.append(quote)
+    return unique
+
+
+def explanation_warnings(source: str, paper_text: str | None = None) -> list[str]:
+    """Return check_levels and check_quotes warnings for inline ladder or quiz copy.
+
+    :param source: notebook source text
+    :param paper_text: optional paper plain text for quote matching
+    :return: warning messages, empty when there is no inline ladder or quiz copy
+    """
+    warnings: list[str] = []
+    named = levels_from_notebook(source)
+    if named:
+        warnings.extend(issue_lines(named))
+    quotes = quotes_from_notebook(source)
+    has_copy = bool(named or quiz_question_texts(source))
+    if has_copy and not quotes:
+        warnings.append(f"{NO_QUOTES_WARNING} in explanation or quiz copy")
+    elif paper_text is not None and quotes:
+        for quote in missing_quotes(paper_text, quotes):
+            warnings.append(f"quote not in paper: {quote}")
+    return warnings
+
+
 def check_components(source: str) -> list[str]:
     """Return warning messages for included components that are missing.
 
@@ -485,6 +582,11 @@ def main() -> int:
     )
     parser.add_argument(
         "--timeout", type=int, default=600, help="seconds allowed for --run"
+    )
+    parser.add_argument(
+        "--paper",
+        type=Path,
+        help="plain-text paper; when set, warn if a quoted passage is missing",
     )
     args = parser.parse_args()
     sys.stdout.reconfigure(line_buffering=True)  # keep step headers in order with subprocess output
@@ -553,6 +655,18 @@ def main() -> int:
         for warning in writing_warnings:
             print(f"WARN: {format_warning(warning)}")
 
+    paper_text = None
+    if args.paper is not None:
+        if not args.paper.is_file():
+            print(f"FAIL: {args.paper} not found")
+            return 1
+        paper_text = args.paper.read_text(encoding="utf-8")
+    explanation_notes = explanation_warnings(source, paper_text)
+    if explanation_notes:
+        print("[explain]")
+        for message in explanation_notes:
+            print(f"WARN: {message}")
+
     walkthrough_warnings, walkthrough_errors = check_figure_walkthroughs(source)
     if walkthrough_warnings or walkthrough_errors:
         print("[figure-walkthroughs]")
@@ -580,6 +694,9 @@ def main() -> int:
     if writing_warnings:
         noun = "warning" if len(writing_warnings) == 1 else "warnings"
         notes.append(f"{len(writing_warnings)} prose {noun}")
+    if explanation_notes:
+        noun = "warning" if len(explanation_notes) == 1 else "warnings"
+        notes.append(f"{len(explanation_notes)} explain {noun}")
     if walkthrough_warnings:
         noun = "warning" if len(walkthrough_warnings) == 1 else "warnings"
         notes.append(f"{len(walkthrough_warnings)} figure-walkthrough {noun}")
