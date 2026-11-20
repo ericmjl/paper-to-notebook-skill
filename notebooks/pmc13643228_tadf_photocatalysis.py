@@ -170,7 +170,12 @@ def cell_tour():
                 {
                     "cell_name": "figure_tour",
                     "title": "Walk Figure 1, then Figure 2",
-                    "description": "Hands-on section. Use Prev and Next. Hover a colored badge to light the same region on the figure. The captions are the paper's.",
+                    "description": "Hands-on section. Use Prev and Next. Hover a colored badge to light the same region on the figure. The captions are the paper's. Figures 3 to 6 are the next cells.",
+                },
+                {
+                    "cell_name": "figure_3",
+                    "title": "Figures 3 to 6",
+                    "description": "Hands-on section. One tour each for the spectra, the quenching model, the continuous-light prediction, and the two other catalyst pairs. Hover a badge. The words stay with what the main text states.",
                 },
                 {
                     "cell_name": "escape_ladder",
@@ -185,7 +190,7 @@ def cell_tour():
                 {
                     "cell_name": "demo_chart",
                     "title": "A labeled sketch, not Figure 4",
-                    "description": "Hands-on section. The code is visible. It weights the reported quenching yields by the reported phenol cage-escape efficiencies. It is not a fit to the paper's kinetic plot.",
+                    "description": "Hands-on section. The chart weights the reported quenching yields by the reported phenol cage-escape efficiencies. The code stays hidden. It is not a fit to the paper's kinetic plot.",
                 },
                 {
                     "cell_name": "quiz_intro",
@@ -398,6 +403,8 @@ def figure_tour(notebook_dir):
     mo.md(
         r"""
         ## Figure 1, then the result in Figure 2
+
+        Figs. 1–6 are every main-text figure. Figs. 3–6 follow in their own cells. An image was obtained for each of them.
 
         Boxes stay hidden until you hover a badge or the drawing. Coordinates are the 100×100 percentage boxes from the repository's figure-annotation example, checked again with `scripts/figure_annotation_helper.py audit` before this notebook was written. The words on the badges were rewritten so they do not quote absorbances or quantum yields that the main text never prints. Equations (1), (3), and (4) are graphics in the PMC XML; they are not redrawn here.
         """
@@ -781,6 +788,493 @@ def figure_tour(notebook_dir):
 
 
 @app.cell(hide_code=True)
+def figure_3(notebook_dir):
+    fig3_annotator = FigureAnnotatorWidget()
+    fig3_annotator.load_image_from_path(notebook_dir / "figures" / "fig3.webp")
+    fig3_annotator.caption = (
+        "Fig. 3. (A) Calibrated steady-state absorption spectrum of PC2+ in solution "
+        "(brown trace), together with transient absorption spectra of PC2+-derived "
+        "species in MeCN upon photoexcitation, showing the triplet 3*PC2+ (green trace) "
+        "and the radical PC˙+ formed after electron transfer in the presence of a "
+        "reductive quencher (blue trace). Excitation and detection wavelengths selected "
+        "during the measurements are indicated. (B) Time-resolved absorption traces at "
+        "450 nm under laser excitation intensities of 5–8 mJ per pulse, for a ~5 µM PC2+ "
+        "solution with 0.22 mM 4-tbuPhOH, chosen to quench the triplet. The dashed lines "
+        "mark the microsecond window used to average ΔA after cage escape. (C) Ground-state "
+        "bleach at 455 nm of an iso-absorbing aqueous [Ru(bpy)3]Cl2 solution, recorded "
+        "under the same conditions as the actinometric reference."
+    )
+    fig3_annotator.annotations = [
+        {
+            "id": "spectra",
+            "label": "Panel A spectra",
+            "box": [2.0, 7.51, 32.19, 86.08],
+            "color": "#92400e",
+            "description": "Steady-state PC2+ and the two transient spectra in acetonitrile",
+        },
+        {
+            "id": "legend_a",
+            "label": "PC2+, triplet, radical",
+            "box": [20.2, 12.0, 10.2, 16.8],
+            "color": "#0f766e",
+            "description": "Brown ground state, green triplet, blue radical",
+        },
+        {
+            "id": "detect_450",
+            "label": "450 nm detection",
+            "box": [16.62, 32.78, 9.31, 5.31],
+            "color": "#0284c7",
+            "description": "The detection wavelength the text uses for PC˙+",
+        },
+        {
+            "id": "time_window",
+            "label": "Averaging window",
+            "box": [42.5, 18.86, 9.94, 18.13],
+            "color": "#1d4ed8",
+            "description": "Microsecond window after cage escape, before bulk recombination",
+        },
+        {
+            "id": "traces_b",
+            "label": "450 nm traces",
+            "box": [33.75, 5.31, 33.44, 87.18],
+            "color": "#2563eb",
+            "description": "Three pulse energies, 5–8 mJ, at 0.22 mM phenol",
+        },
+        {
+            "id": "actinometry",
+            "label": "Ru actinometry",
+            "box": [70.25, 14.84, 28.19, 66.12],
+            "color": "#b45309",
+            "description": "Iso-absorbing [Ru(bpy)3]2+ bleach at 455 nm",
+        },
+    ]
+    fig3_annotator.tour_steps = [
+        {
+            "title": "1. Which spectrum is which",
+            "target_ids": ["spectra", "legend_a", "detect_450"],
+            "html": (
+                "<p>Panel A is the set of spectra the quantitative analysis needs. "
+                "The <a class='fig-ref' data-target='legend_a'>legend</a> "
+                "marks ground-state PC<sup>2+</sup> in brown, the triplet "
+                "<sup>3</sup>*PC<sup>2+</sup> in green, and the radical PC˙<sup>+</sup> "
+                "in blue. The "
+                "<a class='fig-ref' data-target='detect_450'>450 nm label</a> "
+                "is the wavelength the text uses to quantify that radical. "
+                "The extinction coefficient used to turn ΔA into a concentration "
+                "is determined in SI Section S2.1; this caption does not print it.</p>"
+            ),
+        },
+        {
+            "title": "2. The window after cage escape",
+            "target_ids": ["traces_b", "time_window"],
+            "html": (
+                "<p>Panel B is 450 nm, ~5 µM PC<sup>2+</sup>, and 0.22 mM phenol, "
+                "low enough that the triplet is the state being quenched. "
+                "Three pulse energies, 5–8 mJ, are overlaid. The "
+                "<a class='fig-ref' data-target='time_window'>dashed marks</a> "
+                "are the microsecond window used to average ΔA: after cage escape, "
+                "and before bulk back-electron transfer on a hundreds-of-microseconds "
+                "scale (Fig. S16). The signal is linear in laser power (Fig. S15), "
+                "which the authors use to rule out two-photon chemistry.</p>"
+            ),
+        },
+        {
+            "title": "3. Counting the excited states",
+            "target_ids": ["actinometry"],
+            "html": (
+                "<p>Panel C is the actinometer: an iso-absorbing aqueous solution of "
+                "[Ru(bpy)<sub>3</sub>]<sup>2+</sup>, recorded under the same laser "
+                "conditions, as a ground-state bleach at 455 nm. "
+                "The text uses it to count how many excited states the pulse produced, "
+                "so the radical signal can be turned into a quantum yield.</p>"
+            ),
+        },
+    ]
+    mo.vstack(
+        [
+            mo.md(
+                r"""
+                ## Figure 3. Spectra, the averaging window, and the actinometer
+
+                This is the measurement behind the yields in Fig. 2. The radical concentration comes from ΔA at 450 nm, and the number of excited states comes from the ruthenium actinometer.
+                """
+            ),
+            fig3_annotator,
+        ]
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def figure_4(notebook_dir):
+    fig4_annotator = FigureAnnotatorWidget()
+    fig4_annotator.load_image_from_path(notebook_dir / "figures" / "fig4.webp")
+    fig4_annotator.caption = (
+        "Fig. 4. (left) Predicted radical-formation yields from quenching efficiency "
+        "alone. Red and blue are the singlet and triplet contributions; black is their "
+        "sum. (right) Free-radical formation quantum yield once cage-escape efficiencies "
+        "are included. Red and blue are the singlet and triplet channels; black is the "
+        "total. Yellow dots are measured free-radical quantum yields from 0.1 mM to 200 mM."
+    )
+    fig4_annotator.annotations = [
+        {
+            "id": "quench_only",
+            "label": "Quenching only",
+            "box": [1.75, 3.39, 47.47, 88.37],
+            "color": "#334155",
+            "description": "Left plot: radical yield if every quenching event counted",
+        },
+        {
+            "id": "legend_left",
+            "label": "Singlet, triplet, sum",
+            "box": [7.75, 5.33, 10.44, 23.1],
+            "color": "#be123c",
+            "description": "Red singlet, blue triplet, black sum",
+        },
+        {
+            "id": "with_escape",
+            "label": "With cage escape",
+            "box": [50.16, 3.39, 49.03, 88.37],
+            "color": "#0f172a",
+            "description": "Right plot: the same kinetics, times the cage-escape efficiencies",
+        },
+        {
+            "id": "legend_right",
+            "label": "Channels and data",
+            "box": [54.72, 7.43, 21.33, 25.04],
+            "color": "#a16207",
+            "description": "Singlet channel, triplet channel, total, and the measured points",
+        },
+        {
+            "id": "measured",
+            "label": "Measured yields",
+            "box": [67.48, 58.16, 24.33, 21.0],
+            "color": "#ca8a04",
+            "description": "Yellow points, the Fig. 2 inset replotted from 0.1 mM to 200 mM",
+        },
+    ]
+    fig4_annotator.tour_steps = [
+        {
+            "title": "1. Quenching alone would say: use more",
+            "target_ids": ["quench_only", "legend_left"],
+            "html": (
+                "<p>The left plot is quenching efficiency only. "
+                "<a class='fig-ref' data-target='legend_left'>Red, blue, and black</a> "
+                "are the singlet contribution, the triplet contribution, and their sum. "
+                "The sum rises toward complete quenching. That model would tell you to "
+                "raise the donor concentration. The text says this is the opposite of Fig. 2. "
+                "The rate constants that draw the curves are not printed in the main text, "
+                "so they are not restated here.</p>"
+            ),
+        },
+        {
+            "title": "2. Cage escape puts a maximum on the curve",
+            "target_ids": ["with_escape", "legend_right", "measured"],
+            "html": (
+                "<p>The right plot multiplies those channels by the cage-escape efficiencies. "
+                "The <a class='fig-ref' data-target='legend_right'>legend</a> "
+                "keeps singlet, triplet, and total, and adds the measured yields. "
+                "The <a class='fig-ref' data-target='measured'>yellow points</a> "
+                "are the experimental free-radical quantum yields from 0.1 mM to 200 mM, "
+                "the same comparison as the Fig. 2 inset. "
+                "Below about 0.1 mM the text says the yield is limited by triplet quenching "
+                "that has not finished. The decline sets in above about 1 mM, where singlet "
+                "quenching starts to compete with intersystem crossing. "
+                "Do not read an extra digit off the axis: the main text does not print one.</p>"
+            ),
+        },
+    ]
+    mo.vstack(
+        [
+            mo.md(
+                r"""
+                ## Figure 4. Quenching only, then quenching times cage escape
+
+                The curves are the paper's prediction for phenol with PC$^{2+}$. This notebook does not recompute them. The rate constants are not in the main text.
+                """
+            ),
+            fig4_annotator,
+        ]
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def figure_5(notebook_dir):
+    fig5_annotator = FigureAnnotatorWidget()
+    fig5_annotator.load_image_from_path(notebook_dir / "figures" / "fig5.webp")
+    fig5_annotator.caption = (
+        "Fig. 5. Predicted maximum photoreaction quantum yield, from the initial radical "
+        "yield after quenching of the excited photocatalyst, against reaction progress, "
+        "for three initial quencher concentrations. The x-axis is normalized to the course "
+        "of the reaction so the three runs can be compared."
+    )
+    fig5_annotator.annotations = [
+        {
+            "id": "model_plot",
+            "label": "Continuous-light model",
+            "box": [7.62, 3.52, 88.69, 82.89],
+            "color": "#334155",
+            "description": "Quantum yield against conversion for three starting concentrations",
+        },
+        {
+            "id": "q10",
+            "label": "10 mM start",
+            "box": [13.0, 7.5, 78.12, 16.48],
+            "color": "#0284c7",
+            "description": "Stoichiometric with the 10 mM substrate",
+        },
+        {
+            "id": "q20",
+            "label": "20 mM start",
+            "box": [13.0, 32.81, 82.44, 15.55],
+            "color": "#7c3aed",
+            "description": "Twice the substrate concentration",
+        },
+        {
+            "id": "q100",
+            "label": "100 mM start",
+            "box": [13.0, 62.97, 82.44, 2.27],
+            "color": "#e11d48",
+            "description": "Ten times the substrate concentration",
+        },
+        {
+            "id": "legend5",
+            "label": "Three starting concentrations",
+            "box": [72.5, 39.8, 20.8, 17.4],
+            "color": "#0f172a",
+            "description": "10, 20, and 100 mM",
+        },
+        {
+            "id": "progress",
+            "label": "Reaction progress",
+            "box": [28.31, 88.36, 52.0, 9.84],
+            "color": "#475569",
+            "description": "Substrate conversion, not clock time",
+        },
+    ]
+    fig5_annotator.tour_steps = [
+        {
+            "title": "1. Conversion, not the clock",
+            "target_ids": ["model_plot", "progress", "legend5"],
+            "html": (
+                "<p>The model uses the same conditions as the rest of the continuous-light "
+                "section: 10 mM substrate, [PC<sup>2+</sup>] = 1 mM, "
+                "ε = 1 × 10<sup>4</sup> M<sup>−1</sup> cm<sup>−1</sup> at 440 nm, "
+                "and a photon flux of 1 × 10<sup>−3</sup> einstein s<sup>−1</sup>. "
+                "The <a class='fig-ref' data-target='legend5'>three traces</a> "
+                "start at 10 mM quencher (stoichiometric with the substrate), 20 mM, and 100 mM. "
+                "The <a class='fig-ref' data-target='progress'>x-axis</a> "
+                "is substrate conversion from 0 to 100%, because the time to 99% conversion "
+                "is very different for the three runs. The y-axis is the predicted "
+                "photoreaction quantum yield from the radical yield after quenching.</p>"
+            ),
+        },
+        {
+            "title": "2. The stoichiometric start climbs",
+            "target_ids": ["q10"],
+            "html": (
+                "<p>The <a class='fig-ref' data-target='q10'>10 mM trace</a> "
+                "starts between the singlet and triplet regimes. As the sacrificial donor "
+                "is used up, the system moves into the triplet domain and the quantum yield rises. "
+                "The main text describes that direction. It does not print the endpoint values "
+                "on the axis.</p>"
+            ),
+        },
+        {
+            "title": "3. A large excess stays in the singlet regime",
+            "target_ids": ["q20", "q100"],
+            "html": (
+                "<p>The <a class='fig-ref' data-target='q20'>20 mM</a> and "
+                "<a class='fig-ref' data-target='q100'>100 mM</a> runs start where "
+                "singlet quenching dominates, so the initial efficiency is low. "
+                "The yield still rises as the donor is consumed, but less than in the "
+                "10 mM case, because the donor concentration barely moves relative to "
+                "where it started. A less efficient run also means more re-excitation "
+                "before the substrate is consumed, which the authors connect to a higher "
+                "chance of degradation.</p>"
+            ),
+        },
+    ]
+    mo.vstack(
+        [
+            mo.md(
+                r"""
+                ## Figure 5. The same idea under continuous light
+
+                The quencher is consumed as the reaction runs, so the system slides along the Fig. 4 curve instead of sitting at one concentration.
+                """
+            ),
+            fig5_annotator,
+        ]
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def figure_6(notebook_dir):
+    fig6_annotator = FigureAnnotatorWidget()
+    fig6_annotator.load_image_from_path(notebook_dir / "figures" / "fig6.webp")
+    fig6_annotator.caption = (
+        "Fig. 6. (A) 4CzIPN and the reductive quencher DMA, with photophysical properties "
+        "of 4CzIPN in toluene (Φisc from ref. 75) and the S1 and T1 quenching rate constants "
+        "for DMA. (B) The non-TADF photocatalyst SO2TDS2− and HAsc−, with properties of "
+        "SO2TDS2− in water (Φisc from ref. 74) and the quenching rate constants for HAsc−. "
+        "(C) Relative radical yield against quencher concentration for the two systems, "
+        "with a fit of eqn (2)–(4) used to extract the ratio of triplet to singlet "
+        "cage-escape efficiencies."
+    )
+    fig6_annotator.annotations = [
+        {
+            "id": "cz_structure",
+            "label": "4CzIPN",
+            "box": [3.47, 1.83, 52.9, 18.64],
+            "color": "#1d4ed8",
+            "description": "The second TADF photocatalyst, used in toluene",
+        },
+        {
+            "id": "dma",
+            "label": "DMA",
+            "box": [68.95, 1.89, 20.72, 9.99],
+            "color": "#1d4ed8",
+            "description": "The aromatic amine used as a reversible reductive quencher",
+        },
+        {
+            "id": "cz_box",
+            "label": "Toluene properties",
+            "box": [51.41, 14.15, 47.1, 15.99],
+            "color": "#1e3a8a",
+            "description": "Lifetimes and Φisc printed on the figure; Φisc is cited to ref. 75",
+        },
+        {
+            "id": "cz_rates",
+            "label": "DMA quenching scheme",
+            "box": [23.06, 25.9, 60.61, 7.31],
+            "color": "#1d4ed8",
+            "description": "The electron-transfer scheme and the two rate constants printed under it",
+        },
+        {
+            "id": "so2",
+            "label": "SO2TDS2−",
+            "box": [15.28, 34.9, 73.2, 11.17],
+            "color": "#b91c1c",
+            "description": "A non-TADF organic photocatalyst, soluble in water",
+        },
+        {
+            "id": "hasc",
+            "label": "Ascorbate",
+            "box": [2.19, 47.82, 44.91, 14.34],
+            "color": "#b91c1c",
+            "description": "HAsc−, the reductive quencher in water",
+        },
+        {
+            "id": "so2_box",
+            "label": "Water properties",
+            "box": [47.45, 47.88, 51.06, 14.13],
+            "color": "#7f1d1d",
+            "description": "Lifetimes and Φisc printed on the figure; Φisc is cited to ref. 74",
+        },
+        {
+            "id": "legend_c",
+            "label": "Two systems",
+            "box": [71.57, 70.98, 26.8, 5.56],
+            "color": "#0f172a",
+            "description": "Blue squares are 4CzIPN; red squares are SO2TDS2−",
+        },
+        {
+            "id": "cz_curve",
+            "label": "4CzIPN radical yield",
+            "box": [15.91, 73.77, 34.72, 19.16],
+            "color": "#1d4ed8",
+            "description": "Relative radical yield falling as DMA concentration rises",
+        },
+        {
+            "id": "so2_curve",
+            "label": "SO2TDS radical yield",
+            "box": [19.31, 73.94, 77.3, 12.73],
+            "color": "#b91c1c",
+            "description": "The same fall, smaller, for ascorbate",
+        },
+        {
+            "id": "ratio_125",
+            "label": "4CzIPN escape ratio",
+            "box": [31.26, 86.7, 37.41, 5.72],
+            "color": "#1d4ed8",
+            "description": "ηce,T / ηce,S = 125, as the text states for 4CzIPN",
+        },
+        {
+            "id": "ratio_115",
+            "label": "SO2TDS escape ratio",
+            "box": [24.61, 75.01, 30.83, 7.06],
+            "color": "#b91c1c",
+            "description": "ηce,T / ηce,S = 11.5, as the text states for SO2TDS2−",
+        },
+    ]
+    fig6_annotator.tour_steps = [
+        {
+            "title": "1. 4CzIPN and DMA in toluene",
+            "target_ids": ["cz_structure", "dma", "cz_box", "cz_rates"],
+            "html": (
+                "<p><a class='fig-ref' data-target='cz_structure'>4CzIPN</a> "
+                "with <a class='fig-ref' data-target='dma'>DMA</a>, in toluene. "
+                "The text says Φ<sub>isc</sub> is much higher there than in acetonitrile, "
+                "which should make the concentration effect larger. DMA was chosen to avoid "
+                "side reactions known for aliphatic amines. The "
+                "<a class='fig-ref' data-target='cz_box'>property box</a> "
+                "and the <a class='fig-ref' data-target='cz_rates'>rate constants</a> "
+                "are printed on the figure. The main text does not reprint those digits, "
+                "and this tour does not read them off the image.</p>"
+            ),
+        },
+        {
+            "title": "2. A non-TADF catalyst in water",
+            "target_ids": ["so2", "hasc", "so2_box"],
+            "html": (
+                "<p><a class='fig-ref' data-target='so2'>SO<sub>2</sub>TDS<sup>2−</sup></a> "
+                "with <a class='fig-ref' data-target='hasc'>ascorbate</a>. "
+                "This pair is the non-TADF example, in water. The "
+                "<a class='fig-ref' data-target='so2_box'>property box</a> "
+                "again prints lifetimes, Φ<sub>isc</sub> (ref. 74), and quenching rate "
+                "constants that the main text does not restate as numbers.</p>"
+            ),
+        },
+        {
+            "title": "3. Less is more in both systems",
+            "target_ids": ["legend_c", "cz_curve", "so2_curve", "ratio_125", "ratio_115"],
+            "html": (
+                "<p>Panel C is relative radical yield against quencher concentration. "
+                "<a class='fig-ref' data-target='legend_c'>Blue is 4CzIPN, red is "
+                "SO<sub>2</sub>TDS<sup>2−</sup></a>. Both fall as the quencher gets more "
+                "concentrated. The fit of eqn (2)–(4) gives "
+                "η<sub>ce,T</sub>/η<sub>ce,S</sub> = "
+                "<a class='fig-ref' data-target='ratio_125'>125</a> for 4CzIPN and "
+                "<a class='fig-ref' data-target='ratio_115'>11.5</a> for SO<sub>2</sub>TDS<sup>2−</sup>. "
+                "The 4CzIPN signal drops almost to zero at high DMA. The text says that "
+                "would cut the reaction quantum yield by about tenfold from 10 mM to 200 mM DMA. "
+                "The one preparative check is the pinacol coupling of acetophenone (15.7 mM) "
+                "with this water system: about 50% higher performance at 19.2 mM ascorbate "
+                "than at 96.9 mM, in the same direction as the red trace.</p>"
+            ),
+        },
+    ]
+    mo.vstack(
+        [
+            mo.md(
+                r"""
+                ## Figure 6. Two more pairs, and the only flask result
+
+                4CzIPN with DMA in toluene, and SO$_2$TDS$^{2-}$ with ascorbate in water. The ratios 125 and 11.5 are stated in the text. Digits that appear only inside the property boxes are left on the figure.
+                """
+            ),
+            fig6_annotator,
+        ]
+    )
+    return
+
+
+
+
+@app.cell(hide_code=True)
 def escape_ladder(reader_level):
     mo.md(
         r"""
@@ -855,7 +1349,7 @@ def escape_ladder(reader_level):
 
                 The preparative test is narrower than that sentence. One pinacol coupling of acetophenone (15.7 mM) with SO$_2$TDS$^{2-}$ and HAsc$^-$, 390 nm LEDs, is about 50% higher in performance at 19.2 mM ascorbate than at 96.9 mM (Section S3.2). The continuous-irradiation model (their earlier Python framework: Bellatreccia, Fina, and Ceroni, *Photochem. Photobiol. Sci.* **2026**, DOI [10.1007/s43630-026-00901-4](https://doi.org/10.1007/s43630-026-00901-4), Crossref; this paper's ref. 68) uses [substrate] = 10 mM, [PC$^{2+}$] = 1 mM, $\varepsilon = 1 \times 10^{4}\,\mathrm{M^{-1}\,cm^{-1}}$ at 440 nm, and a photon flux of $1 \times 10^{-3}$ einstein s$^{-1}$. It puts the highest quantum yield near 1 mM and still requires a stoichiometric 10 mM of quencher for full conversion (Fig. 5 compares 10, 20, and 100 mM).
 
-                Open, and not settled in the main text: the substrate-as-quencher case is a simulation in SI Section 2.9, not a measured scope. Rate constants behind Fig. 4 ($k_{\mathrm{q,S}}$, $k_{\mathrm{q,T}}$, $k_{\mathrm{isc}}$) are not printed in the main text, so Fig. 4 is not rebuilt below. Spin retention at the moment of electron transfer is taken from the literature they cite, not re-proved here.
+                Open, and not settled in the main text: the substrate-as-quencher case is a simulation in SI Section 2.9, not a measured scope. Rate constants behind Fig. 4 ($k_{\mathrm{q,S}}$, $k_{\mathrm{q,T}}$, $k_{\mathrm{isc}}$) are not printed in the main text, so those curves are not recomputed here. The printed Fig. 4 is annotated above, from the paper's image. Spin retention at the moment of electron transfer is taken from the literature they cite, not re-proved here.
                 """
             ),
         },
@@ -1150,7 +1644,7 @@ def demo_pick():
     return (regime,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def demo_chart(regime):
     def teaching_phi_r(phi_q_s: float, phi_q_t: float) -> float:
         """Weight each quenching yield by the phenol cage-escape efficiency.
