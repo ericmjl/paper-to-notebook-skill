@@ -31,27 +31,33 @@ Build a skill an AI agent can follow to:
 | [`scripts/`](scripts/) | Helper scripts (e.g. validate a generated notebook). |
 | [`evals/`](evals/) | Promptfoo test cases, a synthetic paper, and runnable marimo fixtures. |
 
-Style and patterns for marimo work come from Eric's skill collection, [github.com/ericmjl/skills](https://github.com/ericmjl/skills). The `marimo`, `marimo-notebook-patterns`, `awesome-marimo-notebook`, and `processing-friendly-prose` skills are installed in [`.agents/skills/`](.agents/skills/) and pinned in `skills-lock.json`; refresh them with `npx skills update`.
+Style and patterns for marimo work come from Eric's skill collection, [github.com/ericmjl/skills](https://github.com/ericmjl/skills). The `marimo`, `marimo-notebook-patterns`, and `awesome-marimo-notebook` skills are installed in [`.agents/skills/`](.agents/skills/) and pinned in `skills-lock.json`; refresh them with `npx skills update`.
 
 ## Run the notebook eval
 
 Start with the [eval setup instructions](evals/README.md#set-up-the-evals). The first run checks table accuracy and needs no API key. A separate local check covers widget behavior, and an optional model judge checks whether the paper supports the notebook's explanation.
 
-## Install the skill
+## Try it with an agent
 
-This skill uses the open [Agent Skills](https://agentskills.io) format. An agent installs it by copying the folder from https://github.com/ericmjl/paper-to-notebook-skill into wherever the harness keeps skills. Include `SKILL.md`, plus `scripts/`, `assets/`, `resources/`, and the vendored skills in `.agents/skills/`. Clone the repo or download the files.
+**TODO:** pin exact install paths for Cursor, Claude Code, and other hosts.
 
-```bash
-git clone https://github.com/ericmjl/paper-to-notebook-skill path/to/skills/paper-to-notebook-skill
-```
+Placeholder workflow:
 
-Optional: `npx skills add ericmjl/paper-to-notebook-skill`.
+1. Clone this repo (or add it as a skill path).
+2. Point your agent at `SKILL.md` when you want a guided learning notebook for a paper.
+3. Provide the paper (PDF, URL, or arXiv id).
+4. Ask the agent to follow the skill and write the notebook to a path you choose.
+5. Validate and run the notebook:
 
-Give the agent a paper (PDF, URL, or arXiv id). When the notebook is ready:
+   ```bash
+   uv run scripts/validate_notebook.py path/to/notebook.py --run
+   ```
 
-```bash
-uvx marimo edit --sandbox path/to/notebook.py
-```
+6. Open the notebook:
+
+   ```bash
+   uvx marimo edit --sandbox path/to/notebook.py
+   ```
 
 ## Help wanted
 
@@ -78,13 +84,20 @@ Issues and PRs welcome during and after the hackathon.
 
 ## Acknowledgments
 
+**Contributors** (via merged pull requests):
+
+- [Isabel Zimmerman](https://github.com/isabelizimm) — notebook validator and PEP 723 guidance (#1), end-of-notebook quizzes (#5), quiz answer-length fix (#24).
+- [Howard Chiu](https://github.com/chiuhoward) — explanation levels with worked examples (#3), method diagrams and MermaidView widget (#13), paper-grounded explanation levels (#23).
+- [Daina Bouquin](https://github.com/dbouquin) — notebook fidelity evals (#4).
+- [Ben Lear](https://github.com/ProfLear) — dynamic figure annotation skill and anywidget example notebook (#6).
+
 Specific adaptations are credited in each resource file's **Credits** section.
 
 - [WIRED, 5 Levels](https://www.wired.com/video/series/5-levels/): the format behind explanation ladders.
 - [marimo-team/skills](https://github.com/marimo-team/skills) (Apache-2.0): `implement-paper`'s reader-background step, which the prerequisite profile extends.
 - [Eric Ma's skills](https://github.com/ericmjl/skills) (MIT): `marimo` patterns and naming conventions.
 - [K-Dense claude-scientific-skills](https://github.com/K-Dense-AI/claude-scientific-skills) (MIT): the anthropomorphism rule.
-- Anderson & Krathwohl (2001): the revised Bloom's taxonomy behind the level-matched quiz.
+- Anderson & Krathwohl (2001): the revised Bloom's taxonomy behind the per-level checks.
 - **Worked-example papers:**
   - Vaswani et al. (2017);
   - McInnes, Healy & Melville (2018), arXiv:1802.03426;
