@@ -1,6 +1,6 @@
 # Skill feedback from the PMC13643228 notebook
 
-Test of the paper-to-notebook skill on Fina et al., *Chemical Science* **2026**, *17*, 21624–21634 (DOI 10.1039/d6sc06836g, PMC13643228). The notebook is `pmc13643228_tadf_photocatalysis.py`. Nothing under `SKILL.md` or `resources/` was edited. These are the places the written workflow was ambiguous or fought the marimo skills while this notebook was being built.
+Test of the paper-to-notebook-skill on Fina et al., *Chemical Science* **2026**, *17*, 21624–21634 (DOI 10.1039/d6sc06836g, PMC13643228). The notebook is `pmc13643228_tadf_photocatalysis.py`. Nothing under `SKILL.md` or `resources/` was edited. These are the places the written workflow was ambiguous or fought the marimo skills while this notebook was being built.
 
 ## 1. HTML ingest is still a TODO, and this paper's equations are images
 
@@ -37,7 +37,7 @@ A related trap in the same skill file: a cell renders only its last top-level ex
 - OpenAlex treats `title_and_abstract.search` as an AND of the tokens. "cage escape photoredox singlet triplet" returned 3 works: a cage-escape review, this paper, and this paper's data deposit. That is not a sample you can use for a dominance count.
 - The degradation rule ("set the class from the paper; add a TODO that vocabulary dominance was not verified") is usable, and this notebook followed it. What is missing is what to do when the query is too strict rather than down: drop to fewer tokens, or search a concept id, before declaring the sample failed. The notebook states the class from the paper and says the literature count was not verified. It does not invent a 30-work tally.
 
-Crossref worked with `User-Agent: paper-to-notebook/1.0 (mailto:research@example.com)`. Romero, *Chem. Rev.* 2016, DOI 10.1021/acs.chemrev.6b00057, stayed at 429 and was left out. The skill should say: if a DOI does not resolve, do not cite it.
+Crossref worked with `User-Agent: paper-to-notebook-skill/1.0 (mailto:research@example.com)`. Romero, *Chem. Rev.* 2016, DOI 10.1021/acs.chemrev.6b00057, stayed at 429 and was left out. The skill should say: if a DOI does not resolve, do not cite it.
 
 ## 4. The figure-annotation example states numbers that are not in the paper
 

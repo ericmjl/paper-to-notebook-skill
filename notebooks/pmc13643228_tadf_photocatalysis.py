@@ -1755,7 +1755,7 @@ def wrapup():
 
     Data: the paper says the sets behind the main figures go to the JGU library (Gutenberg Open Science) and the corresponding author's site after final publication, and that the SI holds methods, synthesis, and the kinetic modelling. This notebook did not re-download that archive.
 
-    This notebook was drafted with an AI agent following the paper-to-notebook skill. Numbers that are not in the paper are confined to the cells marked **Our demo**, and to the lifetime ratio 44 µs / 17 ns, which is arithmetic on Fig. 1B.
+    This notebook was drafted with an AI agent following the paper-to-notebook-skill. Numbers that are not in the paper are confined to the cells marked **Our demo**, and to the lifetime ratio 44 µs / 17 ns, which is arithmetic on Fig. 1B.
     """)
     return
 
