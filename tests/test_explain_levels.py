@@ -286,6 +286,13 @@ def test_css_scrolls_wide_display_math() -> None:
     assert "scrollbar-width: thin" in widget._css
 
 
+def test_css_restores_list_markers() -> None:
+    widget = ExplainLevels(levels=_five_levels()[:1], title="t")
+    assert "list-style: disc outside" in widget._css
+    assert "list-style: decimal outside" in widget._css
+    assert "display: list-item" in widget._css
+
+
 def test_katex_css_is_injected_into_the_widget_root() -> None:
     widget = ExplainLevels(levels=_five_levels()[:1], title="t")
     assert "ensureKatexCss(el)" in widget._esm
