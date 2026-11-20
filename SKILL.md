@@ -11,7 +11,7 @@ description: >
 
 # Paper to notebook
 
-Steer an agent from **one paper** to a **runnable marimo notebook** that helps a reader understand that paper. The notebook is a lesson, not a summary page: plain-language explanation, interactive widgets where they help, and informal checks along the way. The writing must be intelligible and representative of the paper, not generic AI prose. Follow [Writing quality](#writing-quality).
+Steer an agent from **one paper** to a **runnable marimo notebook** that helps a reader understand that paper. The notebook is a lesson, not a summary page: plain-language explanation, interactive widgets where they help, and a final quiz on the paper when that component is included. The writing must be intelligible and representative of the paper, not generic AI prose. Follow [Writing quality](#writing-quality).
 
 This file is a skeleton. Lots of details will be filled in later. Items marked **TODO** are still undecided or only sketched.
 

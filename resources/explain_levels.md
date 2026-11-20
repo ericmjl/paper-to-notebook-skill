@@ -1,10 +1,10 @@
 # ExplainLevels widget
 
-The **five-level explanation ladder** as a reusable anywidget. One mechanism, five rungs, a check under the open rung. Use it instead of wiring `mo.ui.tabs` and `show_check` by hand.
+The **five-level explanation ladder** as a reusable anywidget. One paper, five rungs. Generated notebooks show the one-line summary and only the reader's level, with no check under the rung. Use it instead of wiring `mo.ui.tabs` by hand.
 
 - **Used from:** [`SKILL.md`](../SKILL.md) [Tools](../SKILL.md#tools); copy [`assets/explain_levels.py`](../assets/explain_levels.py) next to the notebook.
 - **How to write the five levels:** [`explanation-levels.md`](explanation-levels.md) (the five-part spine, the one-line summary, prerequisite profiles, paper-only grounding, the simplification ledger). The worked ladder lives in [`examples/ladder-umap.md`](examples/ladder-umap.md).
-- **Renders with:** `ExplainLevels`. Add `anywidget` and `traitlets` to the notebook's PEP 723 block. Not `mo.ui.tabs` plus a separate check cell: the widget holds the tabs, the prose, and the check.
+- **Renders with:** `ExplainLevels`. Add `anywidget` and `traitlets` to the notebook's PEP 723 block. Not `mo.ui.tabs` by hand: the widget holds the rungs and the prose. It still accepts an optional `check` for other uses; generated notebooks leave that out.
 
 A companion change documents `ExplainLevels` as a default notebook tool and teaches the validator to look for it. This file is the widget contract.
 
