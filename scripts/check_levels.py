@@ -9,18 +9,19 @@
 Levels are blockquotes starting "> **1 · Child.** " through "> **5 · Expert.** "
 (resources/explanation-levels.md §7). Words are counted without locations in
 parentheses and without math. Prints a table and exits 1 if any level falls outside its
-sentence or word band, has too many paragraphs, or uses reporting-voice phrases.
+sentence or word band, has too many or too few paragraphs, a sentence over the
+35-word cap (15 at Child, 25 at Teen), or uses reporting-voice phrases.
 """
 
 import re
 import sys
 
-CAPS = {  # level: (min, max sentences), max words per sentence, (min, max words), max paragraphs
-    "Child": ((3, 5), 15, (None, None), 1),
-    "Teen": ((5, 8), 25, (None, None), 1),
-    "Undergrad": ((None, None), None, (200, 400), 4),
-    "Grad student": ((6, 8), None, (150, 220), 1),
-    "Expert": ((4, 6), None, (100, 180), 1),
+CAPS = {  # level: (min, max sentences), max words per sentence, (min, max words), (min, max paragraphs)
+    "Child": ((3, 5), 15, (None, None), (1, 1)),
+    "Teen": ((5, 8), 25, (None, None), (1, 1)),
+    "Undergrad": ((None, None), 35, (200, 400), (2, 4)),
+    "Grad student": ((6, 8), 35, (150, 220), (2, 3)),
+    "Expert": ((4, 8), 35, (100, 180), (2, 3)),
 }
 REPORTING = re.compile(r"\b(the authors|the paper|this paper|the study|this study|this work|they (?:report|note|argue|find|found|show))\b", re.I)
 
@@ -45,7 +46,9 @@ def main(path):
         sentences = [s for s in re.split(r"(?<=[.!?])[”\"]?\s+", text.strip()) if len(s.split()) > 1]
         words = len(text.split())
         longest = max((len(s.split()) for s in sentences), default=0)
-        (min_s, max_s), max_len, (min_w, max_w), max_paras = CAPS.get(name, ((None, None), None, (None, None), None))
+        (min_s, max_s), max_len, (min_w, max_w), (min_p, max_p) = CAPS.get(
+            name, ((None, None), None, (None, None), (None, None))
+        )
         joined = re.sub(r"\n\s*\n\s*\$\$.*?\$\$\s*\n\s*\n", " ", body.strip(), flags=re.S)  # a displayed equation doesn't split a paragraph
         paragraphs = len([p for p in re.split(r"\n\s*\n", joined) if p.strip() and not p.strip().startswith("$$")])
         problems = []
@@ -59,8 +62,10 @@ def main(path):
             problems.append(f"over {max_w} words")
         if min_w and words < min_w:
             problems.append(f"under {min_w} words")
-        if max_paras and paragraphs > max_paras:
-            problems.append(f"over {max_paras} paragraph{'s' if max_paras > 1 else ''}")
+        if max_p and paragraphs > max_p:
+            problems.append(f"over {max_p} paragraph{'s' if max_p > 1 else ''}")
+        if min_p and paragraphs < min_p:
+            problems.append(f"under {min_p} paragraph{'s' if min_p > 1 else ''}")
         unquoted = re.sub(r"“[^”]*”", " ", body)  # a verbatim quote may say "this work"
         problems += [f"reporting voice: “{m}”" for m in sorted({m.group(0) for m in REPORTING.finditer(unquoted)})]
         failed |= bool(problems)
