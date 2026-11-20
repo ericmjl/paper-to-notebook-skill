@@ -11,7 +11,7 @@ description: >
 
 # Paper to notebook
 
-Steer an agent from **one paper** to a **runnable marimo notebook** that helps a reader understand that paper. The notebook is a lesson, not a summary page: plain-language explanation, interactive widgets where they help, and informal checks along the way. The writing must be intelligible and representative of the paper, not generic AI prose.
+Steer an agent from **one paper** to a **runnable marimo notebook** that helps a reader understand that paper. The notebook is a lesson, not a summary page: plain-language explanation, interactive widgets where they help, and informal checks along the way. The writing must be intelligible and representative of the paper, not generic AI prose. Follow [Writing quality](#writing-quality).
 
 This file is a skeleton. Lots of details will be filled in later. Items marked **TODO** are still undecided or only sketched.
 
@@ -56,7 +56,7 @@ Do **not** treat this skill as a tool for reviewing a large literature. That is 
    Then ask which components to include (all four is the default offer;
    also equations when the paper has them)
 4. Generate the marimo notebook
-5. Validate it runs with `uv run`, then hand off
+5. Validate it runs with `uv run`, run the writing check, then hand off
 ```
 
 ### 1. Ingest the paper
@@ -255,21 +255,45 @@ eq
 
 Start from an `assets/` template when one exists (**TODO:** add `assets/notebook_template.py`). Write a marimo notebook that can be opened with `uvx marimo edit --sandbox`.
 
-Follow the marimo skills installed in `.agents/skills/` (one `import marimo as mo` cell; unique top-level names; widgets that drive exploration, not decoration):
+Follow the skills installed in `.agents/skills/` (one `import marimo as mo` cell; unique top-level names; widgets that drive exploration, not decoration):
 
 - [`marimo-notebook-patterns`](.agents/skills/marimo-notebook-patterns/SKILL.md): read before writing or editing any notebook cell (import and cell-parameter rules, unique variables, widget API signatures, common errors). For charts, follow its `plotly-over-matplotlib` rule: Plotly is the default.
 - [`marimo`](.agents/skills/marimo/SKILL.md): broader authoring reference, including live pairing and embedding notebooks on the web.
 - [`awesome-marimo-notebook`](.agents/skills/awesome-marimo-notebook/SKILL.md): how to make a paper or dataset explainer engaging and polished.
+- [`processing-friendly-prose`](.agents/skills/processing-friendly-prose/SKILL.md): sentence shape for every reader-facing string. Read it in full before writing prose; see [Writing quality](#writing-quality).
 
 Declare dependencies in a [PEP 723](https://peps.python.org/pep-0723/) inline script metadata block at the top of the file (`# /// script` … `# ///`), listing `marimo`, `plotly`, and every other package the notebook imports, each with a lower-bound version (e.g. `numpy>=2.0`, `plotly>=5.24.0`). This lets `uv run` and `marimo edit --sandbox` install them.
 
 If the final quiz is included, end the notebook with the five-question quiz described under [Final quiz](#final-quiz).
 
-Hard requirements for the prose:
+#### Writing quality
+
+Every reader-facing sentence follows
+[`processing-friendly-prose`](.agents/skills/processing-friendly-prose/SKILL.md).
+That is not only `mo.md` cells. It is also widget copy: ExplainLevels
+level `text` and checks, TangleLatex `notes` / `label` strings and the
+markdown "what to try" cell that follows each equation, figure-tour
+`html` and labels, quiz questions and feedback, MermaidView step `what`
+/ `params` / `incoming`, flowchart labels, and figure annotations.
+
+Read that skill and
+[`references/sources.md`](.agents/skills/processing-friendly-prose/references/sources.md)
+in full before writing. Do not work from memory.
+
+When you delegate writing or review to a subagent or helper, put this
+requirement in that helper's instructions, and give it the path
+`.agents/skills/processing-friendly-prose/SKILL.md`. If the helper cannot
+see the repo, give it
+https://github.com/ericmjl/skills/tree/main/skills/processing-friendly-prose
+instead. Review the helper's prose against that skill before you merge it
+into the notebook.
+
+Hard requirements:
 
 - Intelligible and representative of the paper's core ideas.
-- Not generic “AI slop.” If a sentence could have been written about any paper, rewrite it.
+- Not generic. If a sentence could have been written about any paper, rewrite it.
 - Define symbols and field terms when they first matter, or point to a glossary / tooltip / highlight-to-explain aid. Follow [`resources/field-maturity.md`](resources/field-maturity.md) for maturity-specific onboarding sections. **TODO:** which of those reader aids to ship first. “Marimo Lens” was mentioned as a possible fit for highlight-to-explain; confirm the actual feature name and host support.
+- Follow the processing-friendly-prose checklist on every sentence you write or accept: do not pack a sentence by dropping a useful word; unpack noun stacks of three or more; keep optional "that" or "which"; keep each subject next to its verb; do not give inanimate subjects verbs of eating, biting, swallowing, thinking, or wanting; do not invent denominal verbs; prefer ordinary wording over rare coinages. Tutorials, widget copy, and handoff notes need extra care.
 
 Other generation rules:
 
@@ -293,12 +317,30 @@ Other generation rules:
 uv run scripts/validate_notebook.py path/to/notebook.py --run
 ```
 
-It checks Python syntax, runs `marimo check --strict`, and with `--run` executes the notebook top to bottom. Fix every reported problem before delivery. It also warns, without failing, when a cell, `@app.function`, or `app.setup` block does not set `hide_code=True`. A warning names a cell you left visible because its code is the teaching point; any other visible cell should be hidden. When a notebook builds two or more figure tours, it warns, again without failing, if those tours are not all values of a single `mo.ui.tabs`. If the notebook has a `# paper-to-notebook-skill-components:` comment, the script also warns when an included component is missing (`FigureAnnotatorWidget`, `MermaidView`, `PaperQuiz`, `ExplainLevels`, `TangleLatex`); skipped components are not a failure. Missing `FigureAnnotatorWidget` is a failure unless that comment opts out of `figure-walkthroughs`. It warns, without failing, when no paper figure image is embedded or referenced, when more than half of the long markdown cells cite no paper anchor (Fig./Figure/Eq./Table/Section/§), and when a Greek TeX command is split from its subscript across a math span (`$\rho$ A`).
+It checks Python syntax, runs `marimo check --strict`, and with `--run` executes the notebook top to bottom. Fix every reported problem before delivery. It also warns, without failing, when a cell, `@app.function`, or `app.setup` block does not set `hide_code=True`. A warning names a cell you left visible because its code is the teaching point; any other visible cell should be hidden. When a notebook builds two or more figure tours, it warns, again without failing, if those tours are not all values of a single `mo.ui.tabs`. If the notebook has a `# paper-to-notebook-skill-components:` comment, the script also warns when an included component is missing (`FigureAnnotatorWidget`, `MermaidView`, `PaperQuiz`, `ExplainLevels`, `TangleLatex`); skipped components are not a failure. Missing `FigureAnnotatorWidget` is a failure unless that comment opts out of `figure-walkthroughs`. It warns, without failing, when no paper figure image is embedded or referenced, when more than half of the long markdown cells cite no paper anchor (Fig./Figure/Eq./Table/Section/§), when a Greek TeX command is split from its subscript across a math span (`$\rho$ A`), and when notebook prose trips a mechanical processing-friendly-prose check (very long sentences or paragraphs, noun stacks, inanimate actors with person-verbs, ad-hoc denominal verbs from the skill's examples).
+
+**Writing check (required before you declare the notebook done).** The validator's `[prose]` warnings are a first filter, not a pass. Then do an explicit review pass on every prose span: markdown, ExplainLevels level `text` and checks, TangleLatex "what to try" cells and `notes`, figure annotations, quiz feedback, and flowchart step descriptions. List issues first (`location + type + short description`), the same shape as processing-friendly-prose, then fix them. Report the leftover in the handoff.
+
+For each item, either rewrite the prose or report it as a gap:
+
+1. **Brevity is not readability.** A cut that saves words but packs modifiers or drops a useful "that" is a miss. Prefer a slightly longer sentence the reader can predict.
+2. **One idea per sentence; subjects next to verbs.** If a subject waits through a long aside before the verb, split the sentence.
+3. **Noun stacks of three or more** are unpacked into a phrase with prepositions or a clause. Familiar hyphenated terms that already name one thing may stay.
+4. **Optional "that" or "which"** stays when the clause is long or the next noun is not the subject the reader expects.
+5. **Inanimate subjects** do not take verbs of eating, biting, swallowing, thinking, or wanting. Name the human actor, or pick a verb that fits an object.
+6. **No ad-hoc denominal verbs** ("footnote it", "calendar it"). Common ones ("email me") are fine.
+7. **Ordinary wording**, not rare coinages or generic filler. If a sentence could have been written about any paper, rewrite it.
+8. **Terms defined before use.** Symbols and field terms are defined when they first matter, or the glossary is pointed at.
+9. **Concrete referents and paper anchors.** Each section cites a paper section, figure, equation, or table. Numbers keep their conditions.
+10. **Mechanical warnings.** Address or justify every `[prose]` line from `uv run scripts/validate_notebook.py`.
+
+Optional extra, not required: `uvx proselint path/to/notebook.py` after the mechanical checker. Do not install it globally. This skill does not depend on it.
 
 Before handoff, scan the notebook against [What a good notebook looks like](#what-a-good-notebook-looks-like):
 
 - List any cell without a paper anchor and either anchor it or cut it.
 - Report the count and fraction of background cells.
+- Report the writing-check findings (mechanical warning count, issues you fixed, leftovers).
 
 Tell the user:
 
@@ -308,11 +350,12 @@ Tell the user:
 - Which of figure walkthroughs, method diagrams, the final quiz, explain-at-five-levels, and interactive equations were included, and that the defaults (all four, plus equations when the paper has them) were used if you could not ask.
 - Each main-text figure and whether its tour was built (or that the user opted out).
 - The background-cell count and fraction from the scan above.
+- The writing-check report: mechanical `[prose]` warning count, checklist issues you fixed, and any leftovers.
 - Paper reference (title, authors, year, link).
 
 **Planned validation beyond “it runs”** is the [good-notebook checklist](#what-a-good-notebook-looks-like), plus:
 
-- Writing is intelligible and representative, not slop.
+- Writing is intelligible and representative, and it passes the [writing check](#writing-quality) against processing-friendly-prose.
 - Core concepts and metadata terms actually get explained.
 - No fabricated numbers or claims.
 - If the final quiz is included: the notebook ends with it, and its questions are about the paper's claims, findings and limits rather than its implementation detail.
@@ -374,17 +417,18 @@ Check this before handoff. If a box fails, fix it or report it as a gap.
 5. **Explanations fit the reader.** Match the level the user gave. Define terms when they first matter.
 6. **Nothing invented.** No fabricated data or plots. Gaps are reported.
 7. **Runs cleanly.** The validator passes, code is hidden, and the notebook executes top to bottom.
-8. **The handoff report is complete.** It lists figures and their tour status, components, and gaps.
+8. **The handoff report is complete.** It lists figures and their tour status, components, gaps, and the writing-check report.
 9. **Interactive equations when the paper has math.** Key equations whose behaviour is worth exploring use `TangleLatex`, each tied to the paper's equation or section number.
+10. **Prose is processing-friendly.** Every reader-facing sentence — markdown, ExplainLevels level text, TangleLatex "what to try" cells and notes, widget text, annotations, quiz feedback, flowchart steps — follows [`processing-friendly-prose`](.agents/skills/processing-friendly-prose/SKILL.md). The writing check was run and reported.
 
 ---
 
 ## Folder reference
 
-- **`.agents/skills/`** — marimo skills installed from [ericmjl/skills](https://github.com/ericmjl/skills) (`marimo`, `marimo-notebook-patterns`, `awesome-marimo-notebook`), pinned in `skills-lock.json`; refresh with `npx skills update`.
+- **`.agents/skills/`** — skills installed from [ericmjl/skills](https://github.com/ericmjl/skills) (`marimo`, `marimo-notebook-patterns`, `awesome-marimo-notebook`, `processing-friendly-prose`), pinned in `skills-lock.json`; refresh with `npx skills update`.
 - **`assets/`** — templates and snippets to copy or fill in. Includes [`paper_quiz.py`](assets/paper_quiz.py) (`PaperQuiz`), [`mermaid_view.py`](assets/mermaid_view.py) (`MermaidView`), and [`explain_levels.py`](assets/explain_levels.py) (`ExplainLevels`). See [Tools](#tools).
 - **`resources/`** — material the agent should read (pedagogy, format-specific ingest notes, writing and eval guidance). Do not paste these wholesale into notebooks. Includes [`explanation-levels.md`](resources/explanation-levels.md) (prerequisite-defined explanation ladders, checks, and a worked example), [`field-maturity.md`](resources/field-maturity.md) (field-maturity rubric, vocabulary onboarding, and literature-sampling procedure), [`field-maturity-research-notes.md`](resources/field-maturity-research-notes.md) (auditable sampling for three case-study fields), [`dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md) (annotated walkthrough of every main-text figure, in one tab box inside a floating panel, when figure walkthroughs are included), [`method_diagrams.md`](resources/method_diagrams.md) (level-aware method diagrams), [`final-quiz.md`](resources/final-quiz.md) (what to ask in the end-of-notebook quiz), [`tangle_latex_example.py`](resources/tangle_latex_example.py) (`TangleLatex` on a real rate equation), and [`examples/`](resources/examples/) (ladders for UMAP and influenza reassortment; field-maturity notebook mocks).
-- **`scripts/`** — helpers, run with `uv run`. `validate_notebook.py` checks syntax, runs `marimo check --strict`, warns when code is left visible or when two or more figure tours are not in one `mo.ui.tabs`, and smoke-runs the notebook with `--run`. If the notebook declares `# paper-to-notebook-skill-components: …`, it warns when an included component is missing (`FigureAnnotatorWidget`, `MermaidView`, `PaperQuiz`, `ExplainLevels`, `TangleLatex`) and does not require skipped ones. Missing `FigureAnnotatorWidget` without an opt-out is a failure. Future: per-input-format ingest, metadata fetch, figure extraction.
+- **`scripts/`** — helpers, run with `uv run`. `validate_notebook.py` checks syntax, runs `marimo check --strict`, warns when code is left visible or when two or more figure tours are not in one `mo.ui.tabs`, and smoke-runs the notebook with `--run`. If the notebook declares `# paper-to-notebook-skill-components: …`, it warns when an included component is missing (`FigureAnnotatorWidget`, `MermaidView`, `PaperQuiz`, `ExplainLevels`, `TangleLatex`) and does not require skipped ones. Missing `FigureAnnotatorWidget` without an opt-out is a failure. It also warns, without failing, on mechanical processing-friendly-prose issues via `check_prose.py`. Future: per-input-format ingest, metadata fetch, figure extraction.
 
 ## Open decisions
 
