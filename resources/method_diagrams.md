@@ -5,7 +5,7 @@ Draw **what the paper did** (its method or analysis pipeline) as a hand-drawn Me
 - **Used from:** [`SKILL.md`](../SKILL.md). Build the stage graph in Step 2; draw it in Step 4.
 - **Follows:** [`explanation-levels.md`](explanation-levels.md). Same mechanism at every level, accurate at every level, numbers keep their conditions. Drive the view from its `reader_level` picker (§9); don't add a second one.
 - **Renders with:** [`assets/mermaid_view.py`](../assets/mermaid_view.py) (`MermaidView`). Copy it next to the notebook, add `anywidget` and `traitlets` to the PEP 723 dependencies, and import it in the cell that imports `marimo`. Not `mo.mermaid`: its default layout overlaps group boxes and routes arrows through labels.
-- **Versus [`dynamic_figure_annotation.md`](dynamic_figure_annotation.md):** that one annotates a figure the paper printed. This one draws the method ourselves, when the paper has no such figure or the reader needs a level-aware view. A notebook can use both.
+- **Versus [`dynamic_figure_annotation.md`](dynamic_figure_annotation.md):** that one annotates every main-text figure the paper printed. This one draws the method ourselves, when the paper has no figure of the pipeline or the reader needs a level-aware view. A notebook can use both.
 
 ## 1. Stage graph
 
