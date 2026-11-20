@@ -180,7 +180,7 @@ uv run scripts/validate_notebook.py path/to/notebook.py --run
 
 It checks Python syntax, runs `marimo check --strict`, and with `--run` executes the notebook top to bottom. Fix every reported problem before delivery. It also warns, without failing, when a cell, `@app.function`, or `app.setup` block does not set `hide_code=True`. A warning names a cell you left visible because its code is the teaching point; any other visible cell should be hidden. When a notebook builds two or more figure tours, it warns, again without failing, if those tours are not all values of a single `mo.ui.tabs`. If the notebook has a `# paper-to-notebook-skill-components:` comment, the script also warns when an included component is missing; skipped components are not a failure. Missing `FigureAnnotatorWidget` is a failure unless that comment opts out of `figure-walkthroughs`. It warns, without failing, when no paper figure image is embedded or referenced, and when more than half of the long markdown cells cite no paper anchor (Fig./Figure/Eq./Table/Section/§).
 
-Before handoff, scan the notebook:
+Before handoff, scan the notebook against [What a good notebook looks like](#what-a-good-notebook-looks-like):
 
 - List any cell without a paper anchor and either anchor it or cut it.
 - Report the count and fraction of background cells.
@@ -195,7 +195,7 @@ Tell the user:
 - The background-cell count and fraction from the scan above.
 - Paper reference (title, authors, year, link).
 
-**Planned validation beyond “it runs” (not all required for a first sketch):**
+**Planned validation beyond “it runs”** is the [good-notebook checklist](#what-a-good-notebook-looks-like), plus:
 
 - Writing is intelligible and representative, not slop.
 - Core concepts and metadata terms actually get explained.
@@ -248,6 +248,19 @@ Quiz the substance, not the machinery: the paper's claims, what it found, why th
 
 **Read before writing:** [`resources/final-quiz.md`](resources/final-quiz.md) has what to ask, how to build distractors that target real misconceptions, and the cells to add.
 
+## What a good notebook looks like
+
+Check this before handoff. If a box fails, fix it or report it as a gap.
+
+1. **Faithful to the paper.** Every claim, number, and conclusion is supported by the paper. Every section is anchored to a paper section, figure, equation, or table.
+2. **Stays on the paper.** Background is the minimum a reader at the chosen level needs for a specific passage, labeled as background. No tangents. No other papers' content except a one-line pointer when this paper depends on it.
+3. **Figures are present.** Every main-text figure appears with its number and caption, and is toured with `FigureAnnotatorWidget` unless the user opted out.
+4. **Chosen components are present.** Figure walkthroughs, the `MermaidView` methods flowchart, and the final quiz — whichever the user kept, and all of them if you could not ask.
+5. **Explanations fit the reader.** Match the level the user gave. Define terms when they first matter.
+6. **Nothing invented.** No fabricated data or plots. Gaps are reported.
+7. **Runs cleanly.** The validator passes, code is hidden, and the notebook executes top to bottom.
+8. **The handoff report is complete.** It lists figures and their tour status, components, and gaps.
+
 ---
 
 ## Folder reference
@@ -264,7 +277,7 @@ Quiz the substance, not the machinery: the paper's claims, what it found, why th
 - One mega-skill with internal components (the shape described in design discussion) vs. splitting later (ingest, pedagogy, build, eval).
 - How to classify domain type and paper “mode” (algorithm vs. concept). Field maturity (established vs. emergent vs. interdisciplinary) is sketched in [`resources/field-maturity.md`](resources/field-maturity.md); algorithm vs. concept remains TODO.
 - Ingest details per input format; figure handling when data are missing.
-- Eval suite, criteria scaffold, and test-paper list.
+- Eval suite and test-paper list. The handoff bar is [What a good notebook looks like](#what-a-good-notebook-looks-like); remaining eval work is automating that checklist.
 - License for the skill and for generated notebooks.
 - Whether to mandate `wigglystuff.CellTour` for every notebook.
 - i18n and accessibility requirements.
