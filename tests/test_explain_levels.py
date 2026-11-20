@@ -242,6 +242,29 @@ def test_widget_synced_traits() -> None:
     assert widget.levels[2]["check"]["kind"] == "numeric"
 
 
+def test_widget_summary_and_tabs_default_to_off_and_on() -> None:
+    widget = ExplainLevels(levels=_five_levels())
+    assert widget.summary == ""
+    assert widget.tabs is True
+    for name in ("summary", "tabs"):
+        assert widget.traits()[name].metadata.get("sync") is True
+
+
+def test_widget_single_level_mode_keeps_summary_and_level() -> None:
+    levels = [{"name": item["name"], "text": item["text"]} for item in _five_levels()]
+    widget = ExplainLevels(levels=levels, level="Grad student", summary="One line.", tabs=False)
+    assert widget.tabs is False
+    assert widget.summary == "One line."
+    assert widget.level == "Grad student"
+    assert all(item.get("check") is None for item in widget.levels)
+
+
+def test_esm_hides_tabs_and_shows_summary() -> None:
+    esm = ExplainLevels._esm
+    assert 'model.get("tabs")' in esm
+    assert "el-summary" in esm
+
+
 def test_widget_level_accepts_int_or_name_and_canonicalizes() -> None:
     widget = ExplainLevels(levels=_five_levels(), level=0)
     assert widget.level == "Child"

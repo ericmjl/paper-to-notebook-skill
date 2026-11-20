@@ -10,6 +10,18 @@ uv run scripts/validate_notebook.py ../path/to/paper_explainer.py --run
 
 - `check_prose.py` — mechanical processing-friendly-prose warnings for markdown, ExplainLevels level text, TangleLatex notes and "what to try" cells, figure-tour HTML, quiz copy, and flowchart step descriptions. Warnings are not failures. Each one marks a sentence to look at again; rewrite only when the change is clearer. Keep wording that is already clear and natural, including ordinary scientific terms, even if it stays flagged. The validator runs this after a successful parse. Optional extra, not required: `uvx proselint path/to/notebook.py` (do not install it globally).
 
+- `check_quotes.py` — check that every quoted passage in a ladder or quiz (Markdown or JSON) appears word for word in the paper's plain text, for [`resources/explanation-levels.md`](../resources/explanation-levels.md). Lists each quote it can't find.
+
+```bash
+uv run scripts/check_quotes.py paper.txt ladder.md
+```
+
+- `check_levels.py` — count each explanation-ladder level's words and sentences against the caps in [`resources/explanation-levels.md`](../resources/explanation-levels.md) §7, and flag reporting-voice phrases.
+
+```bash
+uv run scripts/check_levels.py ladder.md
+```
+
 - `figure_annotation_helper.py` — CLI helper for [`resources/dynamic_figure_annotation.md`](../resources/dynamic_figure_annotation.md): generates a private 100×100 percentage slice grid (`grid`), isolates foreground ink or colored traces to compute centered percentage bounding boxes (`isolate`), and renders a Visual Centering Audit Contact Sheet with center crosshairs (`audit`).
 
 ```bash

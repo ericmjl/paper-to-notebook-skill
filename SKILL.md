@@ -93,16 +93,16 @@ Before writing cells, build an outline. Map each planned section to its paper an
 
 Design a path a human can follow in one sitting. **TODO:** target duration.
 
-Do not lock the whole notebook to a single reading level. Plan for **adaptive explanation**: the reader should be able to get a simpler or more advanced account of a hard passage. **TODO:** default direction — start simple and add complexity, or start high and step down when the reader is confused. Both were proposed; neither was chosen. Core concepts get a full ladder (see [Explaining at multiple levels](#explaining-at-multiple-levels)).
+Do not lock the whole notebook to a single reading level. Plan for **adaptive explanation**: the reader should be able to get a simpler or more advanced account of a hard passage. **TODO:** default direction — start simple and add complexity, or start high and step down when the reader is confused. Both were proposed; neither was chosen. The paper's main point gets an explanation ladder (see [Explaining at multiple levels](#explaining-at-multiple-levels)).
 
 Suggested spine (adjust per paper):
 
 1. Why this paper matters.
-2. Intuition or a toy example before heavy notation.
-3. Setup: notation, assumptions, terms, and field vocabulary onboarding (glossary; disambiguation or terminology-in-flux when required—see [`resources/field-maturity.md`](resources/field-maturity.md)).
-4. Core idea, tied to an equation or figure.
-5. Step-through aligned with the paper.
-6. Informal checks after segments, matched to the explanation level: explain, predict, apply, or critique (not formal assessment — formal assessment is out of scope).
+2. The explanation ladder: the paper's main point as a one-line summary, then the reader's own level (see [Explaining at multiple levels](#explaining-at-multiple-levels)).
+3. Intuition or a toy example before heavy notation.
+4. Setup: notation, assumptions, terms, and field vocabulary onboarding (glossary; disambiguation or terminology-in-flux when required—see [`resources/field-maturity.md`](resources/field-maturity.md)).
+5. Core idea, tied to an equation or figure.
+6. Step-through aligned with the paper.
 7. For graduate-and-above readers, critique beats: does the experimental design address the stated question; is the statistical framework an appropriate choice; what is missing; what assumptions is the reader making.
 8. Wrap-up: limitations, what to read next, citation.
 9. If the final quiz is included: five multiple-choice questions on the paper, as the last section (see [Final quiz](#final-quiz)).
@@ -118,7 +118,7 @@ Before writing cells for a **new** notebook, ask the user whether to include **a
 1. **Figure walkthroughs** — annotated tours of every main-text figure, in one `mo.ui.tabs` inside `wigglystuff.FloatingPanel` (`FigureAnnotatorWidget`; [`resources/dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md)). **Default on.** Omit only when the user explicitly opts out. If you cannot ask, include them.
 2. **Method diagrams** — a Materials-and-Methods flowchart of the paper's pipeline (`MermaidView`; [`resources/method_diagrams.md`](resources/method_diagrams.md)). The flowchart is pannable and zoomable (drag, Ctrl/pinch zoom, +/− and Fit buttons).
 3. **Final quiz** — five multiple-choice questions at the end of the notebook (`PaperQuiz`; [`resources/final-quiz.md`](resources/final-quiz.md)).
-4. **Explain at five levels** — level picker, ladder tabs, and per-level checks (`ExplainLevels` in [`assets/explain_levels.py`](assets/explain_levels.py); [`resources/explanation-levels.md`](resources/explanation-levels.md)).
+4. **Explain at five levels** — level picker, one-line summary, and the paper's main point at the reader's own level (`ExplainLevels` in [`assets/explain_levels.py`](assets/explain_levels.py); [`resources/explanation-levels.md`](resources/explanation-levels.md)).
 5. **Interactive equations** — draggable variables in a key paper equation (`TangleLatex` from `wigglystuff`; [Tools](#tools)). **Default on when the paper has equations** whose behaviour the reader benefits from exploring (scaling laws, rate equations, loss functions, model parameters). Skip papers with no equations, purely definitional notation, or huge derivations. Mention it in the offer even when the paper has none, so the user can confirm. If you cannot ask, include it when the paper has such equations.
 
 Build only the components they choose. If you cannot ask, or they do not answer, include all four, plus interactive equations when the paper has equations worth exploring, and say so at handoff.
@@ -144,11 +144,11 @@ The validator reads that comment. A skipped component is not a failure, except f
 
 Five widgets. For the four that live in this repo, copy the file next to the notebook, add its packages to the PEP 723 block, and import it. `TangleLatex` comes from `wigglystuff` — add the package, nothing to copy. Details live in the resource linked on each tool. Stick to the paper when you fill them.
 
-#### Assessment widgets (`PaperQuiz` + per-level checks)
+#### Assessment widget (`PaperQuiz`)
 
-**For:** the five-question end-of-notebook quiz, and the explain/predict/apply/critique check under each ladder.
+**For:** the end-of-notebook quiz: five questions at each reader level, shown for the reader's level.
 
-**Files:** [`assets/paper_quiz.py`](assets/paper_quiz.py). Per-level checks ship with `ExplainLevels` (below). Copy `paper_quiz.py` next to the notebook. Add `anywidget` and `traitlets`.
+**Files:** [`assets/paper_quiz.py`](assets/paper_quiz.py). Copy `paper_quiz.py` next to the notebook. Add `anywidget` and `traitlets`.
 
 ```python
 from paper_quiz import PaperQuiz
@@ -202,7 +202,7 @@ MermaidView(
 
 #### Explain at five levels (`ExplainLevels`)
 
-**For:** one core mechanism at five reader levels: a level picker, tabs that open on that level, and a per-level check with feedback.
+**For:** the paper's main point at five reader levels. Generated notebooks show the one-line summary and only the reader's level (`tabs=False`), driven by the notebook's level picker; no per-level checks.
 
 **File:** [`assets/explain_levels.py`](assets/explain_levels.py). Copy it next to the notebook. Add `anywidget` and `traitlets`.
 
@@ -211,14 +211,16 @@ from explain_levels import ExplainLevels
 
 explainer = mo.ui.anywidget(ExplainLevels(
     title="…",
-    paper_ref="Sec. 3.1",
+    paper_ref="Abstract, Secs. 1–3",
+    summary="…",  # the one-line summary
+    tabs=False,
     level=reader_level.value,
-    levels=[{"name": "Child", "text": "…", "check": {"question": "…", "options": ["…"], "correct": "…", "why": "…"}}, …],
+    levels=[{"name": "Child", "text": "…"}, …],
 ))
 explainer
 ```
 
-**Parameters:** `title`, `paper_ref` (section, figure, equation, or algorithm of **this paper**), `level` (0-based index or name; the synced value is the canonical name), `levels` (each `name`, markdown `text`, optional `check` with `question`, `why`, and either `options` plus a `correct` option string, a numeric `correct` plus `tolerance`, or open `correct=None`). `explainer.value["level"]` after the reader changes rungs. One notebook-level picker can drive several ladders via `level=reader_level.value`. Write each subscripted or decorated symbol as a single math span (`$\rho_A$`, not `$\rho$ A` or a Unicode ρ followed by math A).
+**Parameters:** `title`, `paper_ref` (section, figure, equation, or algorithm of **this paper**), `summary` (the one-line summary), `tabs` (default `True`; generated notebooks pass `False`), `level` (0-based index or name; the synced value is the canonical name), `levels` (each `name`, markdown `text`, optional `check`, which generated notebooks leave out since the final quiz is matched to the level). `explainer.value["level"]` after the reader changes rungs. One notebook-level picker can drive several ladders via `level=reader_level.value`. Write each subscripted or decorated symbol as a single math span (`$\rho_A$`, not `$\rho$ A` or a Unicode ρ followed by math A).
 
 **Read:** [`resources/explanation-levels.md`](resources/explanation-levels.md) (how to write the five levels) and [`resources/explain_levels.md`](resources/explain_levels.md) (trait schema and snippets).
 
@@ -304,9 +306,8 @@ Other generation rules:
 - **Figures first:** the paper's own main-text figures (images extracted from the paper) appear in the notebook regardless of which components were chosen. If figure walkthroughs are skipped, still show each figure with its caption and number. Missing figure images are reported; never silently replace them with unrelated plots. A reproduced or simplified plot is extra, and only when the paper's data allow — it does not stand in for the printed figure. Default plotting library is **Plotly** (`plotly.graph_objects` / `plotly.express`). Put `plotly` in the PEP 723 block. Use Plotly annotations, shapes, and hover text for callouts on recreated figures. Do not start from matplotlib or Altair unless the user asks. **TODO:** how far to go with vision-based estimates or reader-written figure interpretations in v1.
 - Figure walkthroughs (when included): every main-text figure gets an annotated tour (`FigureAnnotatorWidget`), not a subset. Enumerate the figures first and report any figure whose image you could not obtain instead of skipping it. Put every tour in one `mo.ui.tabs`, one tab per figure, and wrap that tab box in `wigglystuff.FloatingPanel` (`wigglystuff>=0.6.0`) so the reader can drag it while scrolling. Recreated plots stay in Plotly; the widget tours the paper's printed figure. Read [`resources/dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md) (`FigureAnnotatorWidget` plus a coordinate-audit helper in `scripts/`).
 - Method diagrams (when included): draw the paper's pipeline as a hand-drawn ELK Mermaid flowchart whose detail follows the reader's level, and step through it. Default layout is top-down (`flowchart TD`). Prefer native Greek/Unicode symbols in diagram labels over ASCII spellings. The rendered view is pannable and zoomable (drag, Ctrl/pinch zoom, +/− and Fit buttons). Read [`resources/method_diagrams.md`](resources/method_diagrams.md) (`MermaidView` in `assets/`).
-- Explain at five levels (when included): core concepts (1–3 per notebook) get an explanation ladder via `ExplainLevels` ([Explaining at multiple levels](#explaining-at-multiple-levels); [Tools](#tools)). Pass `paper_ref`. One `reader_level` picker can drive several ladders.
+- Explain at five levels (when included): the paper's main point gets one explanation ladder via `ExplainLevels`, showing only the reader's level (`tabs=False`) under its one-line summary (`summary=`); other concepts get one explanation at the reader's level ([Explaining at multiple levels](#explaining-at-multiple-levels); [Tools](#tools)). Pass `paper_ref` and `level=reader_level.value`; no per-level checks, since the final quiz is matched to the level.
 - Interactive equations (when included): one `TangleLatex` per key equation, cited by equation or section number, ranges from the paper, and a short markdown cell saying what to try ([Tools](#tools)). Prefer native Greek/Unicode in `label` and notes over ASCII spellings.
-- Informal checks: short questions, not graded assessment. Each `ExplainLevels` rung has a check (radio, a numeric answer with tolerance, or an open answer with a model answer). See [`resources/explanation-levels.md`](resources/explanation-levels.md) §5.
 - Domain mode from step 2: coding exercises and method reconstruction for algorithm-like papers; agent-written visualization/widget explainers for concept-like papers (for example, a mechanism in a cell).
 - Label anything that goes beyond the paper (“Our demo,” “Simplified assumption”).
 - Include paper metadata and citations.
@@ -361,52 +362,45 @@ Tell the user:
 - Core concepts and metadata terms actually get explained.
 - No fabricated numbers or claims.
 - If the final quiz is included: the notebook ends with it, and its questions are about the paper's claims, findings and limits rather than its implementation detail.
-- Every ladder explains the same mechanism spine at every level; every ledger simplification is corrected at a later level; the analogy's limit is stated.
+- Every ladder level carries the same five parts; every quote appears word for word in the paper (`scripts/check_quotes.py`); every simplification is true as it stands, since each level stands alone; any analogy is labelled and its limit stated.
 - **Vocabulary onboarding:** for established, emergent, and interdisciplinary case studies, verify glossary coverage and—where required—disambiguation or terminology-in-flux sections per [`resources/field-maturity.md`](resources/field-maturity.md) §8.
 - **TODO:** assertion- or gold-question evals; multi-model runs (open-weight and frontier models from several providers were offered); LLM-as-judge only as a first filter that is more trustworthy on “this is bad” than on “this is good”; a human try-on-an-unfamiliar-paper pass; domain-expert review after an own-field smoke test.
 - **TODO:** a shared test-paper set that covers established, emergent, and interdisciplinary work, and subdomains, not just one field. A 2016 influenza paper was offered as one possible case; the list is not chosen.
 
 ## Explaining at multiple levels
 
-Core ideas get an **explanation ladder**: one mechanism explained at five levels, each written for a reader with specific prerequisites. It is modeled on WIRED's [5 Levels](https://www.wired.com/video/series/5-levels/) series. The level names are **shorthand**. What defines a level is the subject knowledge and math the reader brings, and the precision the level adds.
+The paper's main point gets an **explanation ladder**: the paper explained at five levels, each written for a reader with specific prerequisites. It is modeled on WIRED's [5 Levels](https://www.wired.com/video/series/5-levels/) series. The level names are **shorthand**. What defines a level is the subject knowledge and math the reader brings, and how deep the level goes.
 
-| Level (shorthand) | Subject knowledge assumed | Math assumed | Adds to the mechanism |
+| Level (shorthand) | Subject knowledge assumed | Math assumed | Depth |
 |---|---|---|---|
-| 1 · Child | Everyday experience | Counting and comparison | Cause and effect, in everyday terms |
-| 2 · Teen | General science literacy | Arithmetic, percentages, simple charts | A toy example with real, small numbers |
-| 3 · Undergrad | An introductory course in the field | The field's introductory tools | The exact equation or algorithm, every symbol defined |
-| 4 · Grad student | An adjacent area's standard methods | Follows the paper's derivations | Assumptions, when it holds, what breaks, and how it compares with the standard approach |
-| 5 · Expert | This subfield's literature | Full formalism | What's new, trade-offs, limits, and open questions |
+| 1 · Child | Everyday experience | Counting and comparison | Cause and effect, in everyday words |
+| 2 · Teen | General science literacy | Arithmetic, percentages, simple charts | The paper's headline numbers, with one or two terms defined |
+| 3 · Undergrad | An introductory course in the field | The field's introductory tools | The exact method, every symbol defined |
+| 4 · Grad student | An adjacent area's standard methods | Follows the paper's derivations | An abstract for a neighbouring field: results with their anchors, plus why it is built this way |
+| 5 · Expert | This subfield's literature | Full formalism | An abstract for this subfield: what's new against prior work, results at full precision, the main limit, and open questions |
 
 Rules:
 
 1. **Profile prerequisites per paper** (Phase 1): for each level, what the reader knows, what they don't, and what the notebook must teach. Map the user's stated background (from the optional inputs under Contract) onto a level.
-2. **One mechanism at every level.** Write a one-sentence *mechanism spine* first; each level adds precision to it. No level substitutes a vaguer or different mechanism.
-3. **Accurate at every level.** Simplify by leaving things out, never by saying something false. Record each simplification in a ledger and correct it at a later level.
-4. **Map the analogy and state its limit.** Carry one anchor up to Level 3, map its parts onto the method's parts, and say where it breaks by Level 3.
-5. **Checks matched to the level:**
-   - Child: explain.
-   - Teen: predict.
-   - Undergrad: apply.
-   - Grad student: apply and critique assumptions.
-   - Expert: critique.
+2. **Every level carries the main point.** Write a *spine* first: the question, what the authors did, what they found, why it matters, and its limits, each with a quote and a location. From it, write a **one-line summary** of what the paper found and why it matters, shown above the ladder. Every level covers all five, deeper as the levels rise. The paper's kind (methods, empirical, theory, review, dataset, or position) sets what each part means and which gets the most space.
+3. **Only the paper** for the ladder and the quiz; a glossary may use outside sources if labelled. Work from the full text, never the abstract alone or memory. If you can't read the whole paper, ask the learner for the PDF instead of summarizing it. No outside facts, no invented numbers or toy examples, and only the paper's own definitions. Significance is what the paper claims, cited, with the paper's own qualifiers.
+4. **Each level stands alone and is accurate.** Readers see only their own level, so each one is complete without the others. Simplify by leaving things out, never by saying something false; a ledger records why each simplification is still true.
+5. **Direct voice, no unexplained acronyms:** state the content and cite it, without "the authors…" or "the paper…"; below Expert, spell out and explain every acronym and named method, and use none at the Child level.
+6. **Analogies only when they help:** labelled as ours, adding no facts, mapped onto the paper, with their limit stated.
+7. **Numbers carry their conditions:** the table, cohort, feature set, or range goes in the same sentence. In testing on real papers, both misconceptions the ladders caused came from a number stripped of its condition.
+8. **Check before shipping:** match every claim to a quote, and run `uv run scripts/check_quotes.py paper.txt ladder.md` so every quote appears word for word, and `uv run scripts/check_levels.py ladder.md` for the length caps and voice. Keep a term ledger (no term used undefined below its level), and check the trends up the ladder.
 
-   Each check has an expected answer, the reasoning, and the paper location.
-6. **Ladders are for the core:** 1–3 concepts per notebook.
-7. **Grounded:** cite locations from the text you read in, and never guess. Mark gaps `[cite: …]` while drafting, and resolve them before shipping.
-8. **Numbers carry their conditions:** the table, cohort, feature set, or range goes in the same sentence. In testing on real papers, both misconceptions the ladders caused came from a number stripped of its condition.
+**In the notebook:** add one level picker near the top; it drives every section. The ladder is one `ExplainLevels` widget with `level=reader_level.value`, `tabs=False`, `summary=` the one-line summary, and `paper_ref`; it shows only the reader's level, with no per-level check.
 
-**In the notebook:** add one level picker near the top. Each core concept is an `ExplainLevels` widget (`level=reader_level.value`, with `paper_ref`). The widget draws the rungs and the check.
-
-**Read before writing:** [`resources/explanation-levels.md`](resources/explanation-levels.md) has the profile and ledger templates, a worked example, and pitfalls. [`resources/explain_levels.md`](resources/explain_levels.md) is the widget contract. [`resources/examples/`](resources/examples/) has two more complete ladders, for a method paper (UMAP) and an analysis paper (influenza reassortment).
+**Read before writing:** [`resources/explanation-levels.md`](resources/explanation-levels.md) has the spine and profile templates, grounding rules, a pointer to the worked example (UMAP), tested marimo cells, and pitfalls. [`resources/explain_levels.md`](resources/explain_levels.md) is the widget contract. [`resources/examples/`](resources/examples/) has a complete ladder and level-matched quiz written with this skill (UMAP).
 
 ## Final quiz
 
-When the final quiz is included, the notebook ends with **five multiple-choice questions about the paper itself**, rendered by the `PaperQuiz` anywidget in [`assets/paper_quiz.py`](assets/paper_quiz.py). It shuffles the options, marks the answer right or wrong, shows an explanation for whichever option the reader picked, and keeps a score. Skip this section when the user left the final quiz out.
+When the final quiz is included, the notebook ends with **five multiple-choice questions about the paper itself**, written for the reader's explanation level, rendered by the `PaperQuiz` anywidget in [`assets/paper_quiz.py`](assets/paper_quiz.py). It shuffles the options, marks the answer right or wrong, shows an explanation for whichever option the reader picked, and keeps a score. Skip this section when the user left the final quiz out.
 
 Quiz the substance, not the machinery: the paper's claims, what it found, why those findings follow, and what it says it cannot conclude. Ask about a method only when the reader needs it to read a result correctly. These are informal checks like the rest, not formal assessment.
 
-**Read before writing:** [`resources/final-quiz.md`](resources/final-quiz.md) has what to ask, how to build distractors that target real misconceptions, and the cells to add.
+**Read before writing:** [`resources/final-quiz.md`](resources/final-quiz.md) has what to ask, how to match the questions to each level, how to build distractors that target real misconceptions, and the cells to add.
 
 ## What a good notebook looks like
 
@@ -429,7 +423,7 @@ Check this before handoff. If a box fails, fix it or report it as a gap.
 
 - **`.agents/skills/`** — skills installed from [ericmjl/skills](https://github.com/ericmjl/skills) (`marimo`, `marimo-notebook-patterns`, `awesome-marimo-notebook`, `processing-friendly-prose`), pinned in `skills-lock.json`; refresh with `npx skills update`.
 - **`assets/`** — templates and snippets to copy or fill in. Includes [`paper_quiz.py`](assets/paper_quiz.py) (`PaperQuiz`), [`mermaid_view.py`](assets/mermaid_view.py) (`MermaidView`), and [`explain_levels.py`](assets/explain_levels.py) (`ExplainLevels`). See [Tools](#tools).
-- **`resources/`** — material the agent should read (pedagogy, format-specific ingest notes, writing and eval guidance). Do not paste these wholesale into notebooks. Includes [`explanation-levels.md`](resources/explanation-levels.md) (prerequisite-defined explanation ladders, checks, and a worked example), [`field-maturity.md`](resources/field-maturity.md) (field-maturity rubric, vocabulary onboarding, and literature-sampling procedure), [`field-maturity-research-notes.md`](resources/field-maturity-research-notes.md) (auditable sampling for three case-study fields), [`dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md) (annotated walkthrough of every main-text figure, in one tab box inside a floating panel, when figure walkthroughs are included), [`method_diagrams.md`](resources/method_diagrams.md) (level-aware method diagrams), [`final-quiz.md`](resources/final-quiz.md) (what to ask in the end-of-notebook quiz), [`tangle_latex_example.py`](resources/tangle_latex_example.py) (`TangleLatex` on a real rate equation), and [`examples/`](resources/examples/) (ladders for UMAP and influenza reassortment; field-maturity notebook mocks).
+- **`resources/`** — material the agent should read (pedagogy, format-specific ingest notes, writing and eval guidance). Do not paste these wholesale into notebooks. Includes [`explanation-levels.md`](resources/explanation-levels.md) (the explanation ladder: the paper's main point at five prerequisite-defined levels, paper-only grounding, and a worked example), [`field-maturity.md`](resources/field-maturity.md) (field-maturity rubric, vocabulary onboarding, and literature-sampling procedure), [`field-maturity-research-notes.md`](resources/field-maturity-research-notes.md) (auditable sampling for three case-study fields), [`dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md) (annotated walkthrough of every main-text figure, in one tab box inside a floating panel, when figure walkthroughs are included), [`method_diagrams.md`](resources/method_diagrams.md) (level-aware method diagrams), [`final-quiz.md`](resources/final-quiz.md) (what to ask in the end-of-notebook quiz), [`tangle_latex_example.py`](resources/tangle_latex_example.py) (`TangleLatex` on a real rate equation), and [`examples/`](resources/examples/) (a ladder and level-matched quiz for UMAP; field-maturity notebook mocks).
 - **`scripts/`** — helpers, run with `uv run`. `validate_notebook.py` checks syntax, runs `marimo check --strict`, warns when code is left visible or when two or more figure tours are not in one `mo.ui.tabs`, and smoke-runs the notebook with `--run`. If the notebook declares `# paper-to-notebook-skill-components: …`, it warns when an included component is missing (`FigureAnnotatorWidget`, `MermaidView`, `PaperQuiz`, `ExplainLevels`, `TangleLatex`) and does not require skipped ones. Missing `FigureAnnotatorWidget` without an opt-out is a failure. It also warns, without failing, on mechanical processing-friendly-prose issues via `check_prose.py`. A `[prose]` warning is a sentence to look at again, not a sentence that must be rewritten. Future: per-input-format ingest, metadata fetch, figure extraction.
 
 ## Open decisions

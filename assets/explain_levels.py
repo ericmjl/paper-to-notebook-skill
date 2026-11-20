@@ -101,6 +101,13 @@ _CSS = """
   border-radius: 999px;
   white-space: nowrap;
 }
+.el-summary {
+  margin: 0.5rem 0 0.75rem;
+  padding: 0.55rem 0.8rem;
+  border-left: 3px solid rgba(66, 133, 244, 0.7);
+  background: rgba(66, 133, 244, 0.08);
+  border-radius: 6px;
+}
 .el-tabs {
   display: flex;
   flex-wrap: wrap;
@@ -407,7 +414,12 @@ function render({ model, el }) {
     const head = make("div", "el-head", root);
     if (model.get("title")) make("h2", "el-title", head, model.get("title"));
     if (model.get("paper_ref")) make("span", "el-ref", head, model.get("paper_ref"));
+    if (model.get("summary")) {
+      const summary = make("div", "el-summary", root);
+      summary.innerHTML = "<strong>In one line:</strong> " + renderMarkdown(model.get("summary")).replace(/^<p>|<\/p>$/g, "");
+    }
 
+    if (model.get("tabs")) {
     const tablist = make("div", "el-tabs", root);
     tablist.setAttribute("role", "tablist");
     tablist.setAttribute("aria-label", "Explanation level");
@@ -418,6 +430,7 @@ function render({ model, el }) {
       tab.addEventListener("click", () => setLevel(idx));
     });
     make("p", "el-hint", root, "← → to change level · 1–5 jump to a rung");
+    }
 
     const body = make("div", "el-body", root);
     body.setAttribute("role", "tabpanel");
@@ -488,6 +501,7 @@ function render({ model, el }) {
   }
 
   root.addEventListener("keydown", (e) => {
+    if (!model.get("tabs")) return;  // without tabs, the notebook's level picker sets the level
     const tag = (e.target && e.target.tagName) || "";
     if (tag === "INPUT" || tag === "TEXTAREA") return;
     const i = indexOf(model.get("level"));
@@ -505,6 +519,8 @@ function render({ model, el }) {
   model.on("change:levels", draw);
   model.on("change:title", draw);
   model.on("change:paper_ref", draw);
+  model.on("change:summary", draw);
+  model.on("change:tabs", draw);
   model.on("change:responses", draw);
   draw();
 }
@@ -730,6 +746,9 @@ class ExplainLevels(anywidget.AnyWidget):
         trait is the canonical name. Defaults to ``"Undergrad"`` when that
         name exists, otherwise the first level.
     :param paper_ref: Paper section/figure/equation/algorithm anchor.
+    :param summary: Optional one-line summary shown under the title.
+    :param tabs: Show the level tabs (default). With ``tabs=False`` the widget
+        shows only the open level, set from the notebook's level picker.
     """
 
     _esm = _ESM
@@ -738,6 +757,8 @@ class ExplainLevels(anywidget.AnyWidget):
     levels = traitlets.List(traitlets.Dict()).tag(sync=True)
     level = traitlets.Any("Undergrad").tag(sync=True)
     paper_ref = traitlets.Unicode("").tag(sync=True)
+    summary = traitlets.Unicode("").tag(sync=True)
+    tabs = traitlets.Bool(True).tag(sync=True)
     responses = traitlets.List(traitlets.Unicode(), default_value=()).tag(sync=True)
 
     def __init__(
@@ -747,6 +768,8 @@ class ExplainLevels(anywidget.AnyWidget):
         title: str = "",
         level: int | str | None = None,
         paper_ref: str = "",
+        summary: str = "",
+        tabs: bool = True,
         **kwargs: Any,
     ) -> None:
         normalized = validate_levels(levels)
@@ -755,13 +778,15 @@ class ExplainLevels(anywidget.AnyWidget):
             chosen = "Undergrad" if "Undergrad" in names else names[0]
         else:
             chosen = normalize_level(level, names)
-        for key in ("title", "levels", "level", "paper_ref", "responses"):
+        for key in ("title", "levels", "level", "paper_ref", "summary", "tabs", "responses"):
             kwargs.pop(key, None)
         super().__init__(
             title=str(title),
             levels=normalized,
             level=chosen,
             paper_ref=str(paper_ref or ""),
+            summary=str(summary or ""),
+            tabs=bool(tabs),
             responses=[""] * len(normalized),
             **kwargs,
         )

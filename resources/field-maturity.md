@@ -67,6 +67,7 @@ Score each **signal** as **low / medium / high** from (a) the paper and (b) a **
 2. **Never silently rename** the paper's terms in quotes, equations, or figure callouts.
 3. **Date-stamp** dominance claims: "In our OpenAlex/arXiv sample (2026-11-19), …".
 4. **Cite evidence** (survey section, benchmark, or counted sample)—see [research notes](field-maturity-research-notes.md).
+5. **Label what comes from outside the paper.** Glossary and onboarding entries drawn from surveys, standard references, or the literature sample are marked as such in the notebook. The explanation ladder and the final quiz use only the paper ([`explanation-levels.md`](explanation-levels.md) §3).
 
 ---
 
