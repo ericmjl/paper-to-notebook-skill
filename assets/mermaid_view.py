@@ -100,16 +100,19 @@ function render({ model, el }) {
     .mv-title { flex: 1; text-align: center; font-weight: 600; }
     .mv-main { display: flex; flex-wrap: wrap; gap: 12px; align-items: stretch; }
     .mv-port { position: relative; overflow: hidden; flex: 3 1 420px; border: 1px solid #ccc;
-      border-radius: 8px; cursor: grab; touch-action: none; outline: none; }
+      border-radius: 8px; cursor: grab; touch-action: none; outline: none;
+      user-select: none; -webkit-user-select: none; }
     .mv-port:focus-visible { box-shadow: 0 0 0 2px ${HIGHLIGHT}; }
     .mv-port.drag { cursor: grabbing; }
-    .mv-port > svg { position: absolute; left: 0; top: 0; transform-origin: 0 0; max-width: none; }
+    .mv-port > svg { position: absolute; left: 0; top: 0; transform-origin: 0 0; max-width: none;
+      user-select: none; -webkit-user-select: none; }
     .mv-port.glide > svg { transition: transform 300ms ease; }
     @media (prefers-reduced-motion: reduce) { .mv-port.glide > svg { transition: none; } }
     .mv-port .mv-ring { fill: none; stroke: ${HIGHLIGHT}; stroke-width: 4px; pointer-events: none; }
     .mv-port path.mv-in { stroke: ${HIGHLIGHT} !important; stroke-width: 2.5px !important; }
     .mv-port [data-step] { cursor: pointer; }
-    .mv-panel { flex: 1 1 220px; overflow: auto; padding: 8px 12px; border-left: 3px solid ${HIGHLIGHT}; }
+    .mv-panel { flex: 1 1 220px; overflow: auto; padding: 8px 12px; border-left: 3px solid ${HIGHLIGHT};
+      user-select: text; -webkit-user-select: text; }
     .mv-panel p { margin: 0 0 8px; }
     .mv-panel ul { margin: 0 0 8px; padding-left: 18px; }
     .mv-muted { opacity: 0.75; font-style: italic; }
@@ -292,11 +295,16 @@ function render({ model, el }) {
     zoomAt(Math.exp(-e.deltaY * 0.01), e.clientX - r.left, e.clientY - r.top);
   }, { passive: false });
   // Pan by dragging; a press that barely moves is a click.
+  // preventDefault stops the drag from selecting SVG/HTML labels.
   let drag = null;
   port.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    port.focus({ preventScroll: true });
     drag = { x: e.clientX, y: e.clientY, vx: view.x, vy: view.y, moved: false };
     port.setPointerCapture(e.pointerId);
   });
+  port.addEventListener("selectstart", (e) => e.preventDefault());
+  port.addEventListener("dragstart", (e) => e.preventDefault());
   port.addEventListener("pointermove", (e) => {
     if (!drag) return;
     const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
