@@ -1588,7 +1588,7 @@ def method_groups(graph: dict) -> list[str]:
     """Return group titles in first-seen order.
 
     :param graph: The method graph with a ``stages`` list.
-    :returns: Unique ``group`` strings, left to right.
+    :returns: Unique ``group`` strings, in first-seen order.
     """
     titles: list[str] = []
     for stage in graph["stages"]:
@@ -1624,7 +1624,7 @@ def mermaid_from_graph(graph: dict, view: str) -> str:
     groups = method_groups(graph)
     group_id = {title: f"g{index}" for index, title in enumerate(groups)}
     by_id = {stage["id"]: stage for stage in graph["stages"]}
-    lines = ["flowchart LR"]
+    lines = ["flowchart TD"]
     if view == "overview":
         for title in groups:
             lines.append(f'  {group_id[title]}["{safe(title)}"]')
@@ -2226,7 +2226,7 @@ def materials_methods():
 
 @app.cell(hide_code=True)
 def method_diagram_widget():
-    method_view = MermaidView(height=520)
+    method_view = MermaidView()
     method_view
     return (method_view,)
 
