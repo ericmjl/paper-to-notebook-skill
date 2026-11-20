@@ -25,9 +25,16 @@ silent. The check looks only at names assigned from that constructor and at
 dict values of ``something.ui.tabs(...)``. Explanation-level tabs, which
 do not hold those names, are ignored.
 
+If the notebook declares ``# paper-to-notebook-skill-components:``, also
+warn when an included component is missing. Skipped components are not
+required. Notebooks without the comment skip those checks. Warnings never
+fail the run.
+
 Usage:
     uv run scripts/validate_notebook.py path/to/notebook.py [--run]
 """
+
+from __future__ import annotations
 
 import argparse
 import ast
@@ -36,6 +43,12 @@ import sys
 from pathlib import Path
 
 _APP_BLOCK_KINDS = frozenset({"cell", "function", "setup"})
+COMPONENT_HEADER = "# paper-to-notebook-skill-components:"
+COMPONENT_MARKERS: dict[str, str] = {
+    "figure-walkthroughs": "FigureAnnotatorWidget",
+    "method-diagrams": "MermaidView",
+    "final-quiz": "PaperQuiz",
+}
 
 
 def _called(node: ast.expr) -> ast.expr:
@@ -238,6 +251,50 @@ def report_visible_code(blocks: list[tuple[int, str]]) -> None:
         print(f"  line {lineno}: {label}")
 
 
+def parse_component_header(source: str) -> list[str] | None:
+    """Return included component ids, or ``None`` if none are declared.
+
+    :param source: Notebook source text.
+    """
+    for line in source.splitlines():
+        stripped = line.strip()
+        if stripped.startswith(COMPONENT_HEADER):
+            rest = stripped[len(COMPONENT_HEADER) :].strip()
+            if not rest:
+                return []
+            return [part.strip() for part in rest.split(",") if part.strip()]
+    return None
+
+
+def check_components(source: str) -> list[str]:
+    """Return warning messages for included components that are missing.
+
+    Unknown names in the header are also reported. A skipped known
+    component is never a warning, even when its marker is absent.
+
+    :param source: Notebook source text.
+    """
+    included = parse_component_header(source)
+    if included is None:
+        return []
+
+    warnings: list[str] = []
+    known = set(COMPONENT_MARKERS)
+    for name in included:
+        if name not in known:
+            warnings.append(
+                f"unknown component {name!r} in {COMPONENT_HEADER.strip()}"
+            )
+            continue
+        marker = COMPONENT_MARKERS[name]
+        if marker not in source:
+            warnings.append(
+                f"included component {name} is missing ({marker} not found); "
+                "skipped components are not required"
+            )
+    return warnings
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("notebook", type=Path)
@@ -255,9 +312,11 @@ def main() -> int:
         print(f"FAIL: {nb} not found")
         return 1
 
+    source = nb.read_text()
+
     print("[1/3] syntax")
     try:
-        tree = ast.parse(nb.read_text(), filename=str(nb))
+        tree = ast.parse(source, filename=str(nb))
     except SyntaxError as e:
         print(f"FAIL: {e}")
         return 1
@@ -288,6 +347,12 @@ def main() -> int:
     else:
         print("[3/3] smoke run skipped (pass --run to enable)")
 
+    component_warnings = check_components(source)
+    if component_warnings:
+        print("[components]")
+        for message in component_warnings:
+            print(f"WARN: {message}")
+
     notes: list[str] = []
     if visible:
         noun = "warning" if len(visible) == 1 else "warnings"
@@ -295,6 +360,9 @@ def main() -> int:
     if split:
         noun = "warning" if len(split) == 1 else "warnings"
         notes.append(f"{len(split)} figure-tab {noun}")
+    if component_warnings:
+        noun = "warning" if len(component_warnings) == 1 else "warnings"
+        notes.append(f"{len(component_warnings)} component {noun}")
     if notes:
         print(f"OK: {nb} ({', '.join(notes)}; not a failure)")
     else:

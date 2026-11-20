@@ -1,6 +1,6 @@
 # Final quiz
 
-Every generated notebook ends with **5 multiple-choice questions about the paper itself**. Read this before writing them.
+When the **final quiz** is included, the generated notebook ends with **5 multiple-choice questions about the paper itself**. Read this before writing them. Skip this file when the user left the final quiz out.
 
 Do not quiz on the notebook's own demos or toy simulations.
 

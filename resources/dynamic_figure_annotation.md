@@ -48,7 +48,7 @@ wigglystuff.FloatingPanel(
 
 ## Dependencies & Related Resources
 
-- **Used from**: [`SKILL.md`](../SKILL.md) — read this during **Step 2** (enumerate every main-text figure) and **Step 4** (one walkthrough per figure).
+- **Used from**: [`SKILL.md`](../SKILL.md) — read this when **figure walkthroughs** are included: **Step 2** enumerates every main-text figure, and **Step 4** builds one walkthrough per figure in a single `mo.ui.tabs` inside `wigglystuff.FloatingPanel`.
 - **Widget Module**: [`resources/figure_annotator_widget.py`](figure_annotator_widget.py) — Reusable `FigureAnnotatorWidget` (`anywidget.AnyWidget`) implementation.
 - **Runnable Example Notebook**: [`resources/figure_annotator_example.py`](figure_annotator_example.py) — Self-contained Marimo notebook demonstrating full multi-panel diagram (Figure 1, Panels A–C) and data plot + inset (Figure 2) tours.
 - **CLI Helper Script**: [`scripts/figure_annotation_helper.py`](../scripts/figure_annotation_helper.py) — Run via `uv run` for 100×100 percentage grid overlays, ink/color-channel isolation, and visual centering audit contact sheets.
