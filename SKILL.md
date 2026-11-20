@@ -43,7 +43,7 @@ Optional inputs to ask for if they are missing (do not block if the user only gi
 - Extra context: supporting information the user supplies (SI, a cited paper this paper depends on). Use it only as the minimum background for a specific passage, labeled as background. It is not a license to survey the field.
 - Depth: full walkthrough vs. methods, results, or one figure.
 - Output path and runtime constraints.
-- Which notebook components to include (see [Choose notebook components](#choose-notebook-components)). Offer all four; the user may pick a subset.
+- Which notebook components to include (see [Choose notebook components](#choose-notebook-components)). Offer the four default tools, plus interactive equations when the paper has equations. The user may pick a subset.
 
 Do **not** treat this skill as a tool for reviewing a large literature. That is a different job.
 
@@ -53,7 +53,8 @@ Do **not** treat this skill as a tool for reviewing a large literature. That is 
 1. Ingest the paper (PDF / HTML / plain-text source)
 2. Extract structure, terms, equations, figures, and gaps
 3. Plan the learning path
-   Then ask which components to include (all four is the default offer)
+   Then ask which components to include (all four is the default offer;
+   also equations when the paper has them)
 4. Generate the marimo notebook
 5. Validate it runs with `uv run`, then hand off
 ```
@@ -118,16 +119,17 @@ Before writing cells for a **new** notebook, ask the user whether to include **a
 2. **Method diagrams** — a Materials-and-Methods flowchart of the paper's pipeline (`MermaidView`; [`resources/method_diagrams.md`](resources/method_diagrams.md)). The flowchart is pannable and zoomable (drag, Ctrl/pinch zoom, +/− and Fit buttons).
 3. **Final quiz** — five multiple-choice questions at the end of the notebook (`PaperQuiz`; [`resources/final-quiz.md`](resources/final-quiz.md)).
 4. **Explain at five levels** — level picker, ladder tabs, and per-level checks (`ExplainLevels` in [`assets/explain_levels.py`](assets/explain_levels.py); [`resources/explanation-levels.md`](resources/explanation-levels.md)).
+5. **Interactive equations** — draggable variables in a key paper equation (`TangleLatex` from `wigglystuff`; [Tools](#tools)). **Default on when the paper has equations** whose behaviour the reader benefits from exploring (scaling laws, rate equations, loss functions, model parameters). Skip papers with no equations, purely definitional notation, or huge derivations. Mention it in the offer even when the paper has none, so the user can confirm. If you cannot ask, include it when the paper has such equations.
 
-Build only the components they choose. If you cannot ask, or they do not answer, include all four and say so at handoff.
+Build only the components they choose. If you cannot ask, or they do not answer, include all four, plus interactive equations when the paper has equations worth exploring, and say so at handoff.
 
 Record the choice in a comment near the top of the notebook, after the script metadata. List only the components that are in:
 
 ```
-# paper-to-notebook-skill-components: figure-walkthroughs, method-diagrams, final-quiz, explain-levels
+# paper-to-notebook-skill-components: figure-walkthroughs, method-diagrams, final-quiz, explain-levels, equations
 ```
 
-The validator reads that comment. A skipped component is not a failure, except figure walkthroughs: omitting `FigureAnnotatorWidget` without opting out in that comment is a failure.
+The validator reads that comment. A skipped component is not a failure, except figure walkthroughs: omitting `FigureAnnotatorWidget` without opting out in that comment is a failure. If `equations` is listed, the notebook must use `TangleLatex`.
 
 **Figure walkthroughs — do not skip these steps:**
 
@@ -140,7 +142,7 @@ The validator reads that comment. A skipped component is not a failure, except f
 
 ### Tools
 
-Four widgets. Copy the file next to the notebook, add its packages to the PEP 723 block, import it. Details live in the resource linked on each tool. Stick to the paper when you fill them.
+Five widgets. For the four that live in this repo, copy the file next to the notebook, add its packages to the PEP 723 block, and import it. `TangleLatex` comes from `wigglystuff` — add the package, nothing to copy. Details live in the resource linked on each tool. Stick to the paper when you fill them.
 
 #### Assessment widgets (`PaperQuiz` + per-level checks)
 
@@ -220,6 +222,35 @@ explainer
 
 **Read:** [`resources/explanation-levels.md`](resources/explanation-levels.md) (how to write the five levels) and [`resources/explain_levels.md`](resources/explain_levels.md) (trait schema and snippets).
 
+#### Interactive equations (`TangleLatex`)
+
+**For:** a paper equation whose behaviour the reader benefits from exploring — scaling laws, rate equations, loss functions, model parameters. One widget per key equation, tied to the paper's equation or section number.
+
+**When not:** purely definitional notation (symbols introduced, not used), or a huge derivation the reader only needs to see written down. Those stay as LaTeX in `mo.md`.
+
+**Package:** `wigglystuff`. Add `wigglystuff>=0.6.0` to the PEP 723 block. Import `TangleLatex` from the package; there is no file to copy.
+
+```python
+from wigglystuff import TangleLatex
+
+eq = mo.ui.anywidget(
+    TangleLatex(
+        latex=r"v = \frac{\tangle{Vmax}[S]}{\tangle{Km} + [S]}",
+        parameters={
+            "Vmax": {"value": 100, "min_value": 20, "max_value": 200, "step": 1},
+            "Km": {"value": 50, "min_value": 5, "max_value": 150, "step": 1},
+        },
+    )
+)
+eq
+```
+
+**Parameters:** `latex` — KaTeX containing at least one `\tangle{name}` marker. `parameters` — a dict per marker; `value` is required. Optional keys: `min_value`, `max_value`, `step`, `digits`, `display` (`"number"` or `"symbol"`), `symbol`, `label`, `pixels_per_step`, `color` (a CSS string or `{"light": ..., "dark": ...}`). `notes` — optional; wrap a part in `\note{name}{tex}` and map `name` to text, or to a dict with `text`, `side` (`"auto"`, `"top"`, `"bottom"`), and `color`. Keyword-only: `display_mode` (default `True`), `editor` (`"popover"` or `"inline"`), `reveal_all_on_drag`, `theme` (`"auto"`, `"light"`, `"dark"`). In a **different** cell, read `eq.values` (live while dragging) and `eq.committed_values` (the numbers from before the drag). Do not invent constructor arguments.
+
+**How:** one `TangleLatex` per key equation. Cite the paper's equation or section number next to it. Set `min_value` / `max_value` from values the paper reports, not round numbers you guessed. Follow with a short markdown cell that says what to try (which variable to drag, what to watch). Equations come from the paper.
+
+**Read:** [`resources/tangle_latex_example.py`](resources/tangle_latex_example.py).
+
 ### 4. Generate the marimo notebook
 
 Start from an `assets/` template when one exists (**TODO:** add `assets/notebook_template.py`). Write a marimo notebook that can be opened with `uvx marimo edit --sandbox`.
@@ -243,11 +274,12 @@ Hard requirements for the prose:
 Other generation rules:
 
 - Hide code on nearly every cell: `@app.cell(hide_code=True)`, and the same flag on `@app.function` and `app.setup`. Readers see prose, figures, widgets, and outputs. Showing the code is the exception, and only for a cell whose code is itself the teaching point (a short snippet the reader is meant to read, if the notebook has one). When you leave a cell visible, say so in that cell's prose. Cell templates in `resources/` set `hide_code=True`.
-- Equations: LaTeX in `mo.md`; widgets on parameters when that builds intuition.
+- Equations: LaTeX in `mo.md` for definitional notation. When the equations component is included, put each key equation whose behaviour is worth exploring in a `TangleLatex` widget (see [Tools](#tools)): one widget per equation, cited by the paper's equation or section number, with ranges from the paper's reported values, and a short markdown cell saying what to try. Do not invent equations.
 - **Figures first:** the paper's own main-text figures (images extracted from the paper) appear in the notebook regardless of which components were chosen. If figure walkthroughs are skipped, still show each figure with its caption and number. Missing figure images are reported; never silently replace them with unrelated plots. A reproduced or simplified plot is extra, and only when the paper's data allow — it does not stand in for the printed figure. Default plotting library is **Plotly** (`plotly.graph_objects` / `plotly.express`). Put `plotly` in the PEP 723 block. Use Plotly annotations, shapes, and hover text for callouts on recreated figures. Do not start from matplotlib or Altair unless the user asks. **TODO:** how far to go with vision-based estimates or reader-written figure interpretations in v1.
 - Figure walkthroughs (when included): every main-text figure gets an annotated tour (`FigureAnnotatorWidget`), not a subset. Enumerate the figures first and report any figure whose image you could not obtain instead of skipping it. Put every tour in one `mo.ui.tabs`, one tab per figure, and wrap that tab box in `wigglystuff.FloatingPanel` (`wigglystuff>=0.6.0`) so the reader can drag it while scrolling. Recreated plots stay in Plotly; the widget tours the paper's printed figure. Read [`resources/dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md) (`FigureAnnotatorWidget` plus a coordinate-audit helper in `scripts/`).
 - Method diagrams (when included): draw the paper's pipeline as a hand-drawn ELK Mermaid flowchart whose detail follows the reader's level, and step through it. Default layout is top-down (`flowchart TD`). Prefer native Greek/Unicode symbols in diagram labels over ASCII spellings. The rendered view is pannable and zoomable (drag, Ctrl/pinch zoom, +/− and Fit buttons). Read [`resources/method_diagrams.md`](resources/method_diagrams.md) (`MermaidView` in `assets/`).
 - Explain at five levels (when included): core concepts (1–3 per notebook) get an explanation ladder via `ExplainLevels` ([Explaining at multiple levels](#explaining-at-multiple-levels); [Tools](#tools)). Pass `paper_ref`. One `reader_level` picker can drive several ladders.
+- Interactive equations (when included): one `TangleLatex` per key equation, cited by equation or section number, ranges from the paper, and a short markdown cell saying what to try ([Tools](#tools)).
 - Informal checks: short questions, not graded assessment. Each `ExplainLevels` rung has a check (radio, a numeric answer with tolerance, or an open answer with a model answer). See [`resources/explanation-levels.md`](resources/explanation-levels.md) §5.
 - Domain mode from step 2: coding exercises and method reconstruction for algorithm-like papers; agent-written visualization/widget explainers for concept-like papers (for example, a mechanism in a cell).
 - Label anything that goes beyond the paper (“Our demo,” “Simplified assumption”).
@@ -261,7 +293,7 @@ Other generation rules:
 uv run scripts/validate_notebook.py path/to/notebook.py --run
 ```
 
-It checks Python syntax, runs `marimo check --strict`, and with `--run` executes the notebook top to bottom. Fix every reported problem before delivery. It also warns, without failing, when a cell, `@app.function`, or `app.setup` block does not set `hide_code=True`. A warning names a cell you left visible because its code is the teaching point; any other visible cell should be hidden. When a notebook builds two or more figure tours, it warns, again without failing, if those tours are not all values of a single `mo.ui.tabs`. If the notebook has a `# paper-to-notebook-skill-components:` comment, the script also warns when an included component is missing (`FigureAnnotatorWidget`, `MermaidView`, `PaperQuiz`, `ExplainLevels`); skipped components are not a failure. Missing `FigureAnnotatorWidget` is a failure unless that comment opts out of `figure-walkthroughs`. It warns, without failing, when no paper figure image is embedded or referenced, when more than half of the long markdown cells cite no paper anchor (Fig./Figure/Eq./Table/Section/§), and when a Greek TeX command is split from its subscript across a math span (`$\rho$ A`).
+It checks Python syntax, runs `marimo check --strict`, and with `--run` executes the notebook top to bottom. Fix every reported problem before delivery. It also warns, without failing, when a cell, `@app.function`, or `app.setup` block does not set `hide_code=True`. A warning names a cell you left visible because its code is the teaching point; any other visible cell should be hidden. When a notebook builds two or more figure tours, it warns, again without failing, if those tours are not all values of a single `mo.ui.tabs`. If the notebook has a `# paper-to-notebook-skill-components:` comment, the script also warns when an included component is missing (`FigureAnnotatorWidget`, `MermaidView`, `PaperQuiz`, `ExplainLevels`, `TangleLatex`); skipped components are not a failure. Missing `FigureAnnotatorWidget` is a failure unless that comment opts out of `figure-walkthroughs`. It warns, without failing, when no paper figure image is embedded or referenced, when more than half of the long markdown cells cite no paper anchor (Fig./Figure/Eq./Table/Section/§), and when a Greek TeX command is split from its subscript across a math span (`$\rho$ A`).
 
 Before handoff, scan the notebook against [What a good notebook looks like](#what-a-good-notebook-looks-like):
 
@@ -273,7 +305,7 @@ Tell the user:
 - Path to the notebook and the command to open it (`uvx marimo edit --sandbox …`).
 - Assumed audience and what was simplified.
 - TODOs and known gaps (including missing data, main-text figures whose images could not be obtained, or undefined terms).
-- Which of figure walkthroughs, method diagrams, the final quiz, and explain-at-five-levels were included, and that all four were used if you could not ask.
+- Which of figure walkthroughs, method diagrams, the final quiz, explain-at-five-levels, and interactive equations were included, and that the defaults (all four, plus equations when the paper has them) were used if you could not ask.
 - Each main-text figure and whether its tour was built (or that the user opted out).
 - The background-cell count and fraction from the scan above.
 - Paper reference (title, authors, year, link).
@@ -338,11 +370,12 @@ Check this before handoff. If a box fails, fix it or report it as a gap.
 1. **Faithful to the paper.** Every claim, number, and conclusion is supported by the paper. Every section is anchored to a paper section, figure, equation, or table.
 2. **Stays on the paper.** Background is the minimum a reader at the chosen level needs for a specific passage, labeled as background. No tangents. No other papers' content except a one-line pointer when this paper depends on it.
 3. **Figures are present.** Every main-text figure appears with its number and caption, and is toured with `FigureAnnotatorWidget` unless the user opted out.
-4. **Chosen components are present.** Figure walkthroughs, the `MermaidView` methods flowchart, the final quiz, and `ExplainLevels` — whichever the user kept, and all four if you could not ask.
+4. **Chosen components are present.** Figure walkthroughs, the `MermaidView` methods flowchart, the final quiz, `ExplainLevels`, and — when the paper has equations — `TangleLatex` — whichever the user kept, and the defaults if you could not ask.
 5. **Explanations fit the reader.** Match the level the user gave. Define terms when they first matter.
 6. **Nothing invented.** No fabricated data or plots. Gaps are reported.
 7. **Runs cleanly.** The validator passes, code is hidden, and the notebook executes top to bottom.
 8. **The handoff report is complete.** It lists figures and their tour status, components, and gaps.
+9. **Interactive equations when the paper has math.** Key equations whose behaviour is worth exploring use `TangleLatex`, each tied to the paper's equation or section number.
 
 ---
 
@@ -350,8 +383,8 @@ Check this before handoff. If a box fails, fix it or report it as a gap.
 
 - **`.agents/skills/`** — marimo skills installed from [ericmjl/skills](https://github.com/ericmjl/skills) (`marimo`, `marimo-notebook-patterns`, `awesome-marimo-notebook`), pinned in `skills-lock.json`; refresh with `npx skills update`.
 - **`assets/`** — templates and snippets to copy or fill in. Includes [`paper_quiz.py`](assets/paper_quiz.py) (`PaperQuiz`), [`mermaid_view.py`](assets/mermaid_view.py) (`MermaidView`), and [`explain_levels.py`](assets/explain_levels.py) (`ExplainLevels`). See [Tools](#tools).
-- **`resources/`** — material the agent should read (pedagogy, format-specific ingest notes, writing and eval guidance). Do not paste these wholesale into notebooks. Includes [`explanation-levels.md`](resources/explanation-levels.md) (prerequisite-defined explanation ladders, checks, and a worked example), [`field-maturity.md`](resources/field-maturity.md) (field-maturity rubric, vocabulary onboarding, and literature-sampling procedure), [`field-maturity-research-notes.md`](resources/field-maturity-research-notes.md) (auditable sampling for three case-study fields), [`dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md) (annotated walkthrough of every main-text figure, in one tab box inside a floating panel, when figure walkthroughs are included), [`method_diagrams.md`](resources/method_diagrams.md) (level-aware method diagrams), [`final-quiz.md`](resources/final-quiz.md) (what to ask in the end-of-notebook quiz), and [`examples/`](resources/examples/) (ladders for UMAP and influenza reassortment; field-maturity notebook mocks).
-- **`scripts/`** — helpers, run with `uv run`. `validate_notebook.py` checks syntax, runs `marimo check --strict`, warns when code is left visible or when two or more figure tours are not in one `mo.ui.tabs`, and smoke-runs the notebook with `--run`. If the notebook declares `# paper-to-notebook-skill-components: …`, it warns when an included component is missing (`FigureAnnotatorWidget`, `MermaidView`, `PaperQuiz`, `ExplainLevels`) and does not require skipped ones. Missing `FigureAnnotatorWidget` without an opt-out is a failure. Future: per-input-format ingest, metadata fetch, figure extraction.
+- **`resources/`** — material the agent should read (pedagogy, format-specific ingest notes, writing and eval guidance). Do not paste these wholesale into notebooks. Includes [`explanation-levels.md`](resources/explanation-levels.md) (prerequisite-defined explanation ladders, checks, and a worked example), [`field-maturity.md`](resources/field-maturity.md) (field-maturity rubric, vocabulary onboarding, and literature-sampling procedure), [`field-maturity-research-notes.md`](resources/field-maturity-research-notes.md) (auditable sampling for three case-study fields), [`dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md) (annotated walkthrough of every main-text figure, in one tab box inside a floating panel, when figure walkthroughs are included), [`method_diagrams.md`](resources/method_diagrams.md) (level-aware method diagrams), [`final-quiz.md`](resources/final-quiz.md) (what to ask in the end-of-notebook quiz), [`tangle_latex_example.py`](resources/tangle_latex_example.py) (`TangleLatex` on a real rate equation), and [`examples/`](resources/examples/) (ladders for UMAP and influenza reassortment; field-maturity notebook mocks).
+- **`scripts/`** — helpers, run with `uv run`. `validate_notebook.py` checks syntax, runs `marimo check --strict`, warns when code is left visible or when two or more figure tours are not in one `mo.ui.tabs`, and smoke-runs the notebook with `--run`. If the notebook declares `# paper-to-notebook-skill-components: …`, it warns when an included component is missing (`FigureAnnotatorWidget`, `MermaidView`, `PaperQuiz`, `ExplainLevels`, `TangleLatex`) and does not require skipped ones. Missing `FigureAnnotatorWidget` without an opt-out is a failure. Future: per-input-format ingest, metadata fetch, figure extraction.
 
 ## Open decisions
 
@@ -367,4 +400,4 @@ Check this before handoff. If a box fails, fix it or report it as a gap.
 
 ## Related work at hackathon
 
-Pairs with **Visual LaTeX** for equation-heavy papers. Collaborators are listed in the repo `README.md`.
+Pairs with **Visual LaTeX** for equation-heavy papers. In-notebook, key equations use `TangleLatex` from `wigglystuff`. Collaborators are listed in the repo `README.md`.
