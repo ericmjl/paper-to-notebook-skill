@@ -4,11 +4,11 @@ Reference documents the agent should **read** while planning or building a noteb
 
 **Contents:**
 
-- [`explanation-levels.md`](explanation-levels.md): explaining one mechanism at five prerequisite-defined levels, with profiles, ledgers, level-matched checks, and the notebook pattern for `ExplainLevels`.
+- [`explanation-levels.md`](explanation-levels.md): explaining the paper's main point at five prerequisite-defined levels, using only the paper: the spine and one-line summary, profiles, the term and simplification ledgers, a quote check, and tested marimo cells. The ladder renders with `ExplainLevels`.
 - [`explain_levels.md`](explain_levels.md): `ExplainLevels` anywidget contract — trait schema, single-ladder and shared-picker usage, PEP 723 deps. Demo notebook: [`explain_levels_example.py`](explain_levels_example.py).
 - [`field-maturity.md`](field-maturity.md): classifying established vs. emergent vs. interdisciplinary fields; vocabulary onboarding components; runtime literature-sampling procedure.
 - [`field-maturity-research-notes.md`](field-maturity-research-notes.md): auditable API sampling for Bayesian/MCMC, LLM agents, and scRNA-seq integration.
-- [`examples/`](examples/): complete example ladders for real papers (UMAP; influenza reassortment); field-maturity notebook mocks (`field-maturity-*.md`).
+- [`examples/`](examples/): a complete example ladder and level-matched quiz for a real paper (UMAP); field-maturity notebook mocks (`field-maturity-*.md`).
 - [`dynamic_figure_annotation.md`](dynamic_figure_annotation.md): when figure walkthroughs are included, an annotated walkthrough for every main-text figure, gathered into one `mo.ui.tabs` (one tab per figure) inside a `wigglystuff.FloatingPanel`, with a self-verification workflow (100×100 percentage slice grid, ink/color-channel segment isolation, visual crosshair audit contact sheet, and `FigureAnnotatorWidget`).
 - [`figure_annotator_widget.py`](figure_annotator_widget.py): reusable `FigureAnnotatorWidget` (`anywidget.AnyWidget`) with Just-In-Time (JIT) hover spotlights, color-matched explanation badges, click-box-to-jump-to-step navigation, and original figure caption display.
 - [`figure_annotator_example.py`](figure_annotator_example.py): standalone runnable Marimo notebook demonstrating `FigureAnnotatorWidget` across all panels of Figure 1 (Panels A–C) and Figure 2 (Transient Absorption & Inset Quantum Yield) from an open-access TADF photocatalysis paper (PMC13643228).

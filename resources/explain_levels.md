@@ -3,7 +3,7 @@
 The **five-level explanation ladder** as a reusable anywidget. One mechanism, five rungs, a check under the open rung. Use it instead of wiring `mo.ui.tabs` and `show_check` by hand.
 
 - **Used from:** [`SKILL.md`](../SKILL.md) [Tools](../SKILL.md#tools); copy [`assets/explain_levels.py`](../assets/explain_levels.py) next to the notebook.
-- **How to write the five levels:** [`explanation-levels.md`](explanation-levels.md) (prerequisite profiles, mechanism spine, simplification ledger, analogy map, level-matched checks). Worked ladders live in [`examples/`](examples/) (`ladder-umap.md`, `ladder-influenza-reassortment.md`).
+- **How to write the five levels:** [`explanation-levels.md`](explanation-levels.md) (the five-part spine, the one-line summary, prerequisite profiles, paper-only grounding, the simplification ledger). The worked ladder lives in [`examples/ladder-umap.md`](examples/ladder-umap.md).
 - **Renders with:** `ExplainLevels`. Add `anywidget` and `traitlets` to the notebook's PEP 723 block. Not `mo.ui.tabs` plus a separate check cell: the widget holds the tabs, the prose, and the check.
 
 A companion change documents `ExplainLevels` as a default notebook tool and teaches the validator to look for it. This file is the widget contract.
@@ -15,10 +15,10 @@ A companion change documents `ExplainLevels` as a default notebook tool and teac
 Follow [`explanation-levels.md`](explanation-levels.md) before touching the widget:
 
 1. Prerequisite profile per paper.
-2. One-sentence mechanism spine; every level explains that spine.
-3. Simplification ledger (leave things out, never say something false).
-4. One analogy, mapped, with its limit stated by Level 3.
-5. A check at each level: Child *explain*, Teen *predict*, Undergrad *apply*, Grad student *apply and critique*, Expert *critique*.
+2. The spine (question, what was done, what was found, why it matters, limits) and the one-line summary; every level carries all five parts.
+3. Each level stands alone, since readers see only their own level; a simplification ledger records why each simplification is still true.
+4. Analogies only when they help, labelled, mapped, with their limit stated in the same level.
+5. No per-level checks in generated notebooks: the final quiz is matched to the reader's level ([`final-quiz.md`](final-quiz.md)). The widget still supports `check` for other uses.
 
 The default names are **Child**, **Teen**, **Undergrad**, **Grad student**, **Expert**. They are shorthand for prerequisites, not age. The widget will render other names if you pass them; generated notebooks should keep the five.
 
@@ -36,6 +36,8 @@ Every ladder needs a **paper anchor** (`paper_ref`): a section, figure, equation
 | `levels` | list[dict] | The rungs. See below. |
 | `level` | int or str in, **str out** | Open rung. Accepts a 0-based index or a name (case-insensitive). The synced value is the canonical name, so a dropdown of names can drive it and the widget can report which tab is open. |
 | `paper_ref` | str | Paper location for this ladder. Optional on the constructor; required by the stick-to-the-paper rule. |
+| `summary` | str | Optional one-line summary, shown under the title. |
+| `tabs` | bool | Show the level tabs (default `True`). With `False`, the widget shows only the open level, set from the notebook's level picker; generated notebooks use this. |
 | `responses` | list[str] | Committed answers, one per level (`""` if unanswered). Filled from the browser. |
 
 Each entry of `levels`:
@@ -89,6 +91,25 @@ PEP 723 at the top of the notebook:
 ```
 
 Copy `assets/explain_levels.py` next to the notebook (the same pattern as `PaperQuiz` and `MermaidView`) and import it in the cell that imports `marimo`.
+
+### The paper's ladder, reader's level only (what generated notebooks use)
+
+The level picker at the top sets the level; the widget shows the one-line summary and that level only, with no tabs and no check.
+
+```python
+@app.cell(hide_code=True)
+def _(ExplainLevels, mo, reader_level):
+    paper_ladder = mo.ui.anywidget(ExplainLevels(
+        title="UMAP: Uniform Manifold Approximation and Projection",
+        paper_ref="Abstract, Secs. 1–3, 5–6",
+        summary=UMAP_SUMMARY,  # from a hide_code data cell
+        tabs=False,
+        level=reader_level.value,
+        levels=UMAP_LEVELS,  # five {"name", "text"} dicts, no "check"
+    ))
+    paper_ladder
+    return (paper_ladder,)
+```
 
 ### Single ladder
 
@@ -163,7 +184,8 @@ Remounting from the picker rebuilds the widget, so committed check answers on th
 
 ## 4. What the reader sees
 
-- Segmented buttons for the rungs (not a second notebook-level dropdown per ladder).
+- With `tabs=False` (generated notebooks): the title, the one-line summary, and the open level only; the notebook's level picker changes it.
+- Otherwise, segmented buttons for the rungs (not a second notebook-level dropdown per ladder).
 - Markdown explanation for the open rung, with KaTeX for `$…$` / `$$…$$`. Raw HTML in `text` is escaped.
 - The check for that rung: radio options, a numeric field, or a short text area. Choice clicks submit immediately; numeric/open use **Check** (or Enter in the numeric field).
 - Feedback: **Right.** / **Not quite.** plus `why`, or **Compare with ours:** for an open check.

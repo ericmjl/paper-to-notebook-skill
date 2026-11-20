@@ -1,10 +1,10 @@
 # Final quiz
 
-When the **final quiz** is included, the generated notebook ends with **5 multiple-choice questions about the paper itself**. Read this before writing them. Skip this file when the user left the final quiz out.
+When the **final quiz** is included, the generated notebook ends with **5 multiple-choice questions about the paper itself**, matched to the reader's explanation level. Read this before writing them. Skip this file when the user left the final quiz out.
 
 Quiz questions are only about this paper. Do not quiz on adjacent literature, extra examples, or the notebook's own demos or toy simulations.
 
-The quiz is an informal check like the rest of the notebook's checks, not formal assessment. It closes the notebook; the level-matched checks in [`explanation-levels.md`](explanation-levels.md) stay where they are, alongside each ladder.
+The quiz is an informal check, not formal assessment. It closes the notebook.
 
 ## What to ask
 
@@ -19,6 +19,29 @@ Across the 5, aim to cover:
 3. Why a finding follows — the mechanism or the reasoning.
 4. An exception, or a boundary of the claim.
 5. What the paper cannot conclude.
+
+## Match the quiz to the reader's level
+
+Write **five questions for each of the five levels** in [`explanation-levels.md`](explanation-levels.md), 25 in all. The notebook shows the set for the reader's level.
+
+- **Same targets at every level.** Each set covers the five targets above, like the explanation ladder covers its five parts at every level.
+- **Answerable from that level alone.** Readers see only their own level, so the correct answer to each question comes from that level's ladder text. Explanations of why a distractor is wrong may cite anything in the paper.
+- **That level's vocabulary throughout:** questions, options, explanations, and any quoted passage. At the Child level, a location such as "(§3)" is fine, and distractors name misconceptions in plain words rather than the paper's terms.
+- **Targets 4 and 5 test different things.** Target 4 is a boundary or exception of a finding; target 5 is an overreach. Frame target 5 as "How firmly is X claimed?" or "Does X support Y?", so every option isn't also a valid conclusion.
+- **Where the paper disagrees with itself,** a question can use the disagreement, and its explanation gives both values with both locations, as the ladder does.
+- **Deeper as the levels rise:**
+
+  | Level | Questions ask about | The reader should be able to |
+  |---|---|---|
+  | 1 · Child | The claim and the finding, in everyday words | Recall and explain |
+  | 2 · Teen | The headline numbers, with their conditions | Explain |
+  | 3 · Undergrad | How the result follows from what was measured or computed | Apply |
+  | 4 · Grad student | Assumptions, what breaks when one fails, and how the result was checked (when the level says so) | Analyse and compare |
+  | 5 · Expert | What is claimed as new, its limits, and what is left untested | Critique |
+
+  The last column follows the revised Bloom's taxonomy: each level's questions need that kind of thinking, not just recall of the level's text.
+
+- **Only the paper.** The same grounding rules as the ladder apply: every answer and explanation comes from the paper, with a location, and any quoted passage passes `scripts/check_quotes.py` (it reads a quiz saved as JSON directly).
 
 ## Rules for the options
 
@@ -51,32 +74,39 @@ It shuffles the options, marks the chosen answer right or wrong, shows the expla
 
 Hide both cells. The reader sees the heading and the quiz; the Python is not the teaching point.
 
+The cells assume `import marimo as mo` in `with app.setup(hide_code=True):` and the `reader_level` picker from [`explanation-levels.md`](explanation-levels.md) §9. Changing the level shows that level's set and clears the answers.
+
 ```python
 @app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    ## Check yourself
-
-    Five questions on the paper. Pick an answer to see why it is or isn't right.
-    """)
-    return
+def _():
+    QUIZ_BY_LEVEL = {
+        "Child": [
+            {
+                "question": "...",
+                "answer": "...",
+                "explain": "Why this is right (Fig. N / Section N).",
+                "distractors": {
+                    "Plausible wrong answer 1": "Misconception it targets, and why the paper does not support it.",
+                    "Plausible wrong answer 2": "...",
+                    "Plausible wrong answer 3": "...",
+                },
+            },
+            # 5 questions per level
+        ],
+        "Teen": [...],
+        "Undergrad": [...],
+        "Grad student": [...],
+        "Expert": [...],
+    }
+    return (QUIZ_BY_LEVEL,)
 
 
 @app.cell(hide_code=True)
-def _(PaperQuiz, mo):
-    quiz = mo.ui.anywidget(PaperQuiz(questions=[
-        {
-            "question": "...",
-            "answer": "...",
-            "explain": "Why this is right (Fig. N / Section N).",
-            "distractors": {
-                "Plausible wrong answer 1": "Misconception it targets, and why the paper does not support it.",
-                "Plausible wrong answer 2": "...",
-                "Plausible wrong answer 3": "...",
-            },
-        },
-        # 5 questions total
-    ]))
-    quiz
+def _(PaperQuiz, QUIZ_BY_LEVEL, reader_level):
+    quiz = mo.ui.anywidget(PaperQuiz(questions=QUIZ_BY_LEVEL[reader_level.value]))
+    mo.vstack([
+        mo.md("## Check yourself\n\nFive questions on the paper. Pick an answer to see why it is or isn't right."),
+        quiz,
+    ])
     return
 ```

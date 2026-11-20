@@ -1,0 +1,262 @@
+{
+  "Child": [
+    {
+      "question": "What does the new way do?",
+      "answer": "It squashes a collection with too many details into a flat map that keeps close things close.",
+      "explain": "Right. The new way turns a collection that is too detailed to draw into a flat map, and things that were close stay close on the map (§1, §3).",
+      "distractors": {
+        "It adds more details, so the collection becomes richer to look at.": "This gets it backwards. The new way makes the collection simpler to draw, not more detailed (§1).",
+        "It keeps only a few of the details and throws the rest away.": "It does not just pick some details to keep. It makes a new map from how close the things are to each other (§3, §6).",
+        "It sorts the things into boxes and writes a name on each box.": "It makes a map, not named boxes. Names were only used afterwards, to check how good the maps were (§5.2)."
+      }
+    },
+    {
+      "question": "What happened when the new way was given much bigger collections?",
+      "answer": "It still worked, on collections bigger than the older way could handle.",
+      "explain": "Right. The new way worked on far bigger collections than the best older way could manage (§1, §5.4).",
+      "distractors": {
+        "It stopped working, so it only suits small collections.": "This gets it backwards. Big collections are where it did best. Very small collections are the ones that need care (§5.4, §6).",
+        "It worked, but much more slowly than the older way.": "It was faster than the best older way, not slower (§5.4, Table 3).",
+        "It worked only after throwing away most of the things in the collection.": "It drew a whole collection of millions of words, not just a small part of it (§5.4.3)."
+      }
+    },
+    {
+      "question": "Why can you look at the new map to see which things are alike?",
+      "answer": "Because things that are close in the collection stay close on the map.",
+      "explain": "Right. Close things stay close, so things that are alike end up near each other on the map (§3, §6).",
+      "distractors": {
+        "Because each side of the map means something, like big or small.": "The sides of the map do not mean anything special. Only how near things are to each other matters (§6).",
+        "Because it puts the things on the map in a random order.": "Where things go is not random. It depends on which things are close to which (§3).",
+        "Because it keeps every gap between things exactly the same size.": "It mostly cares about keeping near things near. Another older way is better at keeping every gap the same (§6)."
+      }
+    },
+    {
+      "question": "When should you be careful with the new way's maps?",
+      "answer": "When the dots are messy, because it can find shapes that are not really there, like seeing pictures in the stars.",
+      "explain": "Right. In messy dots it can find shapes that are not really there, the way people see pictures in the stars (§6).",
+      "distractors": {
+        "When the collection is very big, because it gets lost in all the things.": "This gets it backwards. With more things, it finds fewer of those pretend shapes (§6).",
+        "Never, because it always shows the true shape.": "It can find shapes that are not really there, so you do have to be careful (§6).",
+        "When the dots are very tidy, because tidy dots confuse it.": "The worry is messy dots, not tidy ones (§6)."
+      }
+    },
+    {
+      "question": "Its maps looked about as good as the best older way. Does that mean its maps are always better?",
+      "answer": "No. About as good is not the same as better; it was in speed that it beat the older way.",
+      "explain": "Right. Its maps were about as good as the best older way, and it was faster. That does not make its maps better every time (Abstract, §5.1, §5.4).",
+      "distractors": {
+        "Yes, because a faster way always makes better maps.": "Being fast and making good maps are two different things. It was faster, but its maps were only about as good (Abstract).",
+        "Yes, its maps were better on every collection tried.": "On one collection of clothing pictures, the older way did a bit better at keeping close things together (§5.2, Table 2).",
+        "No, its maps were much worse; it was only faster.": "This goes too far the other way. Its maps were about as good as the best older way (Abstract, §5.1)."
+      }
+    }
+  ],
+  "Teen": [
+    {
+      "question": "What is the main result for UMAP, the new method, against t-SNE, the leading earlier tool for drawing data as pictures?",
+      "answer": "Its pictures showed the same groups as t-SNE's, and it ran much faster on large data sets.",
+      "explain": "Right. UMAP's pictures showed the same groups as t-SNE's (§5.1), and it was faster, for example 87 seconds against 292 for the fastest t-SNE version on 70,000 digit images (Table 3).",
+      "distractors": {
+        "Its pictures found groups that t-SNE missed, but it ran slower.": "The pictures showed the same groups as t-SNE's (§5.1), and UMAP was faster than every t-SNE version in every timing (Table 3).",
+        "Its pictures matched t-SNE's dot for dot.": "The same groups showed up, but the exact positions of the dots were different (§5.1).",
+        "It was faster only on small data sets.": "The biggest gains came on large data sets, such as 3 million words (§5.4.3). On one very small digit set, two other older methods were actually faster (Table 3)."
+      }
+    },
+    {
+      "question": "On 70,000 handwritten-digit images, how did UMAP's time compare with t-SNE's?",
+      "answer": "87 seconds, against 292 seconds for the fastest t-SNE version.",
+      "explain": "Right. On 70,000 digit images, UMAP took 87 seconds and the fastest t-SNE version took 292 seconds (Table 3).",
+      "distractors": {
+        "87 seconds, against 1,450 seconds for t-SNE.": "1,450 seconds is real, but it is a slower t-SNE version. The fair comparison is with the fastest t-SNE version, at 292 seconds (Table 3).",
+        "About 200 minutes, against several days for t-SNE.": "Those numbers are for 3 million words and phrases, not for the 70,000 digit images (§5.4.3).",
+        "292 seconds, against 87 seconds for the fastest t-SNE version.": "This swaps the two. UMAP took 87 seconds, and t-SNE's fastest version took 292 (Table 3)."
+      }
+    },
+    {
+      "question": "Why do similar images end up near each other in UMAP's picture?",
+      "answer": "It links each point to its nearest neighbours, then arranges the dots so that linked points stay close.",
+      "explain": "Right. UMAP links each point to its nearest neighbours, then places the dots so linked points stay close together (§3).",
+      "distractors": {
+        "It sorts the images by their correct labels first.": "UMAP does not use labels to place dots. Labels were only used afterwards, to score how good the pictures were (§5.2).",
+        "It keeps a few of the 784 numbers for each image and throws the rest away.": "It does not pick out some of the original numbers. Its new numbers come from which points are close to which, and do not stand for any original number (§6).",
+        "It keeps every distance between every pair of points exactly as before.": "UMAP mainly cares about nearby points. Keeping every distance is the aim of a different kind of method, which does it better than UMAP (§6)."
+      }
+    },
+    {
+      "question": "When does UMAP need extra care?",
+      "answer": "With small, noisy data sets, because it can find patterns in random noise.",
+      "explain": "Right. UMAP can find patterns in random noise, like seeing pictures in the stars, so small noisy data sets need care (§6).",
+      "distractors": {
+        "With very large data sets, because it slows down like t-SNE.": "This gets it backwards. UMAP arranged 3 million words in about 200 minutes, while a fast t-SNE version needed several days (§5.4.3).",
+        "When shrinking data to more than three numbers per point, because its cost explodes.": "It is t-SNE whose cost shoots up there. UMAP's time grows only slowly as you ask for more numbers (Fig. 9, §5.4.1).",
+        "With handwritten-digit images, because it cannot tell the digits apart.": "On digit images its pictures showed the same groups as t-SNE's (§5.1)."
+      }
+    },
+    {
+      "question": "UMAP arranged 3 million words and phrases in about 200 minutes, while a fast t-SNE version needed several days. Does this show UMAP is faster than every method on every data set?",
+      "answer": "No. It compares UMAP with one t-SNE version on one very large data set.",
+      "explain": "Right. The 200 minutes against several days compares UMAP with one fast t-SNE version on one large set of words (§5.4.3). It says nothing about every method on every set.",
+      "distractors": {
+        "Yes, it was faster than every method tested, on every data set.": "On a very small set of 1,797 digit images, two other older methods took 2 seconds against UMAP's 9 seconds (Table 3, §5.4).",
+        "Yes, because it was also faster on the 70,000 digit images.": "Being faster than t-SNE on one more data set still is not every method on every set. On the very small digit set, two other methods were faster (Table 3).",
+        "No, because t-SNE was faster on the 3 million words.": "This swaps the two. UMAP took about 200 minutes, and t-SNE needed several days (§5.4.3)."
+      }
+    }
+  ],
+  "Undergrad": [
+    {
+      "question": "Which description matches how UMAP builds a low-dimensional layout?",
+      "answer": "It builds a weighted k-nearest-neighbour graph with a distance scale for each point, then moves low-dimensional points to minimise the cross-entropy between the graph's weights and the layout's weights.",
+      "explain": "Right. Each point gets its own scale (ρ_i, σ_i), the edge weights are merged into a symmetric graph, and stochastic gradient descent minimises the cross-entropy between the input weights v_ij and the layout weights w_ij (§3.1, §3.2, §4.1, Eq. 13).",
+      "distractors": {
+        "It projects the data onto the eigenvectors of the data's covariance matrix, the directions of greatest variance.": "That is principal component analysis. UMAP's axes have “no specific meaning, unlike PCA where the dimensions are the directions of greatest variance in the source data” (§6). UMAP uses eigenvectors only of the graph's normalised Laplacian, and only to set the starting layout (§4.1).",
+        "It preserves every pairwise distance, as multidimensional scaling does.": "Multidimensional scaling “specifically seeks to preserve the full distance matrix of the data” (§6). UMAP instead “concerns itself primarily with accurately representing local structure” (§6).",
+        "It uses one global distance scale for every point, because it assumes the data are spread uniformly.": "This is the reverse. Real data rarely are uniform, so each point x_i gets its own distance scale to make the uniform assumption hold locally (§2.1, §3.1)."
+      }
+    },
+    {
+      "question": "On COIL-20 (1,440 images of 20 rotated objects) at K=160, the kNN-classifier accuracy was 0.803 for UMAP against 0.616 for LargeVis, the next best. Here a kNN classifier labels each point by its K nearest points in the layout. What does that result show?",
+      "answer": "At that large K, the labels of nearby points in UMAP's layout predicted each point's own label better, so more of the neighbourhood structure survived.",
+      "explain": "Right. kNN-classifier accuracy measures how well the layout keeps local structure (§5.2), and at K=160 on COIL-20 UMAP scored 0.803 against 0.616 for LargeVis (Table 1).",
+      "distractors": {
+        "UMAP's layout reproduced 80.3% of the original pairwise distances.": "This mixes up the measure. 0.803 is a classification accuracy from neighbours' labels, not a share of distances kept (§5.2).",
+        "UMAP was about 19% more accurate than LargeVis.": "The gap is an absolute difference of 0.187 in accuracy, not a relative 19% increase (Table 1).",
+        "UMAP's layout keeps the arrangement of far-apart groups better than LargeVis.": "kNN accuracy measures “how well the embedding has preserved the important local structure of the dataset” (§5.2). The field lacks “clear objective measures, or even definitions, of global structure preservation” (§7)."
+      }
+    },
+    {
+      "question": "In the edge weight exp(−max(0, d(x_i, x_{i_j}) − ρ_i)/σ_i), ρ_i is the distance from x_i to its nearest neighbour. What does subtracting ρ_i guarantee?",
+      "answer": "Every point has at least one edge of weight 1, the edge to its nearest neighbour.",
+      "explain": "Right. For the nearest neighbour, d − ρ_i = 0, so the weight is exp(0) = 1, and every point keeps at least one edge of weight 1 (§3.1).",
+      "distractors": {
+        "The weights from each point sum to 1, like a probability distribution.": "σ_i is set so the weights sum to log₂ k, not 1 (§3.1, §4.1), and UMAP does not carry out t-SNE's further normalisation (App. C).",
+        "The graph becomes symmetric.": "Symmetry comes from a separate step, the merge B = A + Aᵀ − A∘Aᵀ (§3.1).",
+        "The nearest neighbour gets weight 0, so only farther points are linked.": "This reverses it. max(0, ρ_i − ρ_i) = 0 gives weight exp(0) = 1, the largest possible (§3.1)."
+      }
+    },
+    {
+      "question": "On Fashion-MNIST (clothing images) at K=100, UMAP's kNN accuracy was 0.790 against 0.818 for t-SNE. What does this say about the accuracy results?",
+      "answer": "UMAP's advantage is not universal: on that dataset at small K, t-SNE's layout kept neighbours' labels better.",
+      "explain": "Right. UMAP “notably underperforms on the Fashion-MNIST dataset” at small k (§5.2), at 0.790 against 0.818 for t-SNE at K=100 (Table 2); only at k of 1600 and 3200 does it become comparable (§5.2).",
+      "distractors": {
+        "It shows UMAP was more accurate on Fashion-MNIST at K=100.": "This reverses the direction. UMAP scored 0.790 and t-SNE 0.818 (Table 2).",
+        "It shows UMAP's layout is 2.8% worse on every dataset.": "The gap is 0.028 in absolute accuracy on one dataset at one K. On COIL-20 at K=160, UMAP led with 0.803 against 0.616 (Tables 1–2).",
+        "It shows UMAP was slower on Fashion-MNIST.": "This mixes accuracy with run time. On Fashion-MNIST, UMAP took 65 s against 278 s for FIt-SNE, the faster t-SNE implementation (Table 3)."
+      }
+    },
+    {
+      "question": "Two clusters lie far apart along the horizontal axis of a UMAP layout. Does that support a claim about which input feature separates them?",
+      "answer": "No. UMAP's axes have no specific meaning, unlike those of principal component analysis, which are directions of greatest variance.",
+      "explain": "Right. “The dimensions of the UMAP embedding space have no specific meaning” (§6), so position along an axis does not point to any input feature.",
+      "distractors": {
+        "Yes: the horizontal axis is the direction of greatest variance in the input.": "That is true of principal component analysis, not UMAP (§6).",
+        "Yes: the cross-entropy keeps far groups apart, so the axis measures the feature that differs most.": "UMAP works from distances between observations, not the input features, so “it does not have an equivalent of factor loadings” (§6).",
+        "Yes, but only in a two-dimensional layout; in higher dimensions the axes lose their meaning.": "The lack of meaning holds for UMAP's embedding space in general, not only above two dimensions (§6)."
+      }
+    }
+  ],
+  "Grad student": [
+    {
+      "question": "Which assumption of Laplacian-eigenmap theory does UMAP relax, and how?",
+      "answer": "That data are uniformly distributed on the manifold; UMAP gives each point its own Riemannian metric by normalising distances to its k nearest neighbours.",
+      "explain": "Right. Finite data are rarely uniform on the manifold, so UMAP builds a local metric per point; “by creating a custom distance for each $X_{i}$ , we can ensure the validity of the assumption of uniform distribution on the manifold” (§2.1).",
+      "distractors": {
+        "The manifold assumption itself; UMAP needs no manifold structure in the data.": "“One of the core assumptions of UMAP is that there exists manifold structure in the data” (§6).",
+        "Uniformity, but by a global normalisation of all pairwise affinities, as in t-SNE.": "UMAP has no global normalisation; it “does not require global normalisation” (§5.4.1), and uniformity comes from the per-point metrics (§2.1).",
+        "Euclidean input distances; UMAP replaces them with exact geodesic distances computed over the whole graph.": "UMAP patches together local fuzzy simplicial sets by fuzzy union rather than computing global geodesics (§3); d need only be a distance, not necessarily Euclidean (App. C)."
+      }
+    },
+    {
+      "question": "How did UMAP's kNN-classifier accuracy compare with t-SNE and LargeVis as k grew?",
+      "answer": "It matched them at small k and led at large k, for example 0.803 against 0.616 for LargeVis on COIL-20 at k=160.",
+      "explain": "Right. UMAP “performs at least as well as t-SNE and LargeVis (given the confidence bounds on the accuracy)” for k from 10 to 40, and led at k=80 and 160 on COIL-20 (§5.2, Table 1).",
+      "distractors": {
+        "It led clearly at small k, and the methods converged at large k.": "This reverses the pattern. Differences at small k lay within the confidence bounds; the clear gap opened at large k (§5.2, Tables 1–2).",
+        "It led at every k on every dataset.": "On Fashion-MNIST at k=100 it trailed t-SNE, 0.790 against 0.818 (Table 2).",
+        "It led at large k only over Laplacian eigenmaps and PCA, not over t-SNE or LargeVis.": "On COIL-20 at k=160 the next best was LargeVis at 0.616 and t-SNE scored 0.609, against 0.803 for UMAP (Table 1)."
+      }
+    },
+    {
+      "question": "Why does UMAP scale well with embedding dimension where t-SNE scales poorly?",
+      "answer": "Its edge weights need no global normalisation, so it needs no space trees, which scale exponentially in dimension.",
+      "explain": "Right. Without global normalisation, UMAP avoids the quad-trees and oct-trees t-SNE uses; “Such space trees scale exponentially in dimension, resulting in t-SNE’s relatively poor scaling with respect to embedding dimension” (§5.4.1).",
+      "distractors": {
+        "Negative sampling reduces the number of embedding dimensions it optimises.": "Negative sampling approximates the repulsive term by sampling non-edges (§4.1); it does not change the embedding dimension.",
+        "Spectral initialisation starts points near the optimum, so few SGD epochs are needed in high dimensions.": "The initialisation is a starting point for SGD (§4.1); §5.4.1 attributes the scaling to the absence of global normalisation and space trees.",
+        "It uses fewer nearest neighbours as the embedding dimension grows.": "Nothing ties k to the embedding dimension; the stated reason is the missing normalisation and space trees (§5.4.1)."
+      }
+    },
+    {
+      "question": "When the data have no real manifold structure, as in pure noise, the manifold assumption fails. What can happen to a UMAP embedding?",
+      "answer": "UMAP can still find structure in the noise, producing a spurious embedding.",
+      "explain": "Right. UMAP “can tend to find manifold structure within the noise of a dataset” (§6), so apparent structure may not be real.",
+      "distractors": {
+        "UMAP returns a featureless blob, which signals that no structure exists.": "The risk is the opposite: structure appears where none exists, and “Detecting when a spurious embedding has occurred is a topic of further research” (§6).",
+        "The risk grows as more data are sampled.": "This reverses the direction: “As more data is sampled the amount of structure evident from noise will tend to decrease” (§6).",
+        "The spectral initialisation detects the missing structure and stops the optimisation.": "No such check exists; detecting spurious embeddings is left to further research (§6)."
+      }
+    },
+    {
+      "question": "How firmly is UMAP's better preservation of global structure established?",
+      "answer": "Only arguably, and much of the advantage owes to the spectral initialisation.",
+      "explain": "Right. The global-structure gain is “arguably” claimed (Abstract), and “a significant contributor to UMAP’s relative global structure preservation is derived from the Laplacian Eigenmaps initialization” (§6).",
+      "distractors": {
+        "Firmly: the large-k kNN gains, such as 0.803 against 0.616 on COIL-20, measure global structure directly.": "kNN accuracy is a measure of local structure (§5.2), and the field lacks “clear objective measures, or even definitions, of global structure preservation” (§7).",
+        "Firmly: even with the same initialisation, t-SNE preserves global structure worse.": "The cited work shows “t-SNE, with similar initialization, can perform equivalently to UMAP in a particular measure of global structure preservation” (§6).",
+        "Not at all: UMAP is shown to preserve global structure worse than t-SNE.": "Nothing shows UMAP worse than t-SNE here; UMAP is believed to capture more global structure than these techniques, though “if global structure is of primary interest then UMAP may not be the best choice for dimension reduction” (§6)."
+      }
+    }
+  ],
+  "Expert": [
+    {
+      "question": "Against t-SNE and LargeVis, what is claimed as new?",
+      "answer": "A topological derivation of the graph and the layout: Spivak's fuzzy singular-set functor on per-point extended-pseudo-metrics, union by the probabilistic t-conorm, and fuzzy-set cross-entropy on the 1-skeleton.",
+      "explain": "Right. Prior neighbour-graph methods rest their choices on heuristics or task-focused experimentation (§2, App. C); UMAP derives its graph and objective from fuzzy simplicial sets (§2.2, §3, §4.1).",
+      "distractors": {
+        "Optimising the layout by edge sampling with negative sampling.": "That part is borrowed: “we follow work of [54]; making use of probabilistic edge sampling and negative sampling [41]” (§4.2), where [54] is LargeVis.",
+        "Initialising from the eigenvectors of the normalised Laplacian.": "Spectral initialisation is Laplacian eigenmaps, one of the baselines; UMAP uses it only as a starting point for SGD (§4.1).",
+        "A guarantee that the embedding preserves the input metric.": "No such guarantee is given; UMAP preserves metric structure less well than MDS, which “specifically seeks to preserve the full distance matrix of the data” (§6)."
+      }
+    },
+    {
+      "question": "Where did UMAP exceed the strongest baseline in kNN-classifier accuracy?",
+      "answer": "At large k on COIL-20 (0.803 vs 0.616 for LargeVis at k=160) and Shuttle (0.957 vs 0.895 for Laplacian eigenmaps at k=3200).",
+      "explain": "Right. Those are the large-k rows where UMAP clearly leads, each against the best other method in that row (Tables 1–2, §5.2).",
+      "distractors": {
+        "At small k (10 to 40) on COIL-20 and PenDigits, by clear margins.": "At those k UMAP performs “at least as well as t-SNE and LargeVis (given the confidence bounds on the accuracy)”, not clearly better (§5.2).",
+        "On Fashion-MNIST for k from 100 to 800.": "This reverses the direction: UMAP “notably underperforms on the Fashion-MNIST dataset” there (§5.2, Table 2).",
+        "On Shuttle at k=3200, with t-SNE as the strongest baseline.": "The strongest baseline there was Laplacian eigenmaps at 0.895; t-SNE scored 0.828 (Table 2)."
+      }
+    },
+    {
+      "question": "What should a reader take from single-core UMAP running MNIST in 87 s against 292 s for FIt-SNE?",
+      "answer": "The gap is not due to UMAP using more cores: FIt-SNE ran multi-core and was the fastest competitor in that row.",
+      "explain": "Right. FIt-SNE “makes use of multiple cores” (§5.4) while UMAP was timed single-core (§4.2, §5.4.3), and 292 s was the best non-UMAP time on MNIST (Table 3).",
+      "distractors": {
+        "UMAP had more cores than FIt-SNE, so the gap mostly reflects hardware.": "This reverses the setup: “these experiments were carried out on a single core version of our algorithm” (§4.2), against multi-core FIt-SNE (§5.4).",
+        "The gap is measured against MulticoreTSNE, the slowest t-SNE run.": "292 s is FIt-SNE; MulticoreTSNE took 1450 s on MNIST (Table 3).",
+        "The gap shows UMAP is faster than every method on every dataset timed.": "On PenDigits, Laplacian eigenmaps and Isomap took 2 s against 9 s for UMAP (Table 3, §5.4)."
+      }
+    },
+    {
+      "question": "For which goal is UMAP stated to be weaker than a classical alternative?",
+      "answer": "Preserving metric structure, where MDS does better.",
+      "explain": "Right. UMAP preserves metric structure less well than MDS, which “specifically seeks to preserve the full distance matrix of the data” (§6).",
+      "distractors": {
+        "Scaling in embedding dimension, where t-SNE does better.": "This reverses it: “t-SNE scales worse than exponentially while UMAP and LargeVis scale linearly” (Fig. 9).",
+        "Large datasets, where the approximations degrade embeddings above 500 samples.": "The concern is the reverse, “small (less than 500 samples) dataset sizes” (§6).",
+        "Large-k kNN accuracy on Shuttle, where Laplacian eigenmaps wins.": "This reverses the result: at k=3200 UMAP scored 0.957 against 0.895 for Laplacian eigenmaps (Table 2)."
+      }
+    },
+    {
+      "question": "How firmly does the evidence support UMAP's better global-structure preservation?",
+      "answer": "Weakly: the gain is arguable, partly due to the spectral initialisation, and global structure preservation still lacks objective definitions.",
+      "explain": "Right. The claim is “arguably” made (Abstract); the gain is partly the Laplacian-eigenmaps initialisation (§6); and the field lacks “clear objective measures, or even definitions, of global structure preservation” (§7).",
+      "distractors": {
+        "Firmly, since large-k kNN accuracy is an objective measure of global structure.": "kNN accuracy measures “the important local structure of the dataset” (§5.2), and §7 names the missing objective measures as an open problem.",
+        "Firmly, since the advantage survives giving t-SNE the same initialisation.": "The reverse is reported: “t-SNE, with similar initialization, can perform equivalently to UMAP in a particular measure of global structure preservation” (§6).",
+        "It is refuted: with the same initialisation, t-SNE preserves global structure better than UMAP.": "The cited result is equivalence on one measure, not superiority, and the cross-entropy objective is also named “a significant contributor” (§6)."
+      }
+    }
+  ]
+}
