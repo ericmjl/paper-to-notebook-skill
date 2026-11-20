@@ -116,7 +116,7 @@ Other generation rules:
 - Hide code on nearly every cell: `@app.cell(hide_code=True)`, and the same flag on `@app.function` and `app.setup`. Readers see prose, figures, widgets, and outputs. Showing the code is the exception, and only for a cell whose code is itself the teaching point (a short snippet the reader is meant to read, if the notebook has one). When you leave a cell visible, say so in that cell's prose. Cell templates in `resources/` set `hide_code=True`.
 - Equations: LaTeX in `mo.md`; widgets on parameters when that builds intuition.
 - Figures: reproduce or simplify when data allow; link back to the paper's figure number. If data are not available, say so — do not invent plots. A reproduced plot does not replace the annotated walkthrough of the paper's own figure. **TODO:** how far to go with vision-based estimates or reader-written figure interpretations in v1.
-- Figure walkthroughs: every main-text figure gets an annotated tour (`FigureAnnotatorWidget`), not a subset. Enumerate the figures first and report any figure whose image you could not obtain instead of skipping it. Read [`resources/dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md).
+- Figure walkthroughs: every main-text figure gets an annotated tour (`FigureAnnotatorWidget`), not a subset. Enumerate the figures first and report any figure whose image you could not obtain instead of skipping it. Put every tour in one `mo.ui.tabs`, one tab per figure. Read [`resources/dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md).
 - Method diagrams: draw the paper's pipeline as a hand-drawn ELK Mermaid flowchart whose detail follows the reader's level, and step through it. Read [`resources/method_diagrams.md`](resources/method_diagrams.md) (`MermaidView` in `assets/`).
 - Core concepts (1–3 per notebook) get an explanation ladder ([Explaining at multiple levels](#explaining-at-multiple-levels)).
 - Informal checks: short questions, not graded assessment. Use the `show_check` pattern in `resources/explanation-levels.md` §9 (radio, a numeric answer with tolerance, or an open answer with a model answer).
@@ -132,7 +132,7 @@ Other generation rules:
 uv run scripts/validate_notebook.py path/to/notebook.py --run
 ```
 
-It checks Python syntax, runs `marimo check --strict`, and with `--run` executes the notebook top to bottom. Fix every reported problem before delivery. It also warns, without failing, when a cell, `@app.function`, or `app.setup` block does not set `hide_code=True`. A warning names a cell you left visible because its code is the teaching point; any other visible cell should be hidden.
+It checks Python syntax, runs `marimo check --strict`, and with `--run` executes the notebook top to bottom. Fix every reported problem before delivery. It also warns, without failing, when a cell, `@app.function`, or `app.setup` block does not set `hide_code=True`. A warning names a cell you left visible because its code is the teaching point; any other visible cell should be hidden. When a notebook builds two or more figure tours, it warns, again without failing, if those tours are not all values of a single `mo.ui.tabs`.
 
 Tell the user:
 
