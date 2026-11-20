@@ -8,7 +8,11 @@ from pathlib import Path
 SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 
-from validate_notebook import check_components, parse_component_header  # noqa: E402
+from validate_notebook import (  # noqa: E402
+    check_components,
+    check_figure_walkthroughs,
+    parse_component_header,
+)
 
 
 HEADER = "# paper-to-notebook-skill-components:"
@@ -66,3 +70,37 @@ def test_check_components_warns_on_unknown_name() -> None:
 
 def test_check_components_empty_header_requires_nothing() -> None:
     assert check_components(f"{HEADER}\n") == []
+
+
+def test_missing_figure_annotator_without_comment_fails() -> None:
+    warnings, errors = check_figure_walkthroughs("mo.md('hello')\n")
+    assert warnings == []
+    assert len(errors) == 1
+    assert "FigureAnnotatorWidget" in errors[0]
+
+
+def test_missing_figure_annotator_with_opt_out_warns() -> None:
+    source = f"{HEADER} final-quiz\nPaperQuiz\n"
+    warnings, errors = check_figure_walkthroughs(source)
+    assert errors == []
+    assert len(warnings) == 1
+    assert "figure-walkthroughs" in warnings[0]
+
+
+def test_empty_component_header_opts_out_of_figure_walkthroughs() -> None:
+    warnings, errors = check_figure_walkthroughs(f"{HEADER}\n")
+    assert errors == []
+    assert len(warnings) == 1
+
+
+def test_figure_annotator_present_is_silent() -> None:
+    source = "fig = FigureAnnotatorWidget()\n"
+    assert check_figure_walkthroughs(source) == ([], [])
+
+
+def test_included_figure_walkthroughs_without_widget_fails() -> None:
+    source = f"{HEADER} figure-walkthroughs, final-quiz\nPaperQuiz\n"
+    warnings, errors = check_figure_walkthroughs(source)
+    assert warnings == []
+    assert len(errors) == 1
+    assert "FigureAnnotatorWidget" in errors[0]

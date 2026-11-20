@@ -114,7 +114,7 @@ If the user supplied extra sources, use them only as background for a specific p
 
 Before writing cells for a **new** notebook, ask the user whether to include **all** of these components (the default offer) or to pick which ones:
 
-1. **Figure walkthroughs** — annotated tours of every main-text figure, in one `mo.ui.tabs` inside `wigglystuff.FloatingPanel` (`FigureAnnotatorWidget`; [`resources/dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md)).
+1. **Figure walkthroughs** — annotated tours of every main-text figure, in one `mo.ui.tabs` inside `wigglystuff.FloatingPanel` (`FigureAnnotatorWidget`; [`resources/dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md)). **Default on.** Omit only when the user explicitly opts out. If you cannot ask, include them.
 2. **Method diagrams** — a Materials-and-Methods flowchart of the paper's pipeline (`MermaidView`; [`resources/method_diagrams.md`](resources/method_diagrams.md)).
 3. **Final quiz** — five multiple-choice questions at the end of the notebook (`PaperQuiz`; [`resources/final-quiz.md`](resources/final-quiz.md)).
 
@@ -126,7 +126,16 @@ Record the choice in a comment near the top of the notebook, after the script me
 # paper-to-notebook-skill-components: figure-walkthroughs, method-diagrams, final-quiz
 ```
 
-The validator reads that comment. A skipped component is not a failure.
+The validator reads that comment. A skipped component is not a failure, except figure walkthroughs: omitting `FigureAnnotatorWidget` without opting out in that comment is a failure.
+
+**Figure walkthroughs — do not skip these steps:**
+
+1. Copy [`resources/figure_annotator_widget.py`](resources/figure_annotator_widget.py) next to the notebook.
+2. Add `anywidget` and `traitlets` to the PEP 723 dependencies.
+3. Extract each main-text figure image into the notebook's directory (for example `figures/fig1.webp`).
+4. For each figure, build tour steps with coordinates via [`scripts/figure_annotation_helper.py`](scripts/figure_annotation_helper.py). Read [`resources/dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md).
+5. Show the paper's caption and figure number on every tour.
+6. Put every tour in one `mo.ui.tabs` inside `wigglystuff.FloatingPanel`.
 
 ### 4. Generate the marimo notebook
 
@@ -169,7 +178,7 @@ Other generation rules:
 uv run scripts/validate_notebook.py path/to/notebook.py --run
 ```
 
-It checks Python syntax, runs `marimo check --strict`, and with `--run` executes the notebook top to bottom. Fix every reported problem before delivery. It also warns, without failing, when a cell, `@app.function`, or `app.setup` block does not set `hide_code=True`. A warning names a cell you left visible because its code is the teaching point; any other visible cell should be hidden. When a notebook builds two or more figure tours, it warns, again without failing, if those tours are not all values of a single `mo.ui.tabs`. If the notebook has a `# paper-to-notebook-skill-components:` comment, the script also warns when an included component is missing; skipped components are not a failure. It warns, without failing, when no paper figure image is embedded or referenced, and when more than half of the long markdown cells cite no paper anchor (Fig./Figure/Eq./Table/Section/§).
+It checks Python syntax, runs `marimo check --strict`, and with `--run` executes the notebook top to bottom. Fix every reported problem before delivery. It also warns, without failing, when a cell, `@app.function`, or `app.setup` block does not set `hide_code=True`. A warning names a cell you left visible because its code is the teaching point; any other visible cell should be hidden. When a notebook builds two or more figure tours, it warns, again without failing, if those tours are not all values of a single `mo.ui.tabs`. If the notebook has a `# paper-to-notebook-skill-components:` comment, the script also warns when an included component is missing; skipped components are not a failure. Missing `FigureAnnotatorWidget` is a failure unless that comment opts out of `figure-walkthroughs`. It warns, without failing, when no paper figure image is embedded or referenced, and when more than half of the long markdown cells cite no paper anchor (Fig./Figure/Eq./Table/Section/§).
 
 Before handoff, scan the notebook:
 
@@ -182,6 +191,7 @@ Tell the user:
 - Assumed audience and what was simplified.
 - TODOs and known gaps (including missing data, main-text figures whose images could not be obtained, or undefined terms).
 - Which of figure walkthroughs, method diagrams, and the final quiz were included, and that all three were used if you could not ask.
+- Each main-text figure and whether its tour was built (or that the user opted out).
 - The background-cell count and fraction from the scan above.
 - Paper reference (title, authors, year, link).
 
