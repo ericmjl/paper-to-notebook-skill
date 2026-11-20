@@ -26,8 +26,9 @@ dict values of ``something.ui.tabs(...)``. Explanation-level tabs, which
 do not hold those names, are ignored.
 
 If the notebook declares ``# paper-to-notebook-skill-components:``, also
-warn when an included component is missing. Skipped components are not
-required. Notebooks without the comment skip those checks.
+warn when an included component is missing (``FigureAnnotatorWidget``,
+``MermaidView``, ``PaperQuiz``, ``ExplainLevels``). Skipped components
+are not required. Notebooks without the comment skip those checks.
 
 After a successful parse, also warn, without failing, when the notebook
 embeds no paper figure image (png/jpg/webp/svg/gif, ``mo.image``,
@@ -57,6 +58,7 @@ COMPONENT_MARKERS: dict[str, str] = {
     "figure-walkthroughs": "FigureAnnotatorWidget",
     "method-diagrams": "MermaidView",
     "final-quiz": "PaperQuiz",
+    "explain-levels": "ExplainLevels",
 }
 
 PAPER_ANCHOR_RE = re.compile(
