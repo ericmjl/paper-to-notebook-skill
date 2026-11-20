@@ -1,0 +1,29 @@
+{
+  "version": 2,
+  "skills": {
+    "awesome-marimo-notebook": {
+      "source": "ericmjl/skills",
+      "commit": "f2ff7d9bd3cf0189e2f2c88caaf69528abd511c3",
+      "sourceType": "github",
+      "skillPath": "skills/awesome-marimo-notebook/SKILL.md",
+      "computedHash": "557cbf13b80bb39bc6b67491604014d6e4e12eabf698c028e113673809222376",
+      "installMode": "copy"
+    },
+    "marimo": {
+      "source": "ericmjl/skills",
+      "commit": "f2ff7d9bd3cf0189e2f2c88caaf69528abd511c3",
+      "sourceType": "github",
+      "skillPath": "skills/marimo/SKILL.md",
+      "computedHash": "47f596b0775e6ac483d902e7166ac5485892522ae4aaff6d74f44c996a8e4bee",
+      "installMode": "copy"
+    },
+    "marimo-notebook-patterns": {
+      "source": "ericmjl/skills",
+      "commit": "f2ff7d9bd3cf0189e2f2c88caaf69528abd511c3",
+      "sourceType": "github",
+      "skillPath": "skills/marimo-notebook-patterns/SKILL.md",
+      "computedHash": "7ba1747f080045d392981dd220832c6fd02daa26d9689248fc1972e3b80e5284",
+      "installMode": "copy"
+    }
+  }
+}
