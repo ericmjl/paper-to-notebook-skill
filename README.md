@@ -39,35 +39,15 @@ Start with the [eval setup instructions](evals/README.md#set-up-the-evals). The 
 
 ## Install the skill
 
-This skill uses the open [Agent Skills](https://agentskills.io) format. Any agent that reads `SKILL.md` folders can use it.
-
-**Easiest path:** the [skills CLI](https://github.com/vercel-labs/skills) (Node.js 22.20 or later). From a project:
+This skill uses the open [Agent Skills](https://agentskills.io) format. An agent installs it by copying the folder from https://github.com/ericmjl/paper-to-notebook-skill into wherever the harness keeps skills. Include `SKILL.md`, plus `scripts/`, `assets/`, `resources/`, and the vendored skills in `.agents/skills/`. Clone the repo or download the files.
 
 ```bash
-npx skills add ericmjl/paper-to-notebook-skill
+git clone https://github.com/ericmjl/paper-to-notebook-skill path/to/skills/paper-to-notebook-skill
 ```
 
-That command installs the skill into the current project. Add `-g` to install it for every project on this machine. Add `-a codex -a cursor -a claude-code` to pick those agents instead of answering the interactive picker.
+Optional: `npx skills add ericmjl/paper-to-notebook-skill`.
 
-**By hand:** clone this repo into the agent's skills folder.
-
-| Agent | Project | User (all projects) |
-| --- | --- | --- |
-| [Claude Code](https://code.claude.com/docs/en/skills) | `.claude/skills/paper-to-notebook-skill/` | `~/.claude/skills/paper-to-notebook-skill/` |
-| [Cursor](https://cursor.com/docs/skills) | `.agents/skills/paper-to-notebook-skill/` or `.cursor/skills/paper-to-notebook-skill/` | `~/.agents/skills/paper-to-notebook-skill/` or `~/.cursor/skills/paper-to-notebook-skill/` |
-| [Codex](https://learn.chatgpt.com/docs/build-skills) | `.agents/skills/paper-to-notebook-skill/` | `~/.agents/skills/paper-to-notebook-skill/` |
-
-Example:
-
-```bash
-git clone https://github.com/ericmjl/paper-to-notebook-skill ~/.agents/skills/paper-to-notebook-skill
-```
-
-**Claude desktop and claude.ai:** turn on Code execution and file creation under Settings > Capabilities. Zip the skill folder so that `SKILL.md` sits inside it (the archive's top level should be `paper-to-notebook-skill/`, not loose files). Then open Customize > Skills, click +, and choose Upload a skill.
-
-**Other agents:** put the folder wherever that agent looks for skills, or point the agent at `SKILL.md`.
-
-Once it is installed, give the agent a paper (PDF, URL, or arXiv id) and ask it to follow the skill. When the notebook is ready, open it with:
+Give the agent a paper (PDF, URL, or arXiv id). When the notebook is ready:
 
 ```bash
 uvx marimo edit --sandbox path/to/notebook.py
