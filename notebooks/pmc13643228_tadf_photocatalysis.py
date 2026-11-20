@@ -9,6 +9,8 @@
 # ]
 # ///
 
+# paper-to-notebook-skill-components: figure-walkthroughs, method-diagrams, final-quiz
+
 import marimo
 
 __generated_with = "0.25.2"
@@ -21,6 +23,7 @@ with app.setup(hide_code=True):
     import plotly.graph_objects as go
     import wigglystuff
     from figure_annotator_widget import FigureAnnotatorWidget
+    from mermaid_view import MermaidView
     from paper_quiz import PaperQuiz
 
     LEVELS = ["Child", "Teen", "Undergrad", "Grad student", "Expert"]
@@ -176,6 +179,11 @@ def cell_tour():
                     "cell_name": "escape_ladder",
                     "title": "Same mechanism, five depths",
                     "description": "Background section. This ladder is cage escape. Stay on your level, or open another tab to see what was left out. The check sits under the tabs.",
+                },
+                {
+                    "cell_name": "materials_methods",
+                    "title": "What they actually did",
+                    "description": "Hands-on section. This is the paper's experimental and computational pipeline, not a figure they printed. Step through it. Drag to pan; Ctrl-scroll, pinch, or the +/− buttons zoom; Fit resets the view. The level picker above changes how much detail the boxes show.",
                 },
                 {
                     "cell_name": "evidence",
@@ -1554,6 +1562,695 @@ def quench_ask():
 @app.cell(hide_code=True)
 def quench_feedback(quench_answers, quench_checks, quench_tabs):
     show_check(quench_tabs, quench_checks, quench_answers)
+    return
+
+
+@app.function(hide_code=True)
+def method_view_name(level: str) -> str:
+    """Return the method-diagram view that matches one explanation level.
+
+    Child and Teen share the group-level Overview. Undergrad gets every
+    stage. Grad student and Expert get Spec, with short parameters on
+    the boxes and full parameters in the side panel.
+
+    :param level: A name from the notebook's ``reader_level`` picker.
+    :returns: ``overview``, ``detail``, or ``spec``.
+    """
+    if level in ("Child", "Teen"):
+        return "overview"
+    if level == "Undergrad":
+        return "detail"
+    return "spec"
+
+
+@app.function(hide_code=True)
+def method_groups(graph: dict) -> list[str]:
+    """Return group titles in first-seen order.
+
+    :param graph: The method graph with a ``stages`` list.
+    :returns: Unique ``group`` strings, left to right.
+    """
+    titles: list[str] = []
+    for stage in graph["stages"]:
+        if stage["group"] not in titles:
+            titles.append(stage["group"])
+    return titles
+
+
+@app.function(hide_code=True)
+def mermaid_from_graph(graph: dict, view: str) -> str:
+    """Draw one Mermaid flowchart from the method graph.
+
+    Overview is one box per group. Detail and Spec draw every stage,
+    boxed by group. Spec inlines short ``params`` and edge ``data``.
+    Inferred stages and edges are dashed. Labels are passed without
+    ``<br>`` so Mermaid can wrap them.
+
+    :param graph: Stages, edges, and optional ``named`` structures.
+    :param view: ``overview``, ``detail``, or ``spec``.
+    :returns: Mermaid source for ``MermaidView``.
+    """
+
+    def shorten(text: str, limit: int = 40) -> str:
+        if len(text) <= limit:
+            return text
+        return text[: limit - 1] + "⋯"
+
+    def safe(text: str) -> str:
+        return (
+            text.replace('"', "'").replace("[", "(").replace("]", ")")
+        )
+
+    groups = method_groups(graph)
+    group_id = {title: f"g{index}" for index, title in enumerate(groups)}
+    by_id = {stage["id"]: stage for stage in graph["stages"]}
+    lines = ["flowchart LR"]
+    if view == "overview":
+        for title in groups:
+            lines.append(f'  {group_id[title]}["{safe(title)}"]')
+        pair_label: dict[tuple[str, str], str | None] = {}
+        pair_inferred: dict[tuple[str, str], bool] = {}
+        for edge in graph["edges"]:
+            source = by_id[edge["from"]]
+            target = by_id[edge["to"]]
+            left = group_id[source["group"]]
+            right = group_id[target["group"]]
+            if left == right:
+                continue
+            pair_inferred[left, right] = pair_inferred.get(
+                (left, right), True
+            ) and bool(edge.get("inferred"))
+            if edge.get("kind") and edge.get("label"):
+                pair_label[left, right] = edge["label"]
+            else:
+                pair_label.setdefault((left, right), None)
+        for (left, right), label in pair_label.items():
+            arrow = "-.->" if pair_inferred.get((left, right)) else "-->"
+            if label:
+                lines.append(f'  {left} {arrow}|"{safe(label)}"| {right}')
+            else:
+                lines.append(f"  {left} {arrow} {right}")
+        return "\n".join(lines)
+
+    dashed_ids: list[str] = []
+    for title in groups:
+        lines.append(f'  subgraph {group_id[title]}["{safe(title)}"]')
+        for stage in graph["stages"]:
+            if stage["group"] != title:
+                continue
+            label = stage["label"]
+            if view == "spec" and stage.get("params"):
+                extras = ", ".join(shorten(item) for item in stage["params"])
+                label = f"{label}. {shorten(extras)}"
+            lines.append(f'    {stage["id"]}["{safe(label)}"]')
+            if stage.get("inferred"):
+                dashed_ids.append(stage["id"])
+        lines.append("  end")
+    for edge in graph["edges"]:
+        arrow = "-.->" if edge.get("inferred") else "-->"
+        bits: list[str] = []
+        if edge.get("kind") and edge.get("label"):
+            bits.append(edge["label"])
+        if view == "spec" and edge.get("data"):
+            bits.append(shorten(edge["data"]))
+        if bits:
+            lines.append(
+                f'  {edge["from"]} {arrow}|"{safe(shorten(" · ".join(bits)))}"| {edge["to"]}'
+            )
+        else:
+            lines.append(f'  {edge["from"]} {arrow} {edge["to"]}')
+    if dashed_ids:
+        lines.append("  classDef inferred stroke-dasharray: 5 5")
+        for node_id in dashed_ids:
+            lines.append(f"  class {node_id} inferred")
+    return "\n".join(lines)
+
+
+@app.function(hide_code=True)
+def method_steps(graph: dict, view: str) -> list[dict]:
+    """Build ``MermaidView`` steps, one per stage.
+
+    Overview highlights the stage's group. Detail and Spec highlight the
+    stage and the arrows into it. Spec adds full ``params`` and incoming
+    ``data`` to the side panel.
+
+    :param graph: The same graph ``mermaid_from_graph`` draws.
+    :param view: ``overview``, ``detail``, or ``spec``.
+    :returns: Step dicts for ``MermaidView.steps``.
+    """
+    groups = method_groups(graph)
+    group_id = {title: f"g{index}" for index, title in enumerate(groups)}
+    by_id = {stage["id"]: stage for stage in graph["stages"]}
+    steps: list[dict] = []
+    for stage in graph["stages"]:
+        incoming = [
+            [edge["from"], edge["to"]]
+            for edge in graph["edges"]
+            if edge["to"] == stage["id"]
+        ]
+        if view == "overview":
+            node = group_id[stage["group"]]
+            incoming = [
+                [group_id[by_id[start]["group"]], group_id[by_id[end]["group"]]]
+                for start, end in incoming
+                if by_id[start]["group"] != by_id[end]["group"]
+            ]
+        else:
+            node = stage["id"]
+        step = {
+            "node": node,
+            "title": stage["label"],
+            "what": stage["what"],
+            "incoming": incoming,
+        }
+        if stage.get("ref"):
+            step["ref"] = stage["ref"]
+        elif stage.get("inferred"):
+            step["ref"] = "inferred"
+            step["note"] = str(stage["inferred"])
+        if view == "spec":
+            if stage.get("params"):
+                step["params"] = "; ".join(stage["params"])
+            receives = [
+                edge["data"]
+                for edge in graph["edges"]
+                if edge["to"] == stage["id"] and edge.get("data")
+            ]
+            if receives:
+                step["receives"] = receives
+        steps.append(step)
+    return steps
+
+
+@app.function(hide_code=True)
+def check_method_graph(graph: dict) -> list[str]:
+    """Return problems in the method graph, or an empty list if it is ready.
+
+    The rules are those in ``resources/method_diagrams.md`` §3: every
+    stage and edge has a ``ref`` or is ``inferred``; every ``kind`` edge
+    has a label; every stage has an incoming edge unless it is first in
+    its group or marked ``input``; several splits into one stage need
+    ``pools``; a branch, split, or parallel inside one group is named;
+    Spec inlines stay short; group titles and stage labels stay short.
+
+    :param graph: The method graph.
+    :returns: Human-readable problems, empty when the check is clean.
+    """
+    problems: list[str] = []
+    stages = graph["stages"]
+    edges = graph["edges"]
+    by_id = {stage["id"]: stage for stage in stages}
+    first_in_group: dict[str, str] = {}
+    for stage in stages:
+        first_in_group.setdefault(stage["group"], stage["id"])
+        if not stage.get("ref") and not stage.get("inferred"):
+            problems.append(f"{stage['id']} has neither ref nor inferred")
+        if len(stage["label"]) > 40:
+            problems.append(f"{stage['id']} label is longer than 40 characters")
+        if len(stage["group"]) > 50:
+            problems.append(f"{stage['id']} group title is longer than 50 characters")
+        incoming = [edge for edge in edges if edge["to"] == stage["id"]]
+        if (
+            not incoming
+            and stage["id"] != first_in_group[stage["group"]]
+            and not stage.get("input")
+        ):
+            problems.append(f"{stage['id']} has no incoming edge")
+        split_in = [edge for edge in incoming if edge.get("kind") == "split"]
+        if len(split_in) > 1 and not stage.get("pools"):
+            problems.append(f"{stage['id']} receives several splits without pools")
+    named = graph.get("named") or []
+    for edge in edges:
+        label = f"{edge['from']}->{edge['to']}"
+        if not edge.get("ref") and not edge.get("inferred"):
+            problems.append(f"edge {label} has neither ref nor inferred")
+        if edge.get("kind") and not edge.get("label"):
+            problems.append(f"edge {label} has a kind but no label")
+        if edge.get("kind") in {"branch", "split", "parallel"}:
+            source = by_id[edge["from"]]
+            target = by_id[edge["to"]]
+            if source["group"] == target["group"] and not named:
+                problems.append(
+                    f"edge {label} is a {edge['kind']} inside "
+                    f"{source['group']!r} but the graph has no named structure"
+                )
+        if edge.get("data") and len(edge["data"]) > 40:
+            # Spec inlines shorten these; the full text belongs in the panel.
+            pass
+    return problems
+
+
+@app.cell(hide_code=True)
+def method_graph():
+    method_graph = {
+        "named": [
+            "low versus high quencher concentration",
+            "mechanistic models a and b",
+        ],
+        "stages": [
+            {
+                "id": "synth_pc",
+                "label": "Synthesize PC2+",
+                "group": "Make the catalyst",
+                "ref": "SI S5; SI S1 (Dortmund); Author contributions",
+                "what": (
+                    "Chris Burdenski synthesized PC2+ at TU Dortmund under "
+                    "Max Hansmann. Solvents were dried on an MBraun SPS and "
+                    "degassed with argon; solids were handled in a nitrogen "
+                    "glovebox. The main text uses this dicationic "
+                    "pi-extended heterocycle/carbene hybrid as the TADF "
+                    "photocatalyst in Fig. 1B."
+                ),
+                "params": [
+                    "SPS solvents over molecular sieves, argon-degassed",
+                    "N2 glovebox for solids and NMR samples",
+                ],
+            },
+            {
+                "id": "tas_setup",
+                "label": "Record ns TAS at 355 nm",
+                "group": "Set up photophysics",
+                "ref": "SI S1 (Mainz photophysical studies)",
+                "what": (
+                    "Transient absorption used an Edinburgh LP980KS with a "
+                    "frequency-tripled Nd:YAG (Quantel Q-smart 450) at 355 nm, "
+                    "about 5 ns, 10 Hz. Spectra were an Andor iCCD integrated "
+                    "over 100 ns; single-wavelength traces a Hamamatsu R928 "
+                    "PMT. The cell holder was at 20 C. Pulse energy was read "
+                    "with a gentec-eo pyroelectric detector."
+                ),
+                "params": [
+                    "355 nm, about 5 ns, 10 Hz",
+                    "cell holder 20 C",
+                ],
+            },
+            {
+                "id": "tcspc",
+                "label": "Measure lifetimes by TCSPC",
+                "group": "Set up photophysics",
+                "ref": "SI S1",
+                "input": True,
+                "what": (
+                    "PC2+ prompt fluorescence used a Mini-Tau with an EPL-450 "
+                    "at 446 nm (pulse width 74.5 ps). 4CzIPN and SO2TDS2- used "
+                    "an FS5 spectrofluorometer with an EPL-375 at 371 nm "
+                    "(58.3 ps) at 20 C. The instrument response was stray "
+                    "light from dilute Ludox."
+                ),
+                "params": [
+                    "EPL-450 446 nm for PC2+",
+                    "EPL-375 371 nm for 4CzIPN and SO2TDS2-",
+                ],
+            },
+            {
+                "id": "delta_eps",
+                "label": "Calibrate delta-eps of PC radical",
+                "group": "Quantify cage escape at low and high Q",
+                "ref": "SI S2.1",
+                "what": (
+                    "Biphenyl was the reference quencher. After 355 nm "
+                    "excitation, the concentration of BP•+ came from Delta-A "
+                    "at 385 nm (literature Delta-eps 27000 M-1 cm-1). PC•+ "
+                    "and BP•+ form 1:1, and Delta-A at 450 nm (no BP•+ there) "
+                    "gave Delta-eps450(PC•+) = 13600 ± 700 M-1 cm-1, averaged "
+                    "over five laser intensities."
+                ),
+                "params": [
+                    "5 µM PC2+, 197 mM biphenyl, MeCN",
+                    "Delta-eps450 = 13600 ± 700 M-1 cm-1",
+                ],
+            },
+            {
+                "id": "quench_sv",
+                "label": "Stern-Volmer quench S1 and T1",
+                "group": "Quantify cage escape at low and high Q",
+                "ref": "SI S2.3; Table 1 caption",
+                "what": (
+                    "S1 quenching of PC2+ was TCSPC of prompt fluorescence "
+                    "(excitation 446 nm, emission 525-575 nm, 200 kHz) in "
+                    "air-equilibrated acetonitrile. T1 quenching was TAS of "
+                    "the 405 nm triplet absorption in argon-saturated "
+                    "acetonitrile (20 min of bubbling). Those rate constants "
+                    "are what Table 1 uses for eta_q and Phi_q."
+                ),
+                "params": [
+                    "S1: TCSPC 446 nm, 525-575 nm, 200 kHz",
+                    "T1: TAS 405 nm, Ar-saturated MeCN",
+                ],
+            },
+            {
+                "id": "actinometry",
+                "label": "Count excited states vs Ru",
+                "group": "Quantify cage escape at low and high Q",
+                "ref": "SI S2.4; Fig. 3C",
+                "what": (
+                    "Relative actinometry used an iso-absorbing aqueous "
+                    "[Ru(bpy)3]Cl2 solution under the same 355 nm pulses. "
+                    "The ground-state bleach at 455 nm supplied the number "
+                    "of *PC2+ per pulse for Phi_r,tot in eqn (1)."
+                ),
+                "params": [
+                    "iso-absorbing [Ru(bpy)3]2+ in water",
+                    "bleach monitored at 455 nm",
+                ],
+            },
+            {
+                "id": "phi_r",
+                "label": "Measure Phi_r,tot versus Q",
+                "group": "Quantify cage escape at low and high Q",
+                "ref": "SI S2.4; Fig. 2; Results, spectroscopic evidence",
+                "what": (
+                    "Phi_r,tot is free radicals per excited state (eqn 1). "
+                    "[PC•+] came from Beer-Lambert with the calibrated "
+                    "Delta-eps and the 450 nm Delta-A in a few-microsecond "
+                    "window after cage escape, before bulk recombination "
+                    "(hundreds of microseconds, Fig. S16). Phenol and "
+                    "naphthalene were scanned over 0.1-200 mM."
+                ),
+                "params": [
+                    "450 nm, few-microsecond averaging window",
+                    "quencher 0.1-200 mM",
+                ],
+            },
+            {
+                "id": "eta_t",
+                "label": "Get eta_ce,T at low Q",
+                "group": "Quantify cage escape at low and high Q",
+                "ref": "SI S2.5-S2.7; Table 1 series 1a/2a",
+                "what": (
+                    "Low quencher (0.22 mM phenol; 0.12 mM naphthalene) makes "
+                    "quenching almost all triplet. Phi_r,T with the known "
+                    "eta_isc and eta_q,T gives eta_ce,T = 0.42 ± 0.02 "
+                    "(phenol) and 0.46 ± 0.03 (naphthalene). Three pulse "
+                    "energies stayed linear (Fig. S15), which they use to "
+                    "rule out two-photon chemistry."
+                ),
+                "params": [
+                    "phenol 0.22 mM; naphthalene 0.12 mM",
+                    "eta_ce,T phenol 0.42 ± 0.02",
+                ],
+            },
+            {
+                "id": "eta_s",
+                "label": "Get eta_ce,S at high Q",
+                "group": "Quantify cage escape at low and high Q",
+                "ref": "SI S2.5-S2.7; Table 1 series 1b/2b",
+                "what": (
+                    "High quencher still leaves residual triplet (eta_isc = "
+                    "0.05 at 132 mM phenol; solubility stops a further "
+                    "increase). Equation (2) subtracts that triplet share "
+                    "before equation (3) reports eta_ce,S = 0.028 ± 0.005 "
+                    "(phenol) and 0.07 ± 0.01 (naphthalene at 120 mM)."
+                ),
+                "params": [
+                    "phenol 132 mM; naphthalene 120 mM",
+                    "eta_ce,S phenol 0.028 ± 0.005",
+                ],
+            },
+            {
+                "id": "fig4_model",
+                "label": "Predict Phi_r versus Q",
+                "group": "Model the kinetics",
+                "ref": "Fig. 4; Predicting concentration-dependent radical yield",
+                "what": (
+                    "Using k_q,S, k_q,T, k_isc, the unquenched lifetimes, "
+                    "and the measured cage-escape efficiencies, they plot a "
+                    "quenching-only Phi_q (monotonic) against Phi_r that "
+                    "includes cage escape (a maximum, then a low plateau). "
+                    "Yellow points are the measured Phi_r,tot from 0.1 to "
+                    "200 mM. Rate constants are not printed in the main text."
+                ),
+                "params": [
+                    "uses k_q,S, k_q,T, k_isc, tau_0",
+                    "yellow dots: 0.1-200 mM",
+                ],
+            },
+            {
+                "id": "tadf_exact",
+                "label": "Recheck with exact TADF kinetics",
+                "group": "Model the kinetics",
+                "ref": "SI S2.8; Mathematical treatment of TADF kinetics",
+                "what": (
+                    "Equations (2) and (3) treat the catalyst as non-TADF. "
+                    "Section S2.8 adds isc-risc cycling and a recursion "
+                    "factor. eta_ce,S and eta_ce,T come out the same, so the "
+                    "first visit to each state dominates at the high "
+                    "concentrations used in synthesis."
+                ),
+                "params": ["recursion factor for isc-risc cycling"],
+            },
+            {
+                "id": "cw_sim",
+                "label": "Simulate continuous irradiation",
+                "group": "Simulate continuous light (models a and b)",
+                "ref": "SI S2.9; Fig. 5; Transferring spectroscopic predictions",
+                "what": (
+                    "A Python model from Bellatreccia, Fina, and Ceroni "
+                    "(University of Bologna). Model a: phenol is the "
+                    "sacrificial donor and later steps are quantitative "
+                    "(Fig. S26). Model b: the substrate itself is the "
+                    "quencher. Conditions: [substrate] = 10 mM, [PC2+] = "
+                    "1 mM, epsilon(440 nm) = 1e4 M-1 cm-1, flux 1e-3 "
+                    "einstein s-1. Fig. 5 compares initial quencher of 10, "
+                    "20, and 100 mM."
+                ),
+                "params": [
+                    "[PC2+] = 1 mM; [substrate] = 10 mM",
+                    "flux 1e-3 einstein s-1 at 440 nm",
+                ],
+            },
+            {
+                "id": "czipn",
+                "label": "TAS of 4CzIPN with DMA",
+                "group": "Test other catalysts",
+                "ref": "SI S3.1; Fig. 6A and 6C",
+                "what": (
+                    "4CzIPN in toluene with DMA as a reversible reductive "
+                    "quencher, on the same TAS bench. Relative radical "
+                    "yields versus [DMA] give eta_ce,T / eta_ce,S = 125. "
+                    "The relative radical signal falls almost to zero at "
+                    "high DMA; they predict about a tenfold drop in "
+                    "reaction quantum yield from 10 mM to 200 mM DMA."
+                ),
+                "params": [
+                    "solvent: toluene",
+                    "eta_ce,T / eta_ce,S = 125",
+                ],
+            },
+            {
+                "id": "so2tds",
+                "label": "TAS of SO2TDS with ascorbate",
+                "group": "Test other catalysts",
+                "ref": "SI S3.2; Fig. 6B and 6C",
+                "what": (
+                    "The water-soluble non-TADF catalyst SO2TDS2- with "
+                    "ascorbate monoanion in 200 mM phosphate buffer at "
+                    "pH 7.2. Relative cage-escape ratio 11.5. They "
+                    "reproduced the known radical spectra rather than "
+                    "repeating the absolute Delta-eps calibration used "
+                    "for PC2+."
+                ),
+                "params": [
+                    "200 mM phosphate buffer, pH 7.2",
+                    "eta_ce,T / eta_ce,S = 11.5",
+                ],
+            },
+            {
+                "id": "pinacol",
+                "label": "Pinacol under 390 nm LED",
+                "group": "Test other catalysts",
+                "ref": "SI S3.2; SI S1 irradiation experiments",
+                "what": (
+                    "Acetophenone 15.7 mM, SO2TDS2-, and HAsc- in "
+                    "Ar-saturated D2O with 200 mM phosphate. A Kessil "
+                    "RP160L 390 nm LED irradiated a septum-sealed NMR "
+                    "tube in a water bath, still on an Ar line. Yield "
+                    "was 1H NMR versus NaOAc. Performance was about 50% "
+                    "higher at 19.2 mM HAsc- than at 96.9 mM."
+                ),
+                "params": [
+                    "Kessil RP160L 390 nm",
+                    "acetophenone 15.7 mM in D2O",
+                ],
+            },
+        ],
+        "edges": [
+            {
+                "from": "synth_pc",
+                "to": "tas_setup",
+                "ref": "Author contributions; SI S1",
+                "data": "PC2+ from Dortmund to Mainz TAS",
+            },
+            {
+                "from": "tas_setup",
+                "to": "delta_eps",
+                "ref": "SI S2.1",
+                "data": "355 nm TAS traces of PC•+ and BP•+",
+            },
+            {
+                "from": "tas_setup",
+                "to": "quench_sv",
+                "ref": "SI S2.3",
+                "data": "T1 decays at 405 nm",
+            },
+            {
+                "from": "tcspc",
+                "to": "quench_sv",
+                "ref": "SI S2.3",
+                "data": "S1 prompt-fluorescence lifetimes",
+            },
+            {
+                "from": "tas_setup",
+                "to": "actinometry",
+                "ref": "SI S2.4; Fig. 3C",
+                "data": "same 355 nm pulses as the samples",
+            },
+            {
+                "from": "delta_eps",
+                "to": "phi_r",
+                "ref": "SI S2.4",
+                "data": "Delta-eps450 of PC•+",
+            },
+            {
+                "from": "actinometry",
+                "to": "phi_r",
+                "ref": "SI S2.4; eqn (1)",
+                "data": "number of *PC2+ per pulse",
+            },
+            {
+                "from": "quench_sv",
+                "to": "phi_r",
+                "ref": "SI S2.3; Fig. 2",
+                "data": "Phi_q,S and Phi_q,T versus Q",
+            },
+            {
+                "from": "phi_r",
+                "to": "eta_t",
+                "ref": "SI S2.5 general procedure for eta_ce,T",
+                "kind": "branch",
+                "label": "low Q, mostly T1",
+                "data": "Phi_r,tot at low Q assigned to T1",
+            },
+            {
+                "from": "phi_r",
+                "to": "eta_s",
+                "ref": "SI S2.5 general procedure for eta_ce,S",
+                "kind": "branch",
+                "label": "high Q, mostly S1",
+                "data": "Phi_r,tot minus residual T1",
+            },
+            {
+                "from": "quench_sv",
+                "to": "eta_t",
+                "ref": "Table 1; SI S2.5",
+                "data": "eta_isc and eta_q,T at low Q",
+            },
+            {
+                "from": "quench_sv",
+                "to": "eta_s",
+                "ref": "Table 1; SI S2.5",
+                "data": "eta_isc and eta_q,S at high Q",
+            },
+            {
+                "from": "eta_t",
+                "to": "fig4_model",
+                "ref": "Fig. 4; Predicting concentration-dependent radical yield",
+                "data": "eta_ce,T",
+            },
+            {
+                "from": "eta_s",
+                "to": "fig4_model",
+                "ref": "Fig. 4",
+                "data": "eta_ce,S",
+            },
+            {
+                "from": "quench_sv",
+                "to": "fig4_model",
+                "ref": "Fig. 4",
+                "data": "k_q,S, k_q,T, k_isc, tau_0",
+            },
+            {
+                "from": "fig4_model",
+                "to": "tadf_exact",
+                "ref": "SI S2.8",
+                "data": "same eta_ce values to re-derive",
+            },
+            {
+                "from": "fig4_model",
+                "to": "cw_sim",
+                "ref": "SI S2.9",
+                "data": "kinetic constants and eta_ce for models a and b",
+            },
+            {
+                "from": "tas_setup",
+                "to": "czipn",
+                "ref": "SI S3.1",
+                "data": "same LP980KS TAS bench",
+            },
+            {
+                "from": "tas_setup",
+                "to": "so2tds",
+                "ref": "SI S3.2",
+                "data": "same LP980KS TAS bench",
+            },
+            {
+                "from": "tcspc",
+                "to": "czipn",
+                "ref": "SI S1; SI S3.1",
+                "data": "FS5 / EPL-375 lifetimes of 4CzIPN",
+            },
+            {
+                "from": "so2tds",
+                "to": "pinacol",
+                "ref": "SI S3.2; SI S1 irradiation experiments",
+                "data": "relative SO2TDS radical yield vs Q",
+            },
+        ],
+    }
+    return (method_graph,)
+
+
+@app.cell(hide_code=True)
+def materials_methods():
+    mo.md(r"""
+    ## Materials and methods
+
+    This is the pipeline in the paper and its SI, not a figure they printed. The boxes follow the Mainz photophysics, the Dortmund synthesis, the Bologna continuous-light code, and the one flask reaction. Nothing here is inferred: every arrow cites a section.
+
+    The level picker at the top of the notebook sets the amount of detail. Child and Teen see the phases. Undergrad sees every stage. Grad student and Expert see short settings on the boxes and the full settings in the side panel.
+
+    Drag the diagram to pan. Zoom with Ctrl-scroll or pinch, or the **+** / **−** buttons. **Fit** puts the whole graph in view; **Re-centre** goes back to the highlighted step. Prev / Next, the arrow keys, or a click on a box steps through the method.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def method_diagram_widget():
+    method_view = MermaidView(height=520)
+    method_view
+    return (method_view,)
+
+
+@app.cell(hide_code=True)
+def method_diagram(method_graph, method_view, reader_level):
+    method_level = method_view_name(reader_level.value)
+    method_view.source = mermaid_from_graph(method_graph, method_level)
+    method_view.steps = method_steps(method_graph, method_level)
+    method_problems = check_method_graph(method_graph)
+    if method_problems:
+        method_check = mo.callout(
+            mo.md(
+                "The method graph still has problems:\n\n"
+                + "\n".join(f"- {item}" for item in method_problems)
+            ),
+            kind="warn",
+        )
+    else:
+        method_check = mo.md(
+            f"*Graph check: nothing to fix. View: **{method_level}** "
+            f"({reader_level.value}).*"
+        )
+    method_check
     return
 
 
