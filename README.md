@@ -84,7 +84,7 @@ Specific adaptations are credited in each resource file's **Credits** section.
 - [marimo-team/skills](https://github.com/marimo-team/skills) (Apache-2.0): `implement-paper`'s reader-background step, which the prerequisite profile extends.
 - [Eric Ma's skills](https://github.com/ericmjl/skills) (MIT): `marimo` patterns and naming conventions.
 - [K-Dense claude-scientific-skills](https://github.com/K-Dense-AI/claude-scientific-skills) (MIT): the anthropomorphism rule.
-- Anderson & Krathwohl (2001): the revised Bloom's taxonomy behind the per-level checks.
+- Anderson & Krathwohl (2001): the revised Bloom's taxonomy behind the level-matched quiz.
 - **Worked-example papers:**
   - Vaswani et al. (2017);
   - McInnes, Healy & Melville (2018), arXiv:1802.03426;
