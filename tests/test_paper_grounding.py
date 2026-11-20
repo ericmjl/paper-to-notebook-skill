@@ -13,6 +13,7 @@ from validate_notebook import (  # noqa: E402
     has_paper_figure_images,
     markdown_texts,
     paper_grounding_warnings,
+    split_math_sub_warnings,
 )
 
 
@@ -91,3 +92,19 @@ def test_short_markdown_chrome_does_not_count_as_unanchored() -> None:
         'load_image_from_path("fig1.png")\n'
     )
     assert paper_grounding_warnings(source) == []
+
+
+def test_split_math_sub_warns_on_rho_closed_then_letter() -> None:
+    warnings = split_math_sub_warnings(r"there $\rho$ A = 2 and the rest")
+    assert warnings
+    assert "subscripted Greek" in warnings[0]
+
+
+def test_split_math_sub_warns_on_unicode_greek_then_math_letter() -> None:
+    warnings = split_math_sub_warnings("there ρ $A$ = 2")
+    assert warnings
+
+
+def test_split_math_sub_silent_on_intact_span_and_prose() -> None:
+    source = r"there $\rho_A = 2$ and $\sigma_A = 1/\ln 2$; $\mu$ and $\nu$."
+    assert split_math_sub_warnings(source) == []

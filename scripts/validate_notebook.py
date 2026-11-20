@@ -34,6 +34,9 @@ After a successful parse, also warn, without failing, when the notebook
 embeds no paper figure image (png/jpg/webp/svg/gif, ``mo.image``,
 ``load_image``, or a markdown image) and when more than half of the long
 ``mo.md`` strings cite no paper anchor (Fig./Figure/Eq./Table/Section/§).
+It also warns when a Greek TeX command is closed and then a subscript
+letter is written outside the span (``$\\rho$ A`` or a Unicode ρ followed
+by ``$A$``): write ``$\\rho_A$`` instead.
 
 Missing ``FigureAnnotatorWidget`` is a **failure** unless the component
 comment opts out of ``figure-walkthroughs``. An explicit opt-out warns
@@ -76,6 +79,16 @@ PAPER_IMAGE_RE = re.compile(
 )
 UNANCHORED_MARKDOWN_WARN_FRACTION = 0.5
 MIN_MARKDOWN_CHARS = 80
+_GREEK_TEX = (
+    "alpha|beta|gamma|delta|epsilon|varepsilon|zeta|eta|theta|vartheta|"
+    "iota|kappa|lambda|mu|nu|xi|pi|varpi|rho|varrho|sigma|varsigma|"
+    "tau|upsilon|phi|varphi|chi|psi|omega|Gamma|Delta|Theta|Lambda|"
+    "Xi|Pi|Sigma|Upsilon|Phi|Psi|Omega"
+)
+SPLIT_MATH_SUB_RE = re.compile(
+    rf"\$\\(?:{_GREEK_TEX})\$(?:\s+[A-Z]\b|_)"
+    r"|[αβγδεζηθικλμνξπρστυφχψωΓΔΘΛΞΠΣΦΨΩ]\s*\$[A-Za-z_]"
+)
 
 
 def _called(node: ast.expr) -> ast.expr:
@@ -353,6 +366,22 @@ def paper_grounding_warnings(source: str) -> list[str]:
     return warnings
 
 
+def split_math_sub_warnings(source: str) -> list[str]:
+    """Return warnings for Greek symbols split across a math-span boundary.
+
+    Catches ``$\\rho$ A`` / ``$\\rho$_A`` and a Unicode Greek letter followed
+    by a one-letter math span. Intact ``$\\rho_A$`` is silent.
+
+    :param source: Notebook source text.
+    """
+    if SPLIT_MATH_SUB_RE.search(source) is None:
+        return []
+    return [
+        "subscripted Greek split across a math span "
+        r"($\rho$ A or Unicode ρ + $A$); write $\rho_A$ as one span"
+    ]
+
+
 def parse_component_header(source: str) -> list[str] | None:
     """Return included component ids, or ``None`` if none are declared.
 
@@ -499,6 +528,12 @@ def main() -> int:
         for message in grounding_warnings:
             print(f"WARN: {message}")
 
+    math_span_warnings = split_math_sub_warnings(source)
+    if math_span_warnings:
+        print("[math]")
+        for message in math_span_warnings:
+            print(f"WARN: {message}")
+
     walkthrough_warnings, walkthrough_errors = check_figure_walkthroughs(source)
     if walkthrough_warnings or walkthrough_errors:
         print("[figure-walkthroughs]")
@@ -520,6 +555,9 @@ def main() -> int:
     if grounding_warnings:
         noun = "warning" if len(grounding_warnings) == 1 else "warnings"
         notes.append(f"{len(grounding_warnings)} paper-grounding {noun}")
+    if math_span_warnings:
+        noun = "warning" if len(math_span_warnings) == 1 else "warnings"
+        notes.append(f"{len(math_span_warnings)} math-span {noun}")
     if walkthrough_warnings:
         noun = "warning" if len(walkthrough_warnings) == 1 else "warnings"
         notes.append(f"{len(walkthrough_warnings)} figure-walkthrough {noun}")
