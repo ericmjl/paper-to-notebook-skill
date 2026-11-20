@@ -135,8 +135,20 @@ _CSS = """
 .el-body p { margin: 0.55rem 0; min-width: 0; }
 .el-body p:first-child { margin-top: 0; }
 .el-body p:last-child { margin-bottom: 0; }
-.el-body ul { margin: 0.4rem 0 0.55rem; padding-left: 1.25rem; }
-.el-body li { margin: 0.2rem 0; }
+.el-body ul {
+  margin: 0.4rem 0 0.55rem;
+  padding-left: 1.25rem;
+  list-style: disc outside;
+}
+.el-body ol {
+  margin: 0.4rem 0 0.55rem;
+  padding-left: 1.25rem;
+  list-style: decimal outside;
+}
+.el-body li {
+  margin: 0.2rem 0;
+  display: list-item;
+}
 .el-body, .el-fb { overflow-x: auto; }
 .el-math-scroll {
   display: block;
