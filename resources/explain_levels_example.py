@@ -111,9 +111,9 @@ def _():
                 "strongly linked pairs sit close and random pairs spread out.\n\n"
                 "**Toy numbers (ours).** Point A's four nearest points: B at 2 "
                 "units, C at 3, D and E at 4.\n\n"
-                "- A→B: **1** (B is closest). A→C: **0.5**. A→D and A→E: **0.25** each. Here each unit past B halves the strength.\n"
-                "- C's own list gives C→A: **0.4**.\n"
-                "- Pair A–C: 0.5 + 0.4 − 0.5 × 0.4 = **0.7**.\n"
+                "- A→B: **1** (B is closest). A→C: **0.5**. A→D and A→E: **0.25** each. Here each unit past B halves the strength.\n\n"
+                "- C's own list gives C→A: **0.4**.\n\n"
+                "- Pair A–C: 0.5 + 0.4 − 0.5 × 0.4 = **0.7**.\n\n"
                 "- In the embedding, the A–C pair is pulled together on about 70% of passes; a pair with strength 0.25, on about 25%."
             ),
             "check": {
@@ -143,11 +143,14 @@ $$C = \sum_{e} \mu(e)\log\frac{\mu(e)}{\nu(e)} + \big(1 - \mu(e)\big)\log\frac{1
 
 Starting from a *spectral embedding* (Alg. 4), SGD uses each edge with probability $\mu$ and then *negative sampling* (Alg. 5, Sec. 4.1). Here the crowd-map picture breaks. A paper map keeps every distance at one scale, but UMAP measures each point on its own scale, so it keeps who is near whom, not how far (Sec. 6).
 
-**What we simplified, and what's true:**
+**What we simplified, and what is true:**
 
 - *"Each unit past the closest halves the strength"* held only for toy point A: there $\rho_A = 2$ and $\sigma_A = 1/\ln 2 \approx 1.44$ make its weights $1, 0.5, 0.25, 0.25$, which sum to $\log_2 4 = 2$.
+
 - *"Pulled together in proportion to strength"* describes how often an edge is used. Where the dots end up is a local minimum of the total $C$.
+
 - *"Random pairs are pushed apart":* only $y_a$ moves, away from randomly drawn points.
+
 - *"A small flat map":* $d$ can be any dimension, not only 2 (Sec. 5.4.1).
 """,
             "check": {
@@ -168,11 +171,13 @@ Starting from a *spectral embedding* (Alg. 4), SGD uses each edge with probabili
         {
             "name": "Grad student",
             "text": r"""
-Each piece follows from the axioms listed in Sec. 3: the data are uniformly distributed on a manifold, the manifold is locally connected, and preserving its topology is the goal. Under uniformity, a ball holding the $k$ nearest neighbours of $X_i$ has roughly fixed volume, so Lemma 1 lets geodesic distance from $X_i$ be approximated by normalising by the distance to its $k$th neighbour (Sec. 2.1). Earlier we called $\sigma_i$ a binary-searched scale; more precisely, it is a smoothed version of that normaliser and defines the Riemannian metric local to $x_i$ (Sec. 3.1), with the $\log_2(k)$ target chosen “based on empirical experiments” (Sec. 4.1). Local connectivity gives $\rho_i$: every $x_i$ keeps an edge of weight 1 (Secs. 3.1, 5.4.2). Against t-SNE (App. C), $\sigma_i$ is calibrated much as perplexity is, but nothing is normalised into probability distributions, and the cost is cross-entropy rather than KL divergence. With no global normaliser the cost is a sum over edges, so SGD with negative sampling runs in $O(kN)$ (Sec. 4.2).
+Each piece follows from the axioms listed in Sec. 3: the data are uniformly distributed on a manifold, the manifold is locally connected, and preserving its topology is the goal. Under uniformity, a ball holding the $k$ nearest neighbours of $X_i$ has roughly fixed volume, so Lemma 1 lets geodesic distance from $X_i$ be approximated by normalising by the distance to its $k$th neighbour (Sec. 2.1). Earlier we called $\sigma_i$ a binary-searched scale; more precisely, it is a smoothed version of that normaliser and defines the Riemannian metric local to $x_i$ (Sec. 3.1), with the $\log_2(k)$ target chosen “based on empirical experiments” (Sec. 4.1).
+
+Local connectivity gives $\rho_i$: every $x_i$ keeps an edge of weight 1 (Secs. 3.1, 5.4.2). Against t-SNE (App. C), $\sigma_i$ is calibrated much as perplexity is, but nothing is normalised into probability distributions, and the cost is cross-entropy rather than KL divergence. With no global normaliser the cost is a sum over edges, so SGD with negative sampling runs in $O(kN)$ (Sec. 4.2).
 
 When assumptions fail: with no manifold structure, UMAP “can tend to find manifold structure within the noise of a dataset” (Sec. 6), and a small $n$ reads sampling noise as fine structure (Sec. 4.3). If density differences are signal, uniformity erases them by design (Sec. 6). Because it models local distance and topology, it does worse than MDS-like methods on metric-preservation measures (Sec. 6).
 
-**What we simplified, and what's true:** negative samples aren't exactly uniform. The formulation implies a vertex distribution $P(x_i)$, which the paper approximates as uniform for sufficiently large data sets (Sec. 4.1).
+**What we simplified, and what is true:** samples drawn as negatives are not exactly uniform. The formulation implies a vertex distribution $P(x_i)$, which the paper approximates as uniform for sufficiently large data sets (Sec. 4.1).
 """,
             "check": {
                 "question": (
