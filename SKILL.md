@@ -149,7 +149,7 @@ Tell the user:
 - The notebook ends with the five-question quiz, and its questions are about the paper's claims, findings and limits rather than its implementation detail.
 - Every ladder explains the same mechanism spine at every level; every ledger simplification is corrected at a later level; the analogy's limit is stated.
 - **Vocabulary onboarding:** for established, emergent, and interdisciplinary case studies, verify glossary coverage and—where required—disambiguation or terminology-in-flux sections per [`resources/field-maturity.md`](resources/field-maturity.md) §8.
-- **TODO:** assertion- or gold-question evals; multi-model runs (Chinese open-weight and Claude models were offered); LLM-as-judge only as a first filter that is more trustworthy on “this is bad” than on “this is good”; a human try-on-an-unfamiliar-paper pass; domain-expert review after an own-field smoke test.
+- **TODO:** assertion- or gold-question evals; multi-model runs (open-weight and frontier models from several providers were offered); LLM-as-judge only as a first filter that is more trustworthy on “this is bad” than on “this is good”; a human try-on-an-unfamiliar-paper pass; domain-expert review after an own-field smoke test.
 - **TODO:** a shared test-paper set that covers established, emergent, and interdisciplinary work, and subdomains, not just one field. A 2016 influenza paper was offered as one possible case; the list is not chosen.
 
 ## Explaining at multiple levels

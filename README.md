@@ -37,27 +37,41 @@ Style and patterns for marimo work come from Eric's skill collection, [github.co
 
 Start with the [eval setup instructions](evals/README.md#set-up-the-evals). The first run checks table accuracy and needs no API key. A separate local check covers widget behavior, and an optional model judge checks whether the paper supports the notebook's explanation.
 
-## Try it with an agent
+## Install the skill
 
-**TODO:** pin exact install paths for Cursor, Claude Code, and other hosts.
+This skill uses the open [Agent Skills](https://agentskills.io) format. Any agent that reads `SKILL.md` folders can use it.
 
-Placeholder workflow:
+**Easiest path:** the [skills CLI](https://github.com/vercel-labs/skills) (Node.js 22.20 or later). From a project:
 
-1. Clone this repo (or add it as a skill path).
-2. Point your agent at `SKILL.md` when you want a guided learning notebook for a paper.
-3. Provide the paper (PDF, URL, or arXiv id).
-4. Ask the agent to follow the skill and write the notebook to a path you choose.
-5. Validate and run the notebook:
+```bash
+npx skills add ericmjl/paper-to-notebook-skill
+```
 
-   ```bash
-   uv run scripts/validate_notebook.py path/to/notebook.py --run
-   ```
+That command installs the skill into the current project. Add `-g` to install it for every project on this machine. Add `-a codex -a cursor -a claude-code` to pick those agents instead of answering the interactive picker.
 
-6. Open the notebook:
+**By hand:** clone this repo into the agent's skills folder.
 
-   ```bash
-   uvx marimo edit --sandbox path/to/notebook.py
-   ```
+| Agent | Project | User (all projects) |
+| --- | --- | --- |
+| [Claude Code](https://code.claude.com/docs/en/skills) | `.claude/skills/paper-to-notebook-skill/` | `~/.claude/skills/paper-to-notebook-skill/` |
+| [Cursor](https://cursor.com/docs/skills) | `.agents/skills/paper-to-notebook-skill/` or `.cursor/skills/paper-to-notebook-skill/` | `~/.agents/skills/paper-to-notebook-skill/` or `~/.cursor/skills/paper-to-notebook-skill/` |
+| [Codex](https://learn.chatgpt.com/docs/build-skills) | `.agents/skills/paper-to-notebook-skill/` | `~/.agents/skills/paper-to-notebook-skill/` |
+
+Example:
+
+```bash
+git clone https://github.com/ericmjl/paper-to-notebook-skill ~/.agents/skills/paper-to-notebook-skill
+```
+
+**Claude desktop and claude.ai:** turn on Code execution and file creation under Settings > Capabilities. Zip the skill folder so that `SKILL.md` sits inside it (the archive's top level should be `paper-to-notebook-skill/`, not loose files). Then open Customize > Skills, click +, and choose Upload a skill.
+
+**Other agents:** put the folder wherever that agent looks for skills, or point the agent at `SKILL.md`.
+
+Once it is installed, give the agent a paper (PDF, URL, or arXiv id) and ask it to follow the skill. When the notebook is ready, open it with:
+
+```bash
+uvx marimo edit --sandbox path/to/notebook.py
+```
 
 ## Help wanted
 
