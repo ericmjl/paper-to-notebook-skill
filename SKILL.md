@@ -137,6 +137,83 @@ The validator reads that comment. A skipped component is not a failure, except f
 5. Show the paper's caption and figure number on every tour.
 6. Put every tour in one `mo.ui.tabs` inside `wigglystuff.FloatingPanel`.
 
+### Tools
+
+Four widgets. Copy the file next to the notebook, add its packages to the PEP 723 block, import it. Details live in the resource linked on each tool. Stick to the paper when you fill them.
+
+#### Assessment widgets (`PaperQuiz` + per-level checks)
+
+**For:** the five-question end-of-notebook quiz, and the explain/predict/apply/critique check under each ladder.
+
+**Files:** [`assets/paper_quiz.py`](assets/paper_quiz.py). Per-level checks ship with `ExplainLevels` (below). Copy `paper_quiz.py` next to the notebook. Add `anywidget` and `traitlets`.
+
+```python
+from paper_quiz import PaperQuiz
+
+quiz = mo.ui.anywidget(PaperQuiz(questions=[...], seed=0))
+quiz
+```
+
+**Parameters:** `questions` — five dicts with `question`, `answer`, `explain`, and exactly three `distractors`. `seed` — reproducible option order. `quiz.value["selected"]` / `["score"]` after the reader answers.
+
+**Read:** [`resources/final-quiz.md`](resources/final-quiz.md). Questions are only about this paper.
+
+#### Figure annotator (`FigureAnnotatorWidget`)
+
+**For:** a step-through of each main-text figure the paper printed, in one `mo.ui.tabs` inside `wigglystuff.FloatingPanel`.
+
+**File:** [`resources/figure_annotator_widget.py`](resources/figure_annotator_widget.py). Copy it next to the notebook. Add `anywidget`, `traitlets`, and `wigglystuff>=0.6.0`.
+
+```python
+from figure_annotator_widget import FigureAnnotatorWidget
+
+annotator = FigureAnnotatorWidget()
+annotator.load_image_from_path(Path("figures/fig1.webp"))
+annotator.caption = "Fig. 1. …"  # paper's caption
+annotator.annotations = [{"id": "…", "label": "…", "box": [l, t, w, h], "color": "#0d9488"}]
+annotator.tour_steps = [{"title": "…", "target_ids": ["…"], "html": "…"}]
+```
+
+**Parameters:** `load_image_from_path(path)`, `caption`, `annotations` (`id`, `label`, `box` as `[left%, top%, width%, height%]`, `color`, `description`), `tour_steps` (`title`, `target_ids`, `html` with `.fig-ref` badges). Display every tour as values of one `mo.ui.tabs`, wrap that tab box in `wigglystuff.FloatingPanel`.
+
+**Read:** [`resources/dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md). Build boxes with [`scripts/figure_annotation_helper.py`](scripts/figure_annotation_helper.py).
+
+#### Materials-and-methods flowchart (`MermaidView`)
+
+**For:** a pannable, zoomable ELK Mermaid drawing of **this paper's** pipeline, stepped with the reader's level.
+
+**File:** [`assets/mermaid_view.py`](assets/mermaid_view.py). Copy it next to the notebook. Add `anywidget` and `traitlets`.
+
+```python
+from mermaid_view import MermaidView
+
+MermaidView(
+    source="flowchart LR\n  a --> b",
+    steps=[{"node": "a", "title": "Start", "ref": "Section 2"}],
+)
+```
+
+**Parameters:** `source` (Mermaid, no `<br>`), `steps` (each `node`, `title`, optional `ref`, `what`, `params`, `incoming`), `step`, `theme` (default `forest`), `look` (default `handDrawn`), `height`. Not `mo.mermaid`.
+
+**Read:** [`resources/method_diagrams.md`](resources/method_diagrams.md).
+
+#### Explain at five levels (`ExplainLevels`)
+
+**For:** one core mechanism at five reader levels: a level picker, tabs that open on that level, and a per-level check with feedback.
+
+**File:** [`assets/explain_levels.py`](assets/explain_levels.py) — an anywidget, landing in a companion PR. Copy it next to the notebook. Add `anywidget` and `traitlets`.
+
+```python
+from explain_levels import ExplainLevels
+
+explainer = mo.ui.anywidget(ExplainLevels())
+explainer
+```
+
+**Parameters:** follow `ExplainLevels` in that file once it lands. Do not invent a second API.
+
+**Read:** [`resources/explanation-levels.md`](resources/explanation-levels.md). Until `assets/explain_levels.py` is in the tree, use the inline picker / tabs / `show_check` pattern in that file §9.
+
 ### 4. Generate the marimo notebook
 
 Start from an `assets/` template when one exists (**TODO:** add `assets/notebook_template.py`). Write a marimo notebook that can be opened with `uvx marimo edit --sandbox`.
@@ -266,7 +343,7 @@ Check this before handoff. If a box fails, fix it or report it as a gap.
 ## Folder reference
 
 - **`.agents/skills/`** — marimo skills installed from [ericmjl/skills](https://github.com/ericmjl/skills) (`marimo`, `marimo-notebook-patterns`, `awesome-marimo-notebook`), pinned in `skills-lock.json`; refresh with `npx skills update`.
-- **`assets/`** — templates and snippets to copy or fill in. Includes [`paper_quiz.py`](assets/paper_quiz.py), the widget for the final quiz when that component is included.
+- **`assets/`** — templates and snippets to copy or fill in. Includes [`paper_quiz.py`](assets/paper_quiz.py) (`PaperQuiz`), [`mermaid_view.py`](assets/mermaid_view.py) (`MermaidView`), and [`explain_levels.py`](assets/explain_levels.py) (`ExplainLevels`, companion PR). See [Tools](#tools).
 - **`resources/`** — material the agent should read (pedagogy, format-specific ingest notes, writing and eval guidance). Do not paste these wholesale into notebooks. Includes [`explanation-levels.md`](resources/explanation-levels.md) (prerequisite-defined explanation ladders, checks, and a worked example), [`field-maturity.md`](resources/field-maturity.md) (field-maturity rubric, vocabulary onboarding, and literature-sampling procedure), [`field-maturity-research-notes.md`](resources/field-maturity-research-notes.md) (auditable sampling for three case-study fields), [`dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md) (annotated walkthrough of every main-text figure, in one tab box inside a floating panel, when figure walkthroughs are included), [`method_diagrams.md`](resources/method_diagrams.md) (level-aware method diagrams), [`final-quiz.md`](resources/final-quiz.md) (what to ask in the end-of-notebook quiz), and [`examples/`](resources/examples/) (ladders for UMAP and influenza reassortment; field-maturity notebook mocks).
 - **`scripts/`** — helpers, run with `uv run`. `validate_notebook.py` checks syntax, runs `marimo check --strict`, warns when code is left visible or when two or more figure tours are not in one `mo.ui.tabs`, and smoke-runs the notebook with `--run`. If the notebook declares `# paper-to-notebook-skill-components: …`, it warns when an included component is missing and does not require skipped ones. Future: per-input-format ingest, metadata fetch, figure extraction.
 

@@ -4,7 +4,7 @@ Reference documents the agent should **read** while planning or building a noteb
 
 **Contents:**
 
-- [`explanation-levels.md`](explanation-levels.md): explaining one mechanism at five prerequisite-defined levels, with profiles, ledgers, level-matched checks, and tested marimo cells.
+- [`explanation-levels.md`](explanation-levels.md): explaining one mechanism at five prerequisite-defined levels, with profiles, ledgers, level-matched checks, and tested marimo cells. The matching widget is `ExplainLevels` in `assets/explain_levels.py` (companion PR); until that file lands, use the inline pattern in §9.
 - [`field-maturity.md`](field-maturity.md): classifying established vs. emergent vs. interdisciplinary fields; vocabulary onboarding components; runtime literature-sampling procedure.
 - [`field-maturity-research-notes.md`](field-maturity-research-notes.md): auditable API sampling for Bayesian/MCMC, LLM agents, and scRNA-seq integration.
 - [`examples/`](examples/): complete example ladders for real papers (UMAP; influenza reassortment); field-maturity notebook mocks (`field-maturity-*.md`).
