@@ -70,6 +70,10 @@ _CSS = """
   flex-direction: column;
   gap: 0.85rem;
   outline: none;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 .el-root:focus-visible {
   box-shadow: 0 0 0 2px rgba(70, 130, 220, 0.65);
@@ -123,13 +127,47 @@ _CSS = """
   border-radius: 10px;
   padding: 0.9rem 1.05rem;
   line-height: 1.5;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
-.el-body p { margin: 0.55rem 0; }
+.el-body p { margin: 0.55rem 0; min-width: 0; }
 .el-body p:first-child { margin-top: 0; }
 .el-body p:last-child { margin-bottom: 0; }
 .el-body ul { margin: 0.4rem 0 0.55rem; padding-left: 1.25rem; }
 .el-body li { margin: 0.2rem 0; }
-.el-body .katex-display { margin: 0.75rem 0; overflow-x: auto; overflow-y: hidden; }
+.el-body, .el-fb { overflow-x: auto; }
+.el-math-scroll {
+  display: block;
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+  text-align: center;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(128, 128, 128, 0.55) rgba(128, 128, 128, 0.14);
+  /* Scroll shadows: a fade on the overflowing edge, independent of native bars. */
+  background:
+    linear-gradient(Canvas, Canvas) left center / 1.4rem 100% local no-repeat,
+    linear-gradient(Canvas, Canvas) right center / 1.4rem 100% local no-repeat,
+    linear-gradient(to right, color-mix(in srgb, currentColor 28%, transparent), transparent) left center / 1rem 100% scroll no-repeat,
+    linear-gradient(to left, color-mix(in srgb, currentColor 28%, transparent), transparent) right center / 1rem 100% scroll no-repeat;
+}
+.el-math-scroll::-webkit-scrollbar { height: 8px; }
+.el-math-scroll::-webkit-scrollbar-track {
+  background: rgba(128, 128, 128, 0.14);
+  border-radius: 999px;
+}
+.el-math-scroll::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, 0.5);
+  border-radius: 999px;
+}
+.el-math-scroll .katex-display {
+  display: inline-block;
+  margin: 0.75rem 0;
+  text-align: left;
+  max-width: none;
+}
 .el-check { display: flex; flex-direction: column; gap: 0.65rem; }
 .el-check h3 { margin: 0; font-size: 0.95rem; }
 .el-q { margin: 0; font-weight: 600; line-height: 1.4; }
@@ -174,6 +212,9 @@ _CSS = """
   border-radius: 8px;
   line-height: 1.45;
   background: rgba(128, 128, 128, 0.1);
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 .el-fb.el-ok { background: rgba(40, 160, 90, 0.12); }
 .el-fb.el-no { background: rgba(210, 70, 70, 0.12); }
@@ -275,10 +316,13 @@ function renderMarkdown(raw) {
     const slot = slots[Number(i)];
     if (!slot) return "";
     try {
-      return katex.renderToString(slot.tex, {
+      const rendered = katex.renderToString(slot.tex, {
         displayMode: slot.display,
         throwOnError: false,
       });
+      return slot.display
+        ? `<span class="el-math-scroll">${rendered}</span>`
+        : rendered;
     } catch {
       return `<code>${escapeHtml(slot.tex)}</code>`;
     }

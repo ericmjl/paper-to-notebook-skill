@@ -274,3 +274,13 @@ def test_widget_has_inline_esm_and_css() -> None:
     assert isinstance(widget._css, str) and ".el-root" in widget._css
     assert "ArrowLeft" in widget._esm
     assert "save_changes" in widget._esm
+
+
+def test_css_scrolls_wide_display_math() -> None:
+    widget = ExplainLevels(levels=_five_levels()[:1], title="t")
+    assert "el-math-scroll" in widget._esm
+    assert ".el-math-scroll" in widget._css
+    assert "overflow-x: auto" in widget._css
+    assert "max-width: 100%" in widget._css
+    assert "min-width: 0" in widget._css
+    assert "scrollbar-width: thin" in widget._css
