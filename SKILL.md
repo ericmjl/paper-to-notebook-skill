@@ -117,7 +117,7 @@ Before writing cells for a **new** notebook, ask the user whether to include **a
 1. **Figure walkthroughs** — annotated tours of every main-text figure, in one `mo.ui.tabs` inside `wigglystuff.FloatingPanel` (`FigureAnnotatorWidget`; [`resources/dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md)). **Default on.** Omit only when the user explicitly opts out. If you cannot ask, include them.
 2. **Method diagrams** — a Materials-and-Methods flowchart of the paper's pipeline (`MermaidView`; [`resources/method_diagrams.md`](resources/method_diagrams.md)). The flowchart is pannable and zoomable (drag, Ctrl/pinch zoom, +/− and Fit buttons).
 3. **Final quiz** — five multiple-choice questions at the end of the notebook (`PaperQuiz`; [`resources/final-quiz.md`](resources/final-quiz.md)).
-4. **Explain at five levels** — level picker, ladder tabs, and per-level checks (`ExplainLevels` in [`assets/explain_levels.py`](assets/explain_levels.py); [`resources/explanation-levels.md`](resources/explanation-levels.md)). The widget lands in a companion PR; until it does, use the inline pattern in that resource §9.
+4. **Explain at five levels** — level picker, ladder tabs, and per-level checks (`ExplainLevels` in [`assets/explain_levels.py`](assets/explain_levels.py); [`resources/explanation-levels.md`](resources/explanation-levels.md)).
 
 Build only the components they choose. If you cannot ask, or they do not answer, include all four and say so at handoff.
 
@@ -202,18 +202,23 @@ MermaidView(
 
 **For:** one core mechanism at five reader levels: a level picker, tabs that open on that level, and a per-level check with feedback.
 
-**File:** [`assets/explain_levels.py`](assets/explain_levels.py) — an anywidget, landing in a companion PR. Copy it next to the notebook. Add `anywidget` and `traitlets`.
+**File:** [`assets/explain_levels.py`](assets/explain_levels.py). Copy it next to the notebook. Add `anywidget` and `traitlets`.
 
 ```python
 from explain_levels import ExplainLevels
 
-explainer = mo.ui.anywidget(ExplainLevels())
+explainer = mo.ui.anywidget(ExplainLevels(
+    title="…",
+    paper_ref="Sec. 3.1",
+    level=reader_level.value,
+    levels=[{"name": "Child", "text": "…", "check": {"question": "…", "options": ["…"], "correct": "…", "why": "…"}}, …],
+))
 explainer
 ```
 
-**Parameters:** follow `ExplainLevels` in that file once it lands. Do not invent a second API.
+**Parameters:** `title`, `paper_ref` (section, figure, equation, or algorithm of **this paper**), `level` (0-based index or name; the synced value is the canonical name), `levels` (each `name`, markdown `text`, optional `check` with `question`, `why`, and either `options` plus a `correct` option string, a numeric `correct` plus `tolerance`, or open `correct=None`). `explainer.value["level"]` after the reader changes rungs. One notebook-level picker can drive several ladders via `level=reader_level.value`.
 
-**Read:** [`resources/explanation-levels.md`](resources/explanation-levels.md). Until `assets/explain_levels.py` is in the tree, use the inline picker / tabs / `show_check` pattern in that file §9.
+**Read:** [`resources/explanation-levels.md`](resources/explanation-levels.md) (how to write the five levels) and [`resources/explain_levels.md`](resources/explain_levels.md) (trait schema and snippets).
 
 ### 4. Generate the marimo notebook
 
@@ -242,8 +247,8 @@ Other generation rules:
 - **Figures first:** the paper's own main-text figures (images extracted from the paper) appear in the notebook regardless of which components were chosen. If figure walkthroughs are skipped, still show each figure with its caption and number. Missing figure images are reported; never silently replace them with unrelated plots. A reproduced or simplified plot is extra, and only when the paper's data allow — it does not stand in for the printed figure. Default plotting library is **Plotly** (`plotly.graph_objects` / `plotly.express`). Put `plotly` in the PEP 723 block. Use Plotly annotations, shapes, and hover text for callouts on recreated figures. Do not start from matplotlib or Altair unless the user asks. **TODO:** how far to go with vision-based estimates or reader-written figure interpretations in v1.
 - Figure walkthroughs (when included): every main-text figure gets an annotated tour (`FigureAnnotatorWidget`), not a subset. Enumerate the figures first and report any figure whose image you could not obtain instead of skipping it. Put every tour in one `mo.ui.tabs`, one tab per figure, and wrap that tab box in `wigglystuff.FloatingPanel` (`wigglystuff>=0.6.0`) so the reader can drag it while scrolling. Recreated plots stay in Plotly; the widget tours the paper's printed figure. Read [`resources/dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md) (`FigureAnnotatorWidget` plus a coordinate-audit helper in `scripts/`).
 - Method diagrams (when included): draw the paper's pipeline as a hand-drawn ELK Mermaid flowchart whose detail follows the reader's level, and step through it. Default layout is top-down (`flowchart TD`). Prefer native Greek/Unicode symbols in diagram labels over ASCII spellings. The rendered view is pannable and zoomable (drag, Ctrl/pinch zoom, +/− and Fit buttons). Read [`resources/method_diagrams.md`](resources/method_diagrams.md) (`MermaidView` in `assets/`).
-- Explain at five levels (when included): core concepts (1–3 per notebook) get an explanation ladder via `ExplainLevels` ([Explaining at multiple levels](#explaining-at-multiple-levels); [Tools](#tools)). Until `assets/explain_levels.py` lands, follow [`resources/explanation-levels.md`](resources/explanation-levels.md) §9.
-- Informal checks: short questions, not graded assessment. Use the `show_check` pattern in `resources/explanation-levels.md` §9 (radio, a numeric answer with tolerance, or an open answer with a model answer).
+- Explain at five levels (when included): core concepts (1–3 per notebook) get an explanation ladder via `ExplainLevels` ([Explaining at multiple levels](#explaining-at-multiple-levels); [Tools](#tools)). Pass `paper_ref`. One `reader_level` picker can drive several ladders.
+- Informal checks: short questions, not graded assessment. Each `ExplainLevels` rung has a check (radio, a numeric answer with tolerance, or an open answer with a model answer). See [`resources/explanation-levels.md`](resources/explanation-levels.md) §5.
 - Domain mode from step 2: coding exercises and method reconstruction for algorithm-like papers; agent-written visualization/widget explainers for concept-like papers (for example, a mechanism in a cell).
 - Label anything that goes beyond the paper (“Our demo,” “Simplified assumption”).
 - Include paper metadata and citations.
@@ -314,9 +319,9 @@ Rules:
 7. **Grounded:** cite locations from the text you read in, and never guess. Mark gaps `[cite: …]` while drafting, and resolve them before shipping.
 8. **Numbers carry their conditions:** the table, cohort, feature set, or range goes in the same sentence. In testing on real papers, both misconceptions the ladders caused came from a number stripped of its condition.
 
-**In the notebook:** add one level picker near the top. Each ladder gets `mo.ui.tabs` that open on the reader's level, with that level's check underneath.
+**In the notebook:** add one level picker near the top. Each core concept is an `ExplainLevels` widget (`level=reader_level.value`, with `paper_ref`). The widget draws the rungs and the check.
 
-**Read before writing:** [`resources/explanation-levels.md`](resources/explanation-levels.md) has the profile and ledger templates, a worked example, tested marimo cells, and pitfalls. [`resources/examples/`](resources/examples/) has two more complete ladders, for a method paper (UMAP) and an analysis paper (influenza reassortment).
+**Read before writing:** [`resources/explanation-levels.md`](resources/explanation-levels.md) has the profile and ledger templates, a worked example, and pitfalls. [`resources/explain_levels.md`](resources/explain_levels.md) is the widget contract. [`resources/examples/`](resources/examples/) has two more complete ladders, for a method paper (UMAP) and an analysis paper (influenza reassortment).
 
 ## Final quiz
 
@@ -344,7 +349,7 @@ Check this before handoff. If a box fails, fix it or report it as a gap.
 ## Folder reference
 
 - **`.agents/skills/`** — marimo skills installed from [ericmjl/skills](https://github.com/ericmjl/skills) (`marimo`, `marimo-notebook-patterns`, `awesome-marimo-notebook`), pinned in `skills-lock.json`; refresh with `npx skills update`.
-- **`assets/`** — templates and snippets to copy or fill in. Includes [`paper_quiz.py`](assets/paper_quiz.py) (`PaperQuiz`), [`mermaid_view.py`](assets/mermaid_view.py) (`MermaidView`), and [`explain_levels.py`](assets/explain_levels.py) (`ExplainLevels`, companion PR). See [Tools](#tools).
+- **`assets/`** — templates and snippets to copy or fill in. Includes [`paper_quiz.py`](assets/paper_quiz.py) (`PaperQuiz`), [`mermaid_view.py`](assets/mermaid_view.py) (`MermaidView`), and [`explain_levels.py`](assets/explain_levels.py) (`ExplainLevels`). See [Tools](#tools).
 - **`resources/`** — material the agent should read (pedagogy, format-specific ingest notes, writing and eval guidance). Do not paste these wholesale into notebooks. Includes [`explanation-levels.md`](resources/explanation-levels.md) (prerequisite-defined explanation ladders, checks, and a worked example), [`field-maturity.md`](resources/field-maturity.md) (field-maturity rubric, vocabulary onboarding, and literature-sampling procedure), [`field-maturity-research-notes.md`](resources/field-maturity-research-notes.md) (auditable sampling for three case-study fields), [`dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md) (annotated walkthrough of every main-text figure, in one tab box inside a floating panel, when figure walkthroughs are included), [`method_diagrams.md`](resources/method_diagrams.md) (level-aware method diagrams), [`final-quiz.md`](resources/final-quiz.md) (what to ask in the end-of-notebook quiz), and [`examples/`](resources/examples/) (ladders for UMAP and influenza reassortment; field-maturity notebook mocks).
 - **`scripts/`** — helpers, run with `uv run`. `validate_notebook.py` checks syntax, runs `marimo check --strict`, warns when code is left visible or when two or more figure tours are not in one `mo.ui.tabs`, and smoke-runs the notebook with `--run`. If the notebook declares `# paper-to-notebook-skill-components: …`, it warns when an included component is missing (`FigureAnnotatorWidget`, `MermaidView`, `PaperQuiz`, `ExplainLevels`) and does not require skipped ones. Missing `FigureAnnotatorWidget` without an opt-out is a failure. Future: per-input-format ingest, metadata fetch, figure extraction.
 
