@@ -27,8 +27,13 @@ do not hold those names, are ignored.
 
 If the notebook declares ``# paper-to-notebook-skill-components:``, also
 warn when an included component is missing. Skipped components are not
-required. Notebooks without the comment skip those checks. Warnings never
-fail the run.
+required. Notebooks without the comment skip those checks.
+
+After a successful parse, also warn, without failing, when the notebook
+embeds no paper figure image (png/jpg/webp/svg/gif, ``mo.image``,
+``load_image``, or a markdown image) and when more than half of the long
+``mo.md`` strings cite no paper anchor (Fig./Figure/Eq./Table/Section/§).
+Warnings never fail the run.
 
 Usage:
     uv run scripts/validate_notebook.py path/to/notebook.py [--run]
@@ -38,6 +43,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -49,6 +55,22 @@ COMPONENT_MARKERS: dict[str, str] = {
     "method-diagrams": "MermaidView",
     "final-quiz": "PaperQuiz",
 }
+
+PAPER_ANCHOR_RE = re.compile(
+    r"(?:(?:Fig|Figure|Eq|Eqn|Equation|Table|Tab|Section|Sec)\.?\s*\d|§\s*\d)",
+    re.IGNORECASE,
+)
+PAPER_IMAGE_RE = re.compile(
+    r"""(?x)
+    \.(?:png|jpe?g|webp|svg|gif|tif{1,2})\b
+    | \bmo\.image\s*\(
+    | \bload_image(?:_from_path)?\s*\(
+    | !\[[^\]]*\]\([^)]+\)
+    """,
+    re.IGNORECASE,
+)
+UNANCHORED_MARKDOWN_WARN_FRACTION = 0.5
+MIN_MARKDOWN_CHARS = 80
 
 
 def _called(node: ast.expr) -> ast.expr:
@@ -251,6 +273,81 @@ def report_visible_code(blocks: list[tuple[int, str]]) -> None:
         print(f"  line {lineno}: {label}")
 
 
+def _string_from_ast(node: ast.AST) -> str | None:
+    """Return a string constant or the literal parts of an f-string.
+
+    :param node: AST node that may hold markdown text
+    :return: extracted text, or None when the node is not a string
+    """
+    if isinstance(node, ast.Constant) and isinstance(node.value, str):
+        return node.value
+    if isinstance(node, ast.JoinedStr):
+        parts: list[str] = []
+        for value in node.values:
+            if isinstance(value, ast.Constant) and isinstance(value.value, str):
+                parts.append(value.value)
+            else:
+                parts.append(" ")
+        return "".join(parts)
+    return None
+
+
+def markdown_texts(source: str) -> list[str]:
+    """Return the string arguments of every ``mo.md(...)`` call.
+
+    :param source: Notebook source text.
+    """
+    tree = ast.parse(source)
+    found: list[str] = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call) or not node.args:
+            continue
+        func = node.func
+        if not (isinstance(func, ast.Attribute) and func.attr == "md"):
+            continue
+        text = _string_from_ast(node.args[0])
+        if text is not None:
+            found.append(text)
+    return found
+
+
+def has_paper_figure_images(source: str) -> bool:
+    """Return whether the source embeds or points at a raster/vector image.
+
+    :param source: Notebook source text.
+    """
+    return PAPER_IMAGE_RE.search(source) is not None
+
+
+def paper_grounding_warnings(source: str) -> list[str]:
+    """Return warnings for missing paper figures or unanchored markdown.
+
+    Short ``mo.md`` strings (chrome, check prompts) are ignored. A notebook
+    with no long markdown cells is silent on the anchor scan.
+
+    :param source: Notebook source text.
+    """
+    warnings: list[str] = []
+    if not has_paper_figure_images(source):
+        warnings.append(
+            "no paper figure images embedded or referenced "
+            "(png/jpg/webp/svg/gif, mo.image, load_image, or markdown image)"
+        )
+    sections = [
+        text for text in markdown_texts(source) if len(text.strip()) >= MIN_MARKDOWN_CHARS
+    ]
+    if sections:
+        unanchored = sum(1 for text in sections if PAPER_ANCHOR_RE.search(text) is None)
+        fraction = unanchored / len(sections)
+        if fraction > UNANCHORED_MARKDOWN_WARN_FRACTION:
+            warnings.append(
+                f"{unanchored}/{len(sections)} markdown cells cite no paper anchor "
+                f"(Fig./Figure/Eq./Table/Section/§); fraction {fraction:.2f} "
+                f"> {UNANCHORED_MARKDOWN_WARN_FRACTION}"
+            )
+    return warnings
+
+
 def parse_component_header(source: str) -> list[str] | None:
     """Return included component ids, or ``None`` if none are declared.
 
@@ -353,6 +450,12 @@ def main() -> int:
         for message in component_warnings:
             print(f"WARN: {message}")
 
+    grounding_warnings = paper_grounding_warnings(source)
+    if grounding_warnings:
+        print("[paper]")
+        for message in grounding_warnings:
+            print(f"WARN: {message}")
+
     notes: list[str] = []
     if visible:
         noun = "warning" if len(visible) == 1 else "warnings"
@@ -363,6 +466,9 @@ def main() -> int:
     if component_warnings:
         noun = "warning" if len(component_warnings) == 1 else "warnings"
         notes.append(f"{len(component_warnings)} component {noun}")
+    if grounding_warnings:
+        noun = "warning" if len(grounding_warnings) == 1 else "warnings"
+        notes.append(f"{len(grounding_warnings)} paper-grounding {noun}")
     if notes:
         print(f"OK: {nb} ({', '.join(notes)}; not a failure)")
     else:
