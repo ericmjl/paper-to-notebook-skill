@@ -1,6 +1,6 @@
 # Final quiz
 
-When the **final quiz** is included, the generated notebook ends with **5 multiple-choice questions about the paper itself**, matched to the reader's explanation level. Read this before writing them. Skip this file when the user left the final quiz out.
+When the **final quiz** is included, the generated notebook ends with **5 multiple-choice questions about the paper itself**. If ExplainLevels is also included, match those questions to the reader's explanation level. If it is not, write one five-question set from the paper for a general reader, with no level picker. Read this before writing them. Skip this file when the user left the final quiz out.
 
 Quiz questions are only about this paper. Do not quiz on adjacent literature, extra examples, or the notebook's own demos or toy simulations.
 
@@ -22,7 +22,7 @@ Across the 5, aim to cover:
 
 ## Match the quiz to the reader's level
 
-Write **five questions for each of the five levels** in [`explanation-levels.md`](explanation-levels.md), 25 in all. The notebook shows the set for the reader's level.
+**When ExplainLevels is included.** Write **five questions for each of the five levels** in [`explanation-levels.md`](explanation-levels.md), 25 in all. The notebook shows the set for the reader's level.
 
 - **Same targets at every level.** Each set covers the five targets above, like the explanation ladder covers its five parts at every level.
 - **Answerable from that level alone.** Readers see only their own level, so the correct answer to each question comes from that level's ladder text. Explanations of why a distractor is wrong may cite anything in the paper.
@@ -42,6 +42,8 @@ Write **five questions for each of the five levels** in [`explanation-levels.md`
   The last column follows the revised Bloom's taxonomy: each level's questions need that kind of thinking, not just recall of the level's text.
 
 - **Only the paper.** The same grounding rules as the ladder apply: every answer and explanation comes from the paper, with a location, and any quoted passage passes `scripts/check_quotes.py` (it reads a quiz saved as JSON directly).
+
+**When ExplainLevels is not included.** Write **one** five-question set from the paper itself, for a general reader. There is no level picker and no `reader_level` dependency. Use the Undergrad row of the table above as the default voice, unless the user named an audience. The five targets, the option rules, and the paper-only grounding still apply. Do not write the other four levels, and do not add a picker just for the quiz.
 
 ## Rules for the options
 
@@ -74,7 +76,7 @@ It shuffles the options, marks the chosen answer right or wrong, shows the expla
 
 Hide both cells. The reader sees the heading and the quiz; the Python is not the teaching point.
 
-The cells assume `import marimo as mo` in `with app.setup(hide_code=True):` and the `reader_level` picker from [`explanation-levels.md`](explanation-levels.md) §9. Changing the level shows that level's set and clears the answers.
+The cells assume `import marimo as mo` in `with app.setup(hide_code=True):`. When ExplainLevels is included, they also use the `reader_level` picker from [`explanation-levels.md`](explanation-levels.md) §9; changing the level shows that level's set and clears the answers. When ExplainLevels is not included, the quiz cell takes only `PaperQuiz` and the single five-question list: no picker, and no `reader_level` parameter.
 
 ```python
 @app.cell(hide_code=True)
@@ -104,6 +106,37 @@ def _():
 @app.cell(hide_code=True)
 def _(PaperQuiz, QUIZ_BY_LEVEL, reader_level):
     quiz = mo.ui.anywidget(PaperQuiz(questions=QUIZ_BY_LEVEL[reader_level.value]))
+    mo.vstack([
+        mo.md("## Check yourself\n\nFive questions on the paper. Pick an answer to see why it is or isn't right."),
+        quiz,
+    ])
+    return
+```
+
+Without ExplainLevels, one five-question list and no picker:
+
+```python
+@app.cell(hide_code=True)
+def _():
+    QUIZ = [
+        {
+            "question": "...",
+            "answer": "...",
+            "explain": "Why this is right (Fig. N / Section N).",
+            "distractors": {
+                "Plausible wrong answer 1": "Misconception it targets, and why the paper does not support it.",
+                "Plausible wrong answer 2": "...",
+                "Plausible wrong answer 3": "...",
+            },
+        },
+        # 5 questions
+    ]
+    return (QUIZ,)
+
+
+@app.cell(hide_code=True)
+def _(PaperQuiz, QUIZ):
+    quiz = mo.ui.anywidget(PaperQuiz(questions=QUIZ))
     mo.vstack([
         mo.md("## Check yourself\n\nFive questions on the paper. Pick an answer to see why it is or isn't right."),
         quiz,
