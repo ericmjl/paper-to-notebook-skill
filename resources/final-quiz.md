@@ -4,6 +4,8 @@ Every generated notebook ends with **5 multiple-choice questions about the paper
 
 Do not quiz on the notebook's own demos or toy simulations.
 
+The quiz is an informal check like the rest of the notebook's checks, not formal assessment. It closes the notebook; the level-matched checks in [`explanation-levels.md`](explanation-levels.md) stay where they are, alongside each ladder.
+
 ## What to ask
 
 **Quiz the substance, not the machinery.** Questions should be about what the paper claims, what it found, why those findings follow, what they mean beyond the specific system, and what the paper says it cannot conclude. A reader who understood the paper should get them right; one who skimmed the abstract should not.
