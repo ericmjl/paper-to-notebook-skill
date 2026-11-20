@@ -99,6 +99,26 @@ def test_comparative_does_not_pad_a_noun_run() -> None:
     assert noun_stacks("more quencher, smaller radical signal") == []
 
 
+def test_comma_breaks_a_noun_run() -> None:
+    assert noun_stacks("The free-radical quantum yield, radicals per excited state") == []
+    assert noun_stacks(
+        "a model with a stated photon flux, path-length absorption coefficient"
+    ) == []
+
+
+def test_hyphenated_participle_is_not_a_noun_unit() -> None:
+    assert noun_stacks("Fast spin-allowed back electron transfer") == []
+    assert noun_stacks("Slow spin-forbidden back electron transfer") == []
+    assert noun_stacks("a solvent-caged radical pair") == []
+    assert noun_stacks("About 2.8% of singlet-born pairs escape") == []
+
+
+def test_scientific_adjective_plus_term_of_art_is_silent() -> None:
+    assert noun_stacks("the experimental free-radical quantum yields") == []
+    assert noun_stacks("As quencher concentration increases across the range") == []
+    assert noun_stacks("Panel C plots relative radical yield against quencher concentration") == []
+
+
 def test_inanimate_actor_from_skill_example() -> None:
     source = _md("The diagram assumes a sorted input.")
     assert "inanimate_actor" in _checks(source)
