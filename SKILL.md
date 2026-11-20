@@ -220,7 +220,7 @@ explainer = mo.ui.anywidget(ExplainLevels(
 explainer
 ```
 
-**Parameters:** `title`, `paper_ref` (section, figure, equation, or algorithm of **this paper**), `summary` (the one-line summary), `tabs` (default `True`; generated notebooks pass `False`), `level` (0-based index or name; the synced value is the canonical name), `levels` (each `name`, markdown `text`, optional `check`, which generated notebooks leave out since the final quiz is matched to the level). `explainer.value["level"]` after the reader changes rungs. One notebook-level picker can drive several ladders via `level=reader_level.value`. Write each subscripted or decorated symbol as a single math span (`$\rho_A$`, not `$\rho$ A` or a Unicode ρ followed by math A).
+**Parameters:** `title`, `paper_ref` (section, figure, equation, or algorithm of **this paper**), `summary` (the one-line summary), `tabs` (default `True`; generated notebooks pass `False`), `level` (0-based index or name; the synced value is the canonical name), `levels` (each `name`, markdown `text`, optional `check`, which generated notebooks leave out since the final quiz is matched to the level). `explainer.value["level"]` after the reader changes rungs. One notebook-level picker drives the ladder and every other section via `level=reader_level.value`. Write each subscripted or decorated symbol as a single math span (`$\rho_A$`, not `$\rho$ A` or a Unicode ρ followed by math A).
 
 **Read:** [`resources/explanation-levels.md`](resources/explanation-levels.md) (how to write the five levels) and [`resources/explain_levels.md`](resources/explain_levels.md) (trait schema and snippets).
 
