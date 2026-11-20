@@ -1,6 +1,6 @@
 # Method diagrams
 
-Draw **what the paper did** (its method or analysis pipeline) as a hand-drawn Mermaid flowchart laid out with ELK, and let the reader step through it. The diagram is pannable and zoomable (drag, Ctrl/pinch zoom, +/− and Fit buttons). Detail follows the reader's explanation level. Use it when the **method diagrams** component is included and the contribution is a sequence of steps: an architecture, an algorithm, a processing pipeline, or an analysis with branches. Stick to the paper: this diagram is the paper's pipeline, not a survey of the field. Every stage cites a `ref` from the paper.
+Draw **what the paper did** (its method or analysis pipeline) as a hand-drawn Mermaid flowchart laid out with ELK, and let the reader step through it. Default layout is top-down (`flowchart TD`) so a long pipeline stays readable at Fit. The diagram is pannable and zoomable (drag, Ctrl/pinch zoom, +/− and Fit buttons). Detail follows the reader's explanation level. Use it when the **method diagrams** component is included and the contribution is a sequence of steps: an architecture, an algorithm, a processing pipeline, or an analysis with branches. Stick to the paper: this diagram is the paper's pipeline, not a survey of the field. Every stage cites a `ref` from the paper.
 
 - **Used from:** [`SKILL.md`](../SKILL.md), when method diagrams are included. Build the stage graph in Step 2; draw it in Step 4.
 - **Follows:** [`explanation-levels.md`](explanation-levels.md). Same mechanism at every level, accurate at every level, numbers keep their conditions. Drive the view from its `reader_level` picker (§9); don't add a second one.
@@ -26,7 +26,7 @@ Extract the method as data before drawing, so every level's view comes from one 
 
 | Level | View | Draws | Side panel |
 |---|---|---|---|
-| Child, Teen | Overview | One box per group, left to right; only labels of `kind` edges | Label, `ref`, `what` |
+| Child, Teen | Overview | One box per group, top to bottom; only labels of `kind` edges | Label, `ref`, `what` |
 | Undergrad | Detail | Every stage, boxed by group | Same |
 | Grad student, Expert | Spec | Detail plus short `params` and edge `data` (rule 6) | Plus full `params` and each incoming edge's `data` |
 
@@ -38,7 +38,7 @@ Extract the method as data before drawing, so every level's view comes from one 
 Transformer encoder, Overview:
 
 ```text
-flowchart LR
+flowchart TD
   g0["Text to vectors"] --> g1["Words share information (8 heads in parallel)"] --> g2["Each word refined"]
   g2 -->|"repeat: N = 6 layers"| g1
 ```

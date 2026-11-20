@@ -2,8 +2,9 @@
 
 Unlike `mo.mermaid` (dagre layout, shrunk to the column), it draws at natural size in a
 viewport you can zoom (buttons, Ctrl-scroll, pinch) and drag, lets Mermaid wrap labels
-(pass source without `<br>`), and moves group titles clear of arrows. Loads Mermaid
-from jsdelivr, so it needs internet the first time.
+(pass source without `<br>`), and moves group titles clear of arrows. Default diagrams
+are top-down (`flowchart TD`); the viewport auto-sizes to the diagram's aspect ratio
+up to `height`. Loads Mermaid from jsdelivr, so it needs internet the first time.
 
 Pass `steps` to step through the diagram: Prev / Next, arrow keys, or click a node.
 Each step highlights its node and incoming arrows, centres them, and shows its text in
@@ -13,7 +14,7 @@ a side panel; only the highlight moves, the diagram is not redrawn. A step is a 
 current index, set by the widget.
 
     from mermaid_view import MermaidView
-    MermaidView(source="flowchart LR\\n  a --> b", steps=[{"node": "a", "title": "Start"}])
+    MermaidView(source="flowchart TD\\n  a --> b", steps=[{"node": "a", "title": "Start"}])
 """
 
 import anywidget
@@ -97,7 +98,7 @@ function render({ model, el }) {
       background: transparent; color: inherit; cursor: pointer; }
     .mv-bar button:disabled { opacity: 0.4; cursor: default; }
     .mv-title { flex: 1; text-align: center; font-weight: 600; }
-    .mv-main { display: flex; flex-wrap: wrap; gap: 12px; }
+    .mv-main { display: flex; flex-wrap: wrap; gap: 12px; align-items: stretch; }
     .mv-port { position: relative; overflow: hidden; flex: 3 1 420px; border: 1px solid #ccc;
       border-radius: 8px; cursor: grab; touch-action: none; outline: none; }
     .mv-port:focus-visible { box-shadow: 0 0 0 2px ${HIGHLIGHT}; }
@@ -237,8 +238,12 @@ function render({ model, el }) {
       origin = { x: vb.x, y: vb.y };
       svg.setAttribute("width", size.w);
       svg.setAttribute("height", size.h);
-      const fitWidth = Math.min(1, (port.clientWidth || size.w) / size.w);
-      port.style.height = `${Math.min(model.get("height"), size.h * fitWidth + 16)}px`;
+      // Size the viewport to the diagram's aspect ratio so Fit keeps labels
+      // readable on a top-down pipeline, then cap at `height`.
+      const availW = port.clientWidth || size.w;
+      const widthScale = Math.min(1, availW / size.w);
+      const minH = 280, maxH = model.get("height");
+      port.style.height = `${Math.round(Math.min(maxH, Math.max(minH, size.h * widthScale + 16)))}px`;
       clearGroupTitles(svg);
       // Measure nodes and arrows once, in diagram units, before any zoom is applied.
       const toSvg = svg.getScreenCTM().inverse();
@@ -334,4 +339,4 @@ class MermaidView(anywidget.AnyWidget):
     look = traitlets.Unicode("handDrawn").tag(sync=True)  # or "classic"
     font_size = traitlets.Int(16).tag(sync=True)
     wrap_width = traitlets.Int(220).tag(sync=True)
-    height = traitlets.Int(520).tag(sync=True)  # most the viewport grows to, in px
+    height = traitlets.Int(960).tag(sync=True)  # max viewport height, px; port auto-sizes to the diagram
