@@ -2,11 +2,25 @@
 
 Guide an agent to turn any static figure from a scientific paper (reaction schemes, multi-panel diagrams, chemical structures, or data plots with kinetic traces and insets) into an interactive, step-by-step guided tour using `FigureAnnotatorWidget` inside a [marimo](https://marimo.io) notebook.
 
+## Every main-text figure
+
+The notebook includes one `FigureAnnotatorWidget` walkthrough for **every main-text figure**, not a subset of the striking ones. A multi-panel figure is one figure: one tour that walks its panels, as the example notebook does for Figure 1. Supplementary figures are out of scope unless the user asks for them.
+
+A reproduced or simplified plot does not stand in for this tour. The tour is of the figure the paper printed.
+
+The runnable example tours Figure 1 and Figure 2 of one paper so the widget pattern is visible. A paper notebook still tours every main-text figure.
+
+Enumerate the figures before writing any annotation cell:
+
+1. List every main-text figure from the paper's own structure, in reading order. For a PMC article, read the `<fig>` elements in the eutils XML and take each `<label>` (`Fig. 1`, `Fig. 2`, …). For LaTeX, use the `figure` environments and their captions. For PDF or HTML, use the numbered figures in the main text. Write the list down: label, caption, and image path.
+2. Obtain an image for each label. When an image cannot be fetched or cropped out, **report that label** — a short note in the notebook where the tour would have been, and the same label in the handoff. Do not drop it from the list and continue.
+3. Build a walkthrough for every figure that has an image, using the steps below.
+
 ---
 
 ## Dependencies & Related Resources
 
-- **Used from**: [`SKILL.md`](../SKILL.md) — read this during **Step 4 (Generate the marimo notebook)** whenever a key figure needs an interactive walkthrough.
+- **Used from**: [`SKILL.md`](../SKILL.md) — read this during **Step 2** (enumerate every main-text figure) and **Step 4** (one walkthrough per figure).
 - **Widget Module**: [`resources/figure_annotator_widget.py`](figure_annotator_widget.py) — Reusable `FigureAnnotatorWidget` (`anywidget.AnyWidget`) implementation.
 - **Runnable Example Notebook**: [`resources/figure_annotator_example.py`](figure_annotator_example.py) — Self-contained Marimo notebook demonstrating full multi-panel diagram (Figure 1, Panels A–C) and data plot + inset (Figure 2) tours.
 - **CLI Helper Script**: [`scripts/figure_annotation_helper.py`](../scripts/figure_annotation_helper.py) — Run via `uv run` for 100×100 percentage grid overlays, ink/color-channel isolation, and visual centering audit contact sheets.

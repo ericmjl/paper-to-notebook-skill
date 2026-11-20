@@ -61,7 +61,7 @@ Extract at least:
 - Prerequisite profile: what a reader at each level knows, doesn't know, and must be taught (see [Explaining at multiple levels](#explaining-at-multiple-levels)).
 - Key concepts and **terms the paper uses but does not define** (core metadata or field terms). Example raised in design discussion: a paper about heart attacks that never explains “myocardial infarction.”
 - Key equations, numbered as in the paper, with variables.
-- Key figures: what each encodes, how it is labeled, and whether underlying data appear to be available.
+- Every main-text figure, enumerated before any notebook cells are written. For a PMC paper, take each `<fig>` `<label>` from the eutils XML. Record the label, what the figure encodes, whether underlying data appear to be available, and the image path — or that no image could be obtained. Do not drop a figure from this list. Supplementary figures only when the user asks. Walkthroughs: [`resources/dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md).
 - Risk points for generation: heavy LaTeX or math, Greek-letter figure labels, other non-ASCII text.
 - Obvious gaps in methods or reporting. Do not invent missing experimental results.
 
@@ -115,8 +115,8 @@ Other generation rules:
 
 - Hide code on nearly every cell: `@app.cell(hide_code=True)`, and the same flag on `@app.function` and `app.setup`. Readers see prose, figures, widgets, and outputs. Showing the code is the exception, and only for a cell whose code is itself the teaching point (a short snippet the reader is meant to read, if the notebook has one). When you leave a cell visible, say so in that cell's prose. Cell templates in `resources/` set `hide_code=True`.
 - Equations: LaTeX in `mo.md`; widgets on parameters when that builds intuition.
-- Figures: reproduce or simplify when data allow; link back to the paper's figure number. If data are not available, say so — do not invent plots. **TODO:** how far to go with vision-based estimates or reader-written figure interpretations in v1.
-- Figure walkthroughs: when a key figure needs a guided, step-by-step tour, read [`resources/dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md) (`FigureAnnotatorWidget` plus a coordinate-audit helper in `scripts/`).
+- Figures: reproduce or simplify when data allow; link back to the paper's figure number. If data are not available, say so — do not invent plots. A reproduced plot does not replace the annotated walkthrough of the paper's own figure. **TODO:** how far to go with vision-based estimates or reader-written figure interpretations in v1.
+- Figure walkthroughs: every main-text figure gets an annotated tour (`FigureAnnotatorWidget`), not a subset. Enumerate the figures first and report any figure whose image you could not obtain instead of skipping it. Read [`resources/dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md).
 - Method diagrams: draw the paper's pipeline as a hand-drawn ELK Mermaid flowchart whose detail follows the reader's level, and step through it. Read [`resources/method_diagrams.md`](resources/method_diagrams.md) (`MermaidView` in `assets/`).
 - Core concepts (1–3 per notebook) get an explanation ladder ([Explaining at multiple levels](#explaining-at-multiple-levels)).
 - Informal checks: short questions, not graded assessment. Use the `show_check` pattern in `resources/explanation-levels.md` §9 (radio, a numeric answer with tolerance, or an open answer with a model answer).
@@ -138,7 +138,7 @@ Tell the user:
 
 - Path to the notebook and the command to open it (`uvx marimo edit --sandbox …`).
 - Assumed audience and what was simplified.
-- TODOs and known gaps (including missing data or undefined terms).
+- TODOs and known gaps (including missing data, main-text figures whose images could not be obtained, or undefined terms).
 - Paper reference (title, authors, year, link).
 
 **Planned validation beyond “it runs” (not all required for a first sketch):**
@@ -200,7 +200,7 @@ Quiz the substance, not the machinery: the paper's claims, what it found, why th
 
 - **`.agents/skills/`** — marimo skills installed from [ericmjl/skills](https://github.com/ericmjl/skills) (`marimo`, `marimo-notebook-patterns`, `awesome-marimo-notebook`), pinned in `skills-lock.json`; refresh with `npx skills update`.
 - **`assets/`** — templates and snippets to copy or fill in. Includes [`paper_quiz.py`](assets/paper_quiz.py), the widget for the required final quiz.
-- **`resources/`** — material the agent should read (pedagogy, format-specific ingest notes, writing and eval guidance). Do not paste these wholesale into notebooks. Includes [`explanation-levels.md`](resources/explanation-levels.md) (prerequisite-defined explanation ladders, checks, and a worked example), [`field-maturity.md`](resources/field-maturity.md) (field-maturity rubric, vocabulary onboarding, and literature-sampling procedure), [`field-maturity-research-notes.md`](resources/field-maturity-research-notes.md) (auditable sampling for three case-study fields), [`dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md) (interactive figure walkthroughs), [`method_diagrams.md`](resources/method_diagrams.md) (level-aware method diagrams), [`final-quiz.md`](resources/final-quiz.md) (what to ask in the end-of-notebook quiz), and [`examples/`](resources/examples/) (ladders for UMAP and influenza reassortment; field-maturity notebook mocks).
+- **`resources/`** — material the agent should read (pedagogy, format-specific ingest notes, writing and eval guidance). Do not paste these wholesale into notebooks. Includes [`explanation-levels.md`](resources/explanation-levels.md) (prerequisite-defined explanation ladders, checks, and a worked example), [`field-maturity.md`](resources/field-maturity.md) (field-maturity rubric, vocabulary onboarding, and literature-sampling procedure), [`field-maturity-research-notes.md`](resources/field-maturity-research-notes.md) (auditable sampling for three case-study fields), [`dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md) (annotated walkthrough of every main-text figure), [`method_diagrams.md`](resources/method_diagrams.md) (level-aware method diagrams), [`final-quiz.md`](resources/final-quiz.md) (what to ask in the end-of-notebook quiz), and [`examples/`](resources/examples/) (ladders for UMAP and influenza reassortment; field-maturity notebook mocks).
 - **`scripts/`** — helpers, run with `uv run`. `validate_notebook.py` checks syntax, runs `marimo check --strict`, warns when code is left visible, and smoke-runs the notebook with `--run`. Future: per-input-format ingest, metadata fetch, figure extraction.
 
 ## Open decisions
