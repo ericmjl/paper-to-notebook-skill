@@ -207,10 +207,12 @@ From *Attention Is All You Need* (Vaswani et al., 2017).
 
 This section covers what is specific to ladders. For general cell conventions (PEP 723 metadata, naming, `marimo check`), follow marimo-team's [`marimo-notebook`](https://github.com/marimo-team/skills/tree/main/skills/marimo-notebook) skill, and Eric Ma's [`marimo`](https://github.com/ericmjl/skills/tree/main/skills/marimo) skill where installed. Following Eric's preference, the examples use descriptive names rather than `_`-prefixed ones.
 
+**Hide the code.** Every cell below is `@app.cell(hide_code=True)`. The reader sees the level picker, the tabs, and the check. Leave a cell's code visible only when that code is itself the teaching point, and say so in the prose beside it.
+
 **One level picker near the top.** Its default comes from the reader's mapped level.
 
 ```python
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     LEVELS = ["Child", "Teen", "Undergrad", "Grad student", "Expert"]
     reader_level = mo.ui.dropdown(
@@ -225,7 +227,7 @@ def _(mo):
 **A check helper, defined once.** It shows the check for whichever tab is open, and gives feedback once the reader answers.
 
 ```python
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     def show_check(tabs, checks, answers):
         """Show the check for the open tab of a ladder, with feedback once answered.
@@ -260,7 +262,7 @@ def _(mo):
 **Per ladder: tabs, checks, and the check display.** The tabs open on the reader's level, and the check below follows whichever tab is open. Checks live in their own cell, so answering one never resets the tabs.
 
 ```python
-@app.cell
+@app.cell(hide_code=True)
 def _(mo, reader_level):
     attention_tabs = mo.ui.tabs(
         {
@@ -281,7 +283,7 @@ def _(mo, reader_level):
     return (attention_tabs,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     attention_checks = mo.ui.dictionary({
         "Child": mo.ui.radio(
@@ -315,7 +317,7 @@ def _(mo):
     return attention_answers, attention_checks
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(attention_answers, attention_checks, attention_tabs, show_check):
     show_check(attention_tabs, attention_checks, attention_answers)
     return

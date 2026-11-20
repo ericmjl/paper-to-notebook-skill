@@ -24,10 +24,12 @@ vocabulary_onboarding_plan:
 
 ## Notebook mock (marimo cells)
 
+Cells hide their code. The reader sees the vocabulary, not the Python.
+
 ### Cell: Field vocabulary (established)
 
 ```python
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(
         r"""
@@ -44,7 +46,7 @@ def _(mo):
 ### Cell: Glossary accordion
 
 ```python
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     glossary = mo.accordion(
         {
@@ -68,7 +70,7 @@ def _(mo):
 ### Cell: Optional note (contemporary shorthand)
 
 ```python
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.callout(
         mo.md(
@@ -87,7 +89,7 @@ def _(mo):
 ### Cell: Check
 
 ```python
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.ui.radio(
         options=[
