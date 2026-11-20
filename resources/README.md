@@ -14,6 +14,7 @@ Reference documents the agent should **read** while planning or building a noteb
 - [`figure_annotator_example.py`](figure_annotator_example.py): standalone runnable Marimo notebook demonstrating `FigureAnnotatorWidget` across all panels of Figure 1 (Panels A–C) and Figure 2 (Transient Absorption & Inset Quantum Yield) from an open-access TADF photocatalysis paper (PMC13643228).
 - [`method_diagrams.md`](method_diagrams.md): drawing the paper's method as a hand-drawn ELK Mermaid flowchart whose detail follows the reader's explanation level: stage-graph data, one view per level, readability rules, and a visual check.
 - [`final-quiz.md`](final-quiz.md): what to ask in the end-of-notebook quiz when that component is included, and how to use the `PaperQuiz` widget in `assets/`.
+- [`tangle_latex_example.py`](tangle_latex_example.py): standalone runnable marimo notebook demonstrating `TangleLatex` (wigglystuff) on the Gaussian density: draggable μ and σ, live Plotly curve, `hide_code=True`. Open with `uvx marimo edit --sandbox resources/tangle_latex_example.py`.
 
 Marimo widget patterns and pitfalls live in the installed skill [`.agents/skills/marimo-notebook-patterns/`](../.agents/skills/marimo-notebook-patterns/SKILL.md), not here.
 
@@ -21,6 +22,6 @@ Marimo widget patterns and pitfalls live in the installed skill [`.agents/skills
 
 - Pedagogy notes: pacing, prerequisites, check-for-understanding patterns.
 - **TODO:** `learning-path-template.md` for Phase 2 planning.
-- Notes on pairing with the hackathon *Visual LaTeX* idea for equation visualization.
+- Notes on pairing with the hackathon *Visual LaTeX* idea for equation visualization. In-notebook, key equations use `TangleLatex` (see [`tangle_latex_example.py`](tangle_latex_example.py)).
 
 Add short, focused markdown files here as collaborators contribute them.
