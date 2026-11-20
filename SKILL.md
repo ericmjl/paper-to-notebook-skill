@@ -146,7 +146,7 @@ Five widgets. For the four that live in this repo, copy the file next to the not
 
 #### Assessment widget (`PaperQuiz`)
 
-**For:** the end-of-notebook quiz: five questions at each reader level, shown for the reader's level.
+**For:** the end-of-notebook quiz. When ExplainLevels is included: five questions at each reader level, shown for the reader's level. When it is not: one five-question set from the paper for a general reader, with no level picker.
 
 **Files:** [`assets/paper_quiz.py`](assets/paper_quiz.py). Copy `paper_quiz.py` next to the notebook. Add `anywidget` and `traitlets`.
 
@@ -396,11 +396,11 @@ Rules:
 
 ## Final quiz
 
-When the final quiz is included, the notebook ends with **five multiple-choice questions about the paper itself**, written for the reader's explanation level, rendered by the `PaperQuiz` anywidget in [`assets/paper_quiz.py`](assets/paper_quiz.py). It shuffles the options, marks the answer right or wrong, shows an explanation for whichever option the reader picked, and keeps a score. Skip this section when the user left the final quiz out.
+When the final quiz is included, the notebook ends with **five multiple-choice questions about the paper itself**, rendered by the `PaperQuiz` anywidget in [`assets/paper_quiz.py`](assets/paper_quiz.py). When ExplainLevels is also included, write five questions per reading level and show the set for the reader's level. When it is not, write one five-question set from the paper for a general reader, with no level picker. It shuffles the options, marks the answer right or wrong, shows an explanation for whichever option the reader picked, and keeps a score. Skip this section when the user left the final quiz out.
 
 Quiz the substance, not the machinery: the paper's claims, what it found, why those findings follow, and what it says it cannot conclude. Ask about a method only when the reader needs it to read a result correctly. These are informal checks like the rest, not formal assessment.
 
-**Read before writing:** [`resources/final-quiz.md`](resources/final-quiz.md) has what to ask, how to match the questions to each level, how to build distractors that target real misconceptions, and the cells to add.
+**Read before writing:** [`resources/final-quiz.md`](resources/final-quiz.md) has what to ask, how to match the questions to each level when explanations are included, how to write one set for a general reader when they are not, how to build distractors that target real misconceptions, and the cells to add.
 
 ## What a good notebook looks like
 
