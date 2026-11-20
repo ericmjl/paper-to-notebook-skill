@@ -2,7 +2,7 @@
 
 Reference for the **Explaining at multiple levels** section of [`SKILL.md`](../SKILL.md). Read it before writing explanation ladders.
 
-An **explanation ladder** explains one core mechanism at five levels. Each level is written for a reader with specific prerequisites and adds precision to the same mechanism. The model is WIRED's [5 Levels](https://www.wired.com/video/series/5-levels/) series: one expert explains one idea to five listeners of rising expertise, and each explanation is complete and correct for its listener.
+An **explanation ladder** explains one core mechanism at five levels. Each level is written for a reader with specific prerequisites and adds precision to the same mechanism. The model is WIRED's [5 Levels](https://www.wired.com/video/series/5-levels/) series: one expert explains one idea to five listeners of rising expertise, and each explanation is complete and correct for its listener. Stick to the paper: ladders explain **this paper's** mechanism, not the field. Levels 4–5 add the paper's assumptions, limits, and claimed novelty — not a tour of adjacent areas or the subfield literature.
 
 This guide refines Step 1 of marimo-team's [`implement-paper`](https://github.com/marimo-team/skills/tree/main/skills/implement-paper) skill ("gauge what the user already knows… skip basics they're familiar with, explain prerequisites they're not") into a repeatable procedure.
 
@@ -339,6 +339,7 @@ def _(attention_answers, attention_checks, attention_tabs, show_check):
 - **Numbers without conditions.** "6.6 days" invites the wrong reading; "6.6 days (external cohort, raw features)" doesn't.
 - **Condescension.** Level 1 is simple, not cute.
 - **Invented context.** Claims about prior work or novelty come from the paper and what it cites. Label your own perspective ("Our take: …").
+- **A tour of the field.** Levels 4–5 still explain this paper's mechanism. One-line pointers to a work the paper itself depends on are enough; do not survey adjacent areas.
 
 ---
 

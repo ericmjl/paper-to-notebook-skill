@@ -2,7 +2,7 @@
 
 When the **final quiz** is included, the generated notebook ends with **5 multiple-choice questions about the paper itself**. Read this before writing them. Skip this file when the user left the final quiz out.
 
-Do not quiz on the notebook's own demos or toy simulations.
+Quiz questions are only about this paper. Do not quiz on adjacent literature, extra examples, or the notebook's own demos or toy simulations.
 
 The quiz is an informal check like the rest of the notebook's checks, not formal assessment. It closes the notebook; the level-matched checks in [`explanation-levels.md`](explanation-levels.md) stay where they are, alongside each ladder.
 
