@@ -9,10 +9,13 @@ SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 
 from validate_notebook import (  # noqa: E402
+    banner_warnings,
     check_components,
     check_figure_walkthroughs,
     explanation_warnings,
     parse_component_header,
+    quiz_length_warnings,
+    quiz_sets,
     quotes_from_notebook,
 )
 
@@ -207,3 +210,95 @@ questions = [{
 '''
     warnings = explanation_warnings(source)
     assert any("no quotes found" in item for item in warnings)
+
+
+def _quiz_question(answer: str, distractors: list[str], as_list: bool = False) -> str:
+    if as_list:
+        options = "[" + ", ".join(f'"{item}"' for item in distractors) + "]"
+    else:
+        options = "{"
+        options += ", ".join(f'"{item}": "why it is wrong"' for item in distractors)
+        options += "}"
+    return (
+        "{\n"
+        '        "question": "What does the paper claim?",\n'
+        f'        "answer": "{answer}",\n'
+        '        "explain": "Section 2 of the paper.",\n'
+        f'        "distractors": {options},\n'
+        "    }"
+    )
+
+
+def _quiz_source(longest_correct: int, total: int = 5, as_list: bool = False) -> str:
+    long_answer = "the correct answer with several extra clarifying words"
+    short_answer = "short"
+    long_distractors = [
+        "a much longer wrong option that keeps going on",
+        "another fairly long wrong option here",
+        "tiny",
+    ]
+    short_distractors = ["short", "shorter", "tiny"]
+    questions = []
+    for index in range(total):
+        if index < longest_correct:
+            questions.append(_quiz_question(long_answer, short_distractors, as_list))
+        else:
+            questions.append(_quiz_question(short_answer, long_distractors, as_list))
+    return "QUIZ = [\n" + ",\n".join(questions) + ",\n]\n"
+
+
+def test_quiz_sets_finds_one_set_of_questions() -> None:
+    sets = quiz_sets(_quiz_source(0))
+    assert len(sets) == 1
+    lineno, questions = sets[0]
+    assert len(questions) == 5
+    assert lineno == 1
+    answer, distractors = questions[0]
+    assert answer == "short"
+    assert len(distractors) == 3
+
+
+def test_quiz_length_warns_when_answer_always_longest() -> None:
+    warnings = quiz_length_warnings(_quiz_source(5))
+    assert len(warnings) == 1
+    assert "line 1" in warnings[0]
+    assert "longest" in warnings[0]
+
+
+def test_quiz_length_silent_when_answer_varies() -> None:
+    assert quiz_length_warnings(_quiz_source(2)) == []
+    assert quiz_length_warnings(_quiz_source(0)) == []
+
+
+def test_quiz_length_warns_one_bad_set_in_by_level_dict() -> None:
+    bad_list = _quiz_source(5).split("=", 1)[1].strip()
+    good_list = _quiz_source(0).split("=", 1)[1].strip()
+    source = f"QUIZ_BY_LEVEL = {{'Child': {bad_list}, 'Teen': {good_list}}}\n"
+    warnings = quiz_length_warnings(source)
+    assert len(warnings) == 1
+
+
+def test_quiz_length_ignores_sets_below_minimum_size() -> None:
+    assert quiz_length_warnings(_quiz_source(2, total=2)) == []
+
+
+def test_quiz_length_handles_list_distractors() -> None:
+    warnings = quiz_length_warnings(_quiz_source(5, as_list=True))
+    assert len(warnings) == 1
+    assert quiz_length_warnings(_quiz_source(0, as_list=True)) == []
+
+
+def test_banner_warns_when_marker_missing() -> None:
+    source = f"{HEADER} final-quiz\nPaperQuiz\n"
+    warnings = banner_warnings(source)
+    assert len(warnings) == 1
+    assert "data-p2n-banner" in warnings[0]
+
+
+def test_banner_skips_notebooks_without_components_comment() -> None:
+    assert banner_warnings("mo.md('hello')\n") == []
+
+
+def test_banner_silent_when_marker_present() -> None:
+    source = 'mo.Html("<div data-p2n-banner=\'1\'>Title</div>")\n'
+    assert banner_warnings(source) == []

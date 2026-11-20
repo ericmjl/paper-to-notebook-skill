@@ -57,6 +57,8 @@ Across the 5, aim to cover:
   - treating a well-explained exception as a contradiction.
 
   Avoid joke answers or options that are wrong on their face.
+- **Length must not give away the answer.** If the correct option is reliably the longest, a reader scores full marks by always picking the longest line. That happened in a real run: every correct answer was the longest option in its question, and picking "the longest" blindly scored 5/5. Vary the shape instead. In most questions the correct option is short — one clause, one number, one name. Give distractors the same density: full clauses that use the paper's terms, not fragments. Plausibility applies to wording as well as content.
+- **Count the characters before you ship.** For each question, compare the character counts of the answer and its three distractors. Across the 5 questions, the correct answer should be the longest in at most 2, and never in all 5. If a draft fails the count, trim the answer or flesh out the distractors. Change only how much each option says; keep every option's content as it is. `scripts/validate_notebook.py` warns when a quiz set fails this outright (the correct option is the longest in every question). The worked example in [`examples/quiz-umap.json`](examples/quiz-umap.json) sits at 2 of 5 in every level set; use it as the reference shape.
 - Every option gets a short explanation: for the answer, why it is right with a pointer to the paper section or figure; for each distractor, the misconception it reflects and why the paper does not support it.
 - Correct-answer positions vary across the 5 questions. The widget handles this: write the answer separately from the distractors and it places them.
 

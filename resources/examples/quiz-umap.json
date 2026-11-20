@@ -26,7 +26,7 @@
       "explain": "Right. Close things stay close, so things that are alike end up near each other on the map (§3, §6).",
       "distractors": {
         "Because each side of the map means something, like big or small.": "The sides of the map do not mean anything special. Only how near things are to each other matters (§6).",
-        "Because it puts the things on the map in a random order.": "Where things go is not random. It depends on which things are close to which (§3).",
+        "Because it puts the things on the map down in a random order, one after another.": "Where things go is not random. It depends on which things are close to which (§3).",
         "Because it keeps every gap between things exactly the same size.": "It mostly cares about keeping near things near. Another older way is better at keeping every gap the same (§6)."
       }
     },
@@ -42,10 +42,10 @@
     },
     {
       "question": "Its maps looked about as good as the best older way. Does that mean its maps are always better?",
-      "answer": "No. About as good is not the same as better; it was in speed that it beat the older way.",
+      "answer": "No. About as good is not better; it was in speed that it beat the older way.",
       "explain": "Right. Its maps were about as good as the best older way, and it was faster. That does not make its maps better every time (Abstract, §5.1, §5.4).",
       "distractors": {
-        "Yes, because a faster way always makes better maps.": "Being fast and making good maps are two different things. It was faster, but its maps were only about as good (Abstract).",
+        "Yes, because a way that runs faster always draws better maps than a slower way does.": "Being fast and making good maps are two different things. It was faster, but its maps were only about as good (Abstract).",
         "Yes, its maps were better on every collection tried.": "On one collection of clothing pictures, the older way did a bit better at keeping close things together (§5.2, Table 2).",
         "No, its maps were much worse; it was only faster.": "This goes too far the other way. Its maps were about as good as the best older way (Abstract, §5.1)."
       }
@@ -78,7 +78,7 @@
       "explain": "Right. UMAP links each point to its nearest neighbours, then places the dots so linked points stay close together (§3).",
       "distractors": {
         "It sorts the images by their correct labels first.": "UMAP does not use labels to place dots. Labels were only used afterwards, to score how good the pictures were (§5.2).",
-        "It keeps a few of the 784 numbers for each image and throws the rest away.": "It does not pick out some of the original numbers. Its new numbers come from which points are close to which, and do not stand for any original number (§6).",
+        "It keeps only a few of the 784 numbers in each image and throws all the rest of them away before it begins.": "It does not pick out some of the original numbers. Its new numbers come from which points are close to which, and do not stand for any original number (§6).",
         "It keeps every distance between every pair of points exactly as before.": "UMAP mainly cares about nearby points. Keeping every distance is the aim of a different kind of method, which does it better than UMAP (§6)."
       }
     },
@@ -116,12 +116,12 @@
     },
     {
       "question": "On COIL-20 (1,440 images of 20 rotated objects) at K=160, the kNN-classifier accuracy was 0.803 for UMAP against 0.616 for LargeVis, the next best. Here a kNN classifier labels each point by its K nearest points in the layout. What does that result show?",
-      "answer": "At that large K, the labels of nearby points in UMAP's layout predicted each point's own label better, so more of the neighbourhood structure survived.",
+      "answer": "At that large K, nearby points in UMAP's layout predicted each point's label better, so more of the neighbourhood structure survived.",
       "explain": "Right. kNN-classifier accuracy measures how well the layout keeps local structure (§5.2), and at K=160 on COIL-20 UMAP scored 0.803 against 0.616 for LargeVis (Table 1).",
       "distractors": {
         "UMAP's layout reproduced 80.3% of the original pairwise distances.": "This mixes up the measure. 0.803 is a classification accuracy from neighbours' labels, not a share of distances kept (§5.2).",
         "UMAP was about 19% more accurate than LargeVis.": "The gap is an absolute difference of 0.187 in accuracy, not a relative 19% increase (Table 1).",
-        "UMAP's layout keeps the arrangement of far-apart groups better than LargeVis.": "kNN accuracy measures “how well the embedding has preserved the important local structure of the dataset” (§5.2). The field lacks “clear objective measures, or even definitions, of global structure preservation” (§7)."
+        "UMAP's layout keeps the arrangement of far-apart groups better than LargeVis, so the kNN classifier must have scored it higher everywhere.": "kNN accuracy measures “how well the embedding has preserved the important local structure of the dataset” (§5.2). The field lacks “clear objective measures, or even definitions, of global structure preservation” (§7)."
       }
     },
     {
@@ -131,7 +131,7 @@
       "distractors": {
         "The weights from each point sum to 1, like a probability distribution.": "σ_i is set so the weights sum to log₂ k, not 1 (§3.1, §4.1), and UMAP does not carry out t-SNE's further normalisation (App. C).",
         "The graph becomes symmetric.": "Symmetry comes from a separate step, the merge B = A + Aᵀ − A∘Aᵀ (§3.1).",
-        "The nearest neighbour gets weight 0, so only farther points are linked.": "This reverses it. max(0, ρ_i − ρ_i) = 0 gives weight exp(0) = 1, the largest possible (§3.1)."
+        "The nearest neighbour gets weight 0, so only the points farther away are linked by edges.": "This reverses it. max(0, ρ_i − ρ_i) = 0 gives weight exp(0) = 1, the largest possible (§3.1)."
       }
     },
     {
@@ -150,7 +150,7 @@
       "explain": "Right. “The dimensions of the UMAP embedding space have no specific meaning” (§6), so position along an axis does not point to any input feature.",
       "distractors": {
         "Yes: the horizontal axis is the direction of greatest variance in the input.": "That is true of principal component analysis, not UMAP (§6).",
-        "Yes: the cross-entropy keeps far groups apart, so the axis measures the feature that differs most.": "UMAP works from distances between observations, not the input features, so “it does not have an equivalent of factor loadings” (§6).",
+        "Yes: the cross-entropy that shapes the layout keeps far-apart groups separated, so each axis measures the input feature that differs most between them.": "UMAP works from distances between observations, not the input features, so “it does not have an equivalent of factor loadings” (§6).",
         "Yes, but only in a two-dimensional layout; in higher dimensions the axes lose their meaning.": "The lack of meaning holds for UMAP's embedding space in general, not only above two dimensions (§6)."
       }
     }
@@ -182,7 +182,7 @@
       "explain": "Right. Without global normalisation, UMAP avoids the quad-trees and oct-trees t-SNE uses; “Such space trees scale exponentially in dimension, resulting in t-SNE’s relatively poor scaling with respect to embedding dimension” (§5.4.1).",
       "distractors": {
         "Negative sampling reduces the number of embedding dimensions it optimises.": "Negative sampling approximates the repulsive term by sampling non-edges (§4.1); it does not change the embedding dimension.",
-        "Spectral initialisation starts points near the optimum, so few SGD epochs are needed in high dimensions.": "The initialisation is a starting point for SGD (§4.1); §5.4.1 attributes the scaling to the absence of global normalisation and space trees.",
+        "Spectral initialisation starts the optimisation near the optimum, so only a few SGD epochs are needed even in high dimensions.": "The initialisation is a starting point for SGD (§4.1); §5.4.1 attributes the scaling to the absence of global normalisation and space trees.",
         "It uses fewer nearest neighbours as the embedding dimension grows.": "Nothing ties k to the embedding dimension; the stated reason is the missing normalisation and space trees (§5.4.1)."
       }
     },
@@ -220,12 +220,12 @@
     },
     {
       "question": "Where did UMAP exceed the strongest baseline in kNN-classifier accuracy?",
-      "answer": "At large k on COIL-20 (0.803 vs 0.616 for LargeVis at k=160) and Shuttle (0.957 vs 0.895 for Laplacian eigenmaps at k=3200).",
+      "answer": "At large k on COIL-20 (0.803 vs 0.616 for LargeVis, k=160) and Shuttle (0.957 vs 0.895 for Laplacian eigenmaps, k=3200).",
       "explain": "Right. Those are the large-k rows where UMAP clearly leads, each against the best other method in that row (Tables 1–2, §5.2).",
       "distractors": {
         "At small k (10 to 40) on COIL-20 and PenDigits, by clear margins.": "At those k UMAP performs “at least as well as t-SNE and LargeVis (given the confidence bounds on the accuracy)”, not clearly better (§5.2).",
         "On Fashion-MNIST for k from 100 to 800.": "This reverses the direction: UMAP “notably underperforms on the Fashion-MNIST dataset” there (§5.2, Table 2).",
-        "On Shuttle at k=3200, with t-SNE as the strongest baseline.": "The strongest baseline there was Laplacian eigenmaps at 0.895; t-SNE scored 0.828 (Table 2)."
+        "On Shuttle at k=3200 only, and even there with t-SNE rather than Laplacian eigenmaps reported as the strongest baseline.": "The strongest baseline there was Laplacian eigenmaps at 0.895; t-SNE scored 0.828 (Table 2)."
       }
     },
     {
@@ -250,12 +250,12 @@
     },
     {
       "question": "How firmly does the evidence support UMAP's better global-structure preservation?",
-      "answer": "Weakly: the gain is arguable, partly due to the spectral initialisation, and global structure preservation still lacks objective definitions.",
+      "answer": "Weakly: the gain is arguable, partly due to spectral initialisation, and global-structure preservation still lacks objective definitions.",
       "explain": "Right. The claim is “arguably” made (Abstract); the gain is partly the Laplacian-eigenmaps initialisation (§6); and the field lacks “clear objective measures, or even definitions, of global structure preservation” (§7).",
       "distractors": {
         "Firmly, since large-k kNN accuracy is an objective measure of global structure.": "kNN accuracy measures “the important local structure of the dataset” (§5.2), and §7 names the missing objective measures as an open problem.",
         "Firmly, since the advantage survives giving t-SNE the same initialisation.": "The reverse is reported: “t-SNE, with similar initialization, can perform equivalently to UMAP in a particular measure of global structure preservation” (§6).",
-        "It is refuted: with the same initialisation, t-SNE preserves global structure better than UMAP.": "The cited result is equivalence on one measure, not superiority, and the cross-entropy objective is also named “a significant contributor” (§6)."
+        "It is refuted outright: with the same spectral initialisation, t-SNE is reported to preserve global structure better than UMAP does on that measure.": "The cited result is equivalence on one measure, not superiority, and the cross-entropy objective is also named “a significant contributor” (§6)."
       }
     }
   ]
