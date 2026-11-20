@@ -32,7 +32,7 @@ Extract the method as data before drawing, so every level's view comes from one 
 
 - Dash inferred stages and edges.
 - Write group titles and `kind` labels in plain words: they are all Child and Teen readers see.
-- Generate the Mermaid source with one function of (graph, view). Don't add `<br>` breaks; Mermaid wraps labels.
+- Generate the Mermaid source with one function of (graph, view). Don't add `<br>` breaks; Mermaid wraps labels. Prefer native Greek and Unicode symbols in node, edge, and step labels (Φᵣ,ₜₒₜ, ηce,S) over ASCII spellings (Phi_r,tot, eta_ce,S).
 - Build `MermaidView`'s `steps` from the graph, one per stage: the node to highlight (its group in Overview), the arrows into it, and the side-panel text. The widget steps through them (Prev / Next, arrow keys, clicking a node), highlights the node and its incoming arrows, and pans to them without redrawing. Create the widget in its own cell that re-runs only when the paper changes, and set `source` and `steps` from the cell that reads the level, so changing level keeps the step.
 
 Transformer encoder, Overview:
