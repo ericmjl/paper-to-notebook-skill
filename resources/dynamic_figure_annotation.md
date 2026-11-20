@@ -26,6 +26,24 @@ A figure whose image could not be obtained still gets a tab. The tab body is the
 
 The runnable example already uses this box for the two figures it tours.
 
+Wrap that one tab box in `wigglystuff.FloatingPanel` (wigglystuff 0.6.0 and later; declare `wigglystuff>=0.6.0`). The class is a marimo display helper, not an anywidget: pass the tab box as `child`, and display the panel as the last expression of the cell.
+
+```python
+wigglystuff.FloatingPanel(
+    mo.ui.tabs(
+        {
+            "Figure 1. States, cage, catalyst, quenchers": fig1_annotator,
+            "Figure 2. 450 nm traces and the yield inset": fig2_annotator,
+        }
+    ),
+    title="Figures 1–2",
+    corner="bottom-right",
+    width=880,
+)
+```
+
+`corner` is `top-left`, `top-right`, `bottom-left`, or `bottom-right`. `width` is the panel width in pixels. `title` is the caption on the drag header. The reader drags that header to move the panel, and the header's minimize control collapses it. Do not invent a second panel, and do not paste a static image in place of the live tabs.
+
 ---
 
 ## Dependencies & Related Resources
@@ -163,12 +181,17 @@ def _(FigureAnnotatorWidget, Path):
 
 
 @app.cell(hide_code=True)
-def _(fig1_annotator, fig2_annotator, mo):
-    mo.ui.tabs(
-        {
-            "Figure 1. States, cage, catalyst, quenchers": fig1_annotator,
-            "Figure 2. 450 nm traces and the yield inset": fig2_annotator,
-        }
+def _(fig1_annotator, fig2_annotator, mo, wigglystuff):
+    wigglystuff.FloatingPanel(
+        mo.ui.tabs(
+            {
+                "Figure 1. States, cage, catalyst, quenchers": fig1_annotator,
+                "Figure 2. 450 nm traces and the yield inset": fig2_annotator,
+            }
+        ),
+        title="Figures 1–2",
+        corner="bottom-right",
+        width=880,
     )
 ```
 
