@@ -10,7 +10,7 @@ The quiz is an informal check, not formal assessment. It closes the notebook.
 
 **Quiz the substance, not the machinery.** Questions should be about what the paper claims, what it found, why those findings follow, what they mean beyond the specific system, and what the paper says it cannot conclude. A reader who understood the paper should get them right; one who skimmed the abstract should not.
 
-Ask about a method **only when understanding it is needed to understand what the result means** — for example, when a result is a comparison against a baseline and the reader would misread the number without knowing that. Do not ask about implementation detail: software names and versions, parameter values, thresholds, database download dates, sample sizes, or the order of processing steps. If the answer is a fact a reader could copy from the Methods section without understanding the paper, cut the question.
+Ask about a method **only when understanding it is needed to understand what the result means** — for example, when a result is a comparison against a baseline and the reader would misread the number without knowing that. Do not ask about implementation detail: software names and versions, parameter values, thresholds, database download dates, sample sizes, or the order of processing steps. If the answer is a fact a reader could copy from the Methods section without understanding the paper, cut the question. All the answers should be plausible from the scope of the paper. The longest answer should not always be the correct one. Check that a student cannot blindly guess the longest answer and it is always correct.
 
 Across the 5, aim to cover:
 
