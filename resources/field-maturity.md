@@ -2,7 +2,7 @@
 
 Reference for **Phase 2 (Extract)** and **Phase 3–4 (Plan / Generate)** in [`SKILL.md`](../SKILL.md). Read this when the paper sits in a field whose vocabulary may be **settled**, **in flux**, or **overloaded across disciplines**.
 
-**Goal:** onboard the reader onto **contemporary dominant vocabulary** for that field while **never silently renaming** the paper's own terms.
+**Goal:** onboard the reader onto **contemporary dominant vocabulary** for that field while **never silently renaming** the paper's own terms. Stick to the paper: this sample is only for classifying vocabulary; do not turn it into notebook content.
 
 ---
 
@@ -154,6 +154,7 @@ Run during **Extract** when network is available. **Time budget: ≤ 90 seconds,
 - No full bibliometric study.
 - No mental arithmetic on large counts—use script or tallies in scratch.
 - Do not fabricate citations or counts (see audit trail in [research notes](field-maturity-research-notes.md)).
+- Do not turn the literature sample into notebook content. It is only for classifying vocabulary (see SKILL.md, Stick to the paper). When in doubt, cut.
 
 ---
 

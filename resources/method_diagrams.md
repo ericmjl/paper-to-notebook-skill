@@ -1,6 +1,6 @@
 # Method diagrams
 
-Draw **what the paper did** (its method or analysis pipeline) as a hand-drawn Mermaid flowchart laid out with ELK, and let the reader step through it. Detail follows the reader's explanation level. Use it when the **method diagrams** component is included and the contribution is a sequence of steps: an architecture, an algorithm, a processing pipeline, or an analysis with branches.
+Draw **what the paper did** (its method or analysis pipeline) as a hand-drawn Mermaid flowchart laid out with ELK, and let the reader step through it. Detail follows the reader's explanation level. Use it when the **method diagrams** component is included and the contribution is a sequence of steps: an architecture, an algorithm, a processing pipeline, or an analysis with branches. Stick to the paper: this diagram is the paper's pipeline, not a survey of the field. Every stage cites a `ref` from the paper.
 
 - **Used from:** [`SKILL.md`](../SKILL.md), when method diagrams are included. Build the stage graph in Step 2; draw it in Step 4.
 - **Follows:** [`explanation-levels.md`](explanation-levels.md). Same mechanism at every level, accurate at every level, numbers keep their conditions. Drive the view from its `reader_level` picker (§9); don't add a second one.
