@@ -1,10 +1,10 @@
 # Method diagrams
 
-Draw **what the paper did** (its method or analysis pipeline) as a hand-drawn Mermaid flowchart laid out with ELK, and let the reader step through it. Detail follows the reader's explanation level. Use it when the **method diagrams** component is included and the contribution is a sequence of steps: an architecture, an algorithm, a processing pipeline, or an analysis with branches. Stick to the paper: this diagram is the paper's pipeline, not a survey of the field. Every stage cites a `ref` from the paper.
+Draw **what the paper did** (its method or analysis pipeline) as a hand-drawn Mermaid flowchart laid out with ELK, and let the reader step through it. The diagram is pannable and zoomable (drag, Ctrl/pinch zoom, +/− and Fit buttons). Detail follows the reader's explanation level. Use it when the **method diagrams** component is included and the contribution is a sequence of steps: an architecture, an algorithm, a processing pipeline, or an analysis with branches. Stick to the paper: this diagram is the paper's pipeline, not a survey of the field. Every stage cites a `ref` from the paper.
 
 - **Used from:** [`SKILL.md`](../SKILL.md), when method diagrams are included. Build the stage graph in Step 2; draw it in Step 4.
 - **Follows:** [`explanation-levels.md`](explanation-levels.md). Same mechanism at every level, accurate at every level, numbers keep their conditions. Drive the view from its `reader_level` picker (§9); don't add a second one.
-- **Renders with:** [`assets/mermaid_view.py`](../assets/mermaid_view.py) (`MermaidView`). Copy it next to the notebook, add `anywidget` and `traitlets` to the PEP 723 dependencies, and import it in the cell that imports `marimo`. Not `mo.mermaid`: its default layout overlaps group boxes and routes arrows through labels.
+- **Renders with:** [`assets/mermaid_view.py`](../assets/mermaid_view.py) (`MermaidView`). Copy it next to the notebook, add `anywidget` and `traitlets` to the PEP 723 dependencies, and import it in the cell that imports `marimo`. The viewport is pannable and zoomable: drag to pan, Ctrl-scroll or pinch to zoom, and use the +/− and Fit buttons. Not `mo.mermaid`: its default layout overlaps group boxes and routes arrows through labels.
 - **Versus [`dynamic_figure_annotation.md`](dynamic_figure_annotation.md):** that one annotates every main-text figure the paper printed. This one draws the method ourselves, when the paper has no figure of the pipeline or the reader needs a level-aware view. A notebook can use both.
 
 ## 1. Stage graph
