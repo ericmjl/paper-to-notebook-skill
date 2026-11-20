@@ -154,6 +154,18 @@ def test_extracts_mo_md() -> None:
     assert any("Fig. 2" in span.text for span in spans)
 
 
+def test_extracts_explain_levels_summary() -> None:
+    source = '''
+ExplainLevels(
+    summary="UMAP was competitive with t-SNE on visual quality and kNN accuracy.",
+    levels=[{"name": "Child", "text": "Close things stay close."}],
+)
+'''
+    spans = extract_prose_spans(source)
+    texts = [span.text for span in spans]
+    assert "UMAP was competitive with t-SNE on visual quality and kNN accuracy." in texts
+
+
 def test_extracts_explain_levels_text() -> None:
     source = '''
 levels = [{
