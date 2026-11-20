@@ -24,6 +24,14 @@
       "skillPath": "skills/marimo-notebook-patterns/SKILL.md",
       "computedHash": "7ba1747f080045d392981dd220832c6fd02daa26d9689248fc1972e3b80e5284",
       "installMode": "copy"
+    },
+    "processing-friendly-prose": {
+      "source": "ericmjl/skills",
+      "commit": "322c8090ba4fb627f4d4225f314a5448ed872bda",
+      "sourceType": "github",
+      "skillPath": "skills/processing-friendly-prose/SKILL.md",
+      "computedHash": "41b865419cec4232d8bc3288907136411d8cbda9b46881c0df53ff10db4bbf77",
+      "installMode": "copy"
     }
   }
 }
