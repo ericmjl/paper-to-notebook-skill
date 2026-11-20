@@ -79,6 +79,7 @@ _CSS = """
   box-shadow: 0 0 0 2px rgba(70, 130, 220, 0.65);
   border-radius: 10px;
 }
+.el-root .katex { white-space: nowrap; }
 .el-head {
   display: flex;
   flex-wrap: wrap;
@@ -227,14 +228,18 @@ import katex from "https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.mjs";
 
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-function ensureKatexCss() {
+function ensureKatexCss(el) {
   const id = "explain-levels-katex-css";
-  if (document.getElementById(id)) return;
+  const root = el.getRootNode();
+  const inShadow = root instanceof ShadowRoot;
+  const scope = inShadow ? root : document;
+  if (scope.querySelector(`#${id}`)) return;
   const link = document.createElement("link");
   link.id = id;
   link.rel = "stylesheet";
   link.href = "https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css";
-  document.head.appendChild(link);
+  if (inShadow) root.appendChild(link);
+  else document.head.appendChild(link);
 }
 
 function make(tag, cls, parent, text) {
@@ -342,7 +347,7 @@ function verdict(check, response) {
 }
 
 function render({ model, el }) {
-  ensureKatexCss();
+  ensureKatexCss(el);
   const root = make("div", "el-root", el);
   root.tabIndex = 0;
   const drafts = {};
