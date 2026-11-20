@@ -284,3 +284,11 @@ def test_css_scrolls_wide_display_math() -> None:
     assert "max-width: 100%" in widget._css
     assert "min-width: 0" in widget._css
     assert "scrollbar-width: thin" in widget._css
+
+
+def test_katex_css_is_injected_into_the_widget_root() -> None:
+    widget = ExplainLevels(levels=_five_levels()[:1], title="t")
+    assert "ensureKatexCss(el)" in widget._esm
+    assert "getRootNode" in widget._esm
+    assert "ShadowRoot" in widget._esm
+    assert ".el-root .katex { white-space: nowrap; }" in widget._css
