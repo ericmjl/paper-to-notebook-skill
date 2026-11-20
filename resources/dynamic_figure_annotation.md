@@ -16,6 +16,21 @@ Enumerate the figures before writing any annotation cell:
 2. Obtain an image for each label. When an image cannot be fetched or cropped out, **report that label** — a short note in the notebook where the tour would have been, and the same label in the handoff. Do not drop it from the list and continue.
 3. Build a walkthrough for every figure that has an image, using the steps below.
 
+## Annotate results, not furniture
+
+A tour box marks a spot on the figure where the paper's text lands a point. Before you place any box, reread the figure's caption and every passage in the body text that cites it. Write down the claims the paper makes about this figure: a region that groups, a trend, a transition, a comparison between panels, an outlier the paper explains, a number the paper interprets. Those claims are the annotation targets. Each claim becomes a tour step whose box holds the region that shows it, and whose `html` says what that region shows and why the paper cares, citing the section that discusses it.
+
+Rules of thumb:
+
+- **The kernels of the results come first.** The cluster, the crossing traces, the plateau, the contrast between panels, the exception the paper explains — these are what a box is for.
+- **Axis labels, tick labels, legends, and panel letters are furniture.** They may anchor at most one short orientation step, early in the tour, so the reader knows how to read the plot. They never carry the substance of a tour. If most boxes in a tour sit on furniture, redo the tour: as built, it teaches the reader where the axes are, not what the paper found.
+- **Box the region the paper interprets.** When the caption says "the plateau indicates …", the plateau gets a box. When the body text argues from a comparison ("Fig. 4b shows X against Y"), that comparison gets a box on each side, or one box on the panel with a step that names both sides.
+- **No box without a claim.** If the paper's text says nothing about a region, leave it unboxed. A box with no claim behind it is decoration, and decoration crowds out the steps that teach.
+
+The centering audit in Step 3 checks where a box sits. This section decides what a box is for. Do both.
+
+---
+
 ## One tab box
 
 All of a paper's figure walkthroughs go in **one** `mo.ui.tabs`. One tab per figure. The label is the figure number and a short title, for example `Figure 3. Spectra, the averaging window, and the actinometer`.

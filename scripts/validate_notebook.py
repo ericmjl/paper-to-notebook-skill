@@ -54,6 +54,14 @@ When those level texts, or inline quiz ``question`` strings, contain quoted
 passages, :mod:`check_quotes` warns if none are found. Pass ``--paper`` to
 warn when a quote is missing from the paper's plain text.
 
+After a successful parse, also warn, without failing, when an inline quiz
+set gives the answer away by length: when every question in a set (three
+or more questions) has the correct answer as strictly the longest option,
+picking "the longest" scores full marks without reading anything. It also
+warns when a notebook that declares the components comment has no banner
+cell marked ``data-p2n-banner`` (:doc:`resources/notebook_banner.md`
+describes the banner).
+
 Missing ``FigureAnnotatorWidget`` is a **failure** unless the component
 comment opts out of ``figure-walkthroughs``. An explicit opt-out warns
 instead of failing. Other warnings never fail the run.
@@ -89,6 +97,8 @@ PAPER_ANCHOR_RE = re.compile(
     r"(?:(?:Fig|Figure|Eq|Eqn|Equation|Table|Tab|Section|Sec)\.?\s*\d|§\s*\d)",
     re.IGNORECASE,
 )
+BANNER_MARKER = "data-p2n-banner"
+MIN_SET_SIZE_FOR_LENGTH_WARN = 3
 PAPER_IMAGE_RE = re.compile(
     r"""(?x)
     \.(?:png|jpe?g|webp|svg|gif|tif{1,2})\b
@@ -497,6 +507,132 @@ def quiz_question_texts(source: str) -> list[str]:
     return found
 
 
+def _distractor_option_texts(node: ast.expr) -> list[str]:
+    """Return the option labels from a ``distractors`` dict or list.
+
+    :param node: the ``distractors`` value of an inline quiz dict
+    :return: option texts, empty when the node holds none
+    """
+    texts: list[str] = []
+    if isinstance(node, ast.Dict):
+        for key_node in node.keys:
+            text = _string_from_ast(key_node) if key_node is not None else None
+            if text:
+                texts.append(text)
+    elif isinstance(node, ast.List):
+        for item in node.elts:
+            text = _string_from_ast(item)
+            if text:
+                texts.append(text)
+    return texts
+
+
+def _quiz_question_fields(element: ast.Dict) -> tuple[str, list[str]] | None:
+    """Return ``(answer, distractor labels)`` for one inline quiz dict.
+
+    :param element: dict literal that should carry ``question``, ``answer``,
+        and ``distractors`` fields
+    :return: the pair, or None when the dict is not a quiz question
+    """
+    answer: str | None = None
+    options: list[str] = []
+    for key_node, value_node in zip(element.keys, element.values, strict=False):
+        key = _string_from_ast(key_node)
+        if key is None or value_node is None:
+            continue
+        if key == "answer":
+            answer = _string_from_ast(value_node)
+            if answer is None:
+                return None
+        elif key == "distractors":
+            options = _distractor_option_texts(value_node)
+    if answer is None:
+        return None
+    return answer, options
+
+
+def quiz_sets(source: str) -> list[tuple[int, list[tuple[str, list[str]]]]]:
+    """Return inline quiz sets with their source lines.
+
+    A set is a list literal whose elements all carry ``question`` and
+    ``answer`` string fields — the shape ``resources/final-quiz.md``
+    prescribes. Each question is an ``(answer, distractor labels)`` pair,
+    so option lengths stay comparable within the question.
+
+    :param source: notebook source text
+    :return: ``(lineno, questions)`` pairs in source order
+    """
+    tree = ast.parse(source)
+    found: list[tuple[int, list[tuple[str, list[str]]]]] = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.List) or not node.elts:
+            continue
+        questions: list[tuple[str, list[str]]] = []
+        for element in node.elts:
+            if not isinstance(element, ast.Dict):
+                questions = []
+                break
+            parsed = _quiz_question_fields(element)
+            if parsed is None:
+                questions = []
+                break
+            questions.append(parsed)
+        if questions:
+            found.append((node.lineno, questions))
+    return found
+
+
+def quiz_length_warnings(source: str) -> list[str]:
+    """Return warnings for quiz sets whose answer is always the longest option.
+
+    A set warns when every question in it (three or more questions) has
+    the correct answer strictly longer than every distractor. Picking the
+    longest option then scores full marks without reading anything.
+
+    :param source: notebook source text
+    :return: warning messages, one per offending set
+    """
+    warnings: list[str] = []
+    for lineno, questions in quiz_sets(source):
+        counted = 0
+        tells = 0
+        for answer, distractors in questions:
+            if not distractors:
+                continue
+            counted += 1
+            if all(len(answer) > len(distractor) for distractor in distractors):
+                tells += 1
+        if counted < MIN_SET_SIZE_FOR_LENGTH_WARN or tells < counted:
+            continue
+        warnings.append(
+            f"line {lineno}: quiz set gives the answer away by length "
+            f"({tells}/{counted} questions have the longest option as the "
+            "correct one); trim answers or flesh out distractors "
+            "(resources/final-quiz.md)"
+        )
+    return warnings
+
+
+def banner_warnings(source: str) -> list[str]:
+    """Return a warning when a generated notebook has no marked banner cell.
+
+    Only notebooks that declare the ``# paper-to-notebook-skill-components:``
+    comment are checked, so the skill's own demo notebooks stay quiet.
+
+    :param source: notebook source text
+    :return: warning message, or nothing when the marker is present or the
+        notebook declares no components comment
+    """
+    if BANNER_MARKER in source:
+        return []
+    if parse_component_header(source) is None:
+        return []
+    return [
+        f"no banner cell found (no {BANNER_MARKER} marker); open the notebook "
+        "with the banner from resources/notebook_banner.md"
+    ]
+
+
 def quotes_from_notebook(source: str) -> list[str]:
     """Return curly quotes in ``source`` plus straight quotes in ladder or quiz copy.
 
@@ -643,6 +779,18 @@ def main() -> int:
         for message in grounding_warnings:
             print(f"WARN: {message}")
 
+    quiz_notes = quiz_length_warnings(source)
+    if quiz_notes:
+        print("[quiz]")
+        for message in quiz_notes:
+            print(f"WARN: {message}")
+
+    banner_notes = banner_warnings(source)
+    if banner_notes:
+        print("[banner]")
+        for message in banner_notes:
+            print(f"WARN: {message}")
+
     math_span_warnings = split_math_sub_warnings(source)
     if math_span_warnings:
         print("[math]")
@@ -688,6 +836,12 @@ def main() -> int:
     if grounding_warnings:
         noun = "warning" if len(grounding_warnings) == 1 else "warnings"
         notes.append(f"{len(grounding_warnings)} paper-grounding {noun}")
+    if quiz_notes:
+        noun = "warning" if len(quiz_notes) == 1 else "warnings"
+        notes.append(f"{len(quiz_notes)} quiz-length {noun}")
+    if banner_notes:
+        noun = "warning" if len(banner_notes) == 1 else "warnings"
+        notes.append(f"{len(banner_notes)} banner {noun}")
     if math_span_warnings:
         noun = "warning" if len(math_span_warnings) == 1 else "warnings"
         notes.append(f"{len(math_span_warnings)} math-span {noun}")
