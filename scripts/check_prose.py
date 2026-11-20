@@ -53,6 +53,7 @@ PROSE_KEYS = frozenset(
         "why",
         "text",
         "notes",
+        "summary",
     }
 )
 NESTED_PROSE_KEYS = frozenset({"notes", "distractors"})
@@ -232,9 +233,9 @@ def extract_prose_spans(source: str) -> list[ProseSpan]:
     """Return reader-facing strings from notebook source.
 
     Collects ``mo.md`` arguments, widget dict fields (ExplainLevels
-    ``text``, TangleLatex ``notes`` and ``label``, figure-tour ``html``,
-    quiz ``explain``, flowchart ``what``), ``options`` lists, and string
-    arguments to ``plain_feedback``.
+    ``text`` and ``summary``, TangleLatex ``notes`` and ``label``,
+    figure-tour ``html``, quiz ``explain``, flowchart ``what``),
+    ``options`` lists, and string arguments to ``plain_feedback``.
 
     :param source: notebook source text
     :return: spans in source order
