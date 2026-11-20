@@ -33,7 +33,10 @@ After a successful parse, also warn, without failing, when the notebook
 embeds no paper figure image (png/jpg/webp/svg/gif, ``mo.image``,
 ``load_image``, or a markdown image) and when more than half of the long
 ``mo.md`` strings cite no paper anchor (Fig./Figure/Eq./Table/Section/§).
-Warnings never fail the run.
+
+Missing ``FigureAnnotatorWidget`` is a **failure** unless the component
+comment opts out of ``figure-walkthroughs``. An explicit opt-out warns
+instead of failing. Other warnings never fail the run.
 
 Usage:
     uv run scripts/validate_notebook.py path/to/notebook.py [--run]
@@ -363,6 +366,42 @@ def parse_component_header(source: str) -> list[str] | None:
     return None
 
 
+def figure_walkthroughs_opted_out(source: str) -> bool:
+    """Return whether the component comment omits figure walkthroughs.
+
+    No comment means the user did not opt out.
+
+    :param source: Notebook source text.
+    """
+    included = parse_component_header(source)
+    if included is None:
+        return False
+    return "figure-walkthroughs" not in included
+
+
+def check_figure_walkthroughs(source: str) -> tuple[list[str], list[str]]:
+    """Return ``(warnings, errors)`` for missing ``FigureAnnotatorWidget`` use.
+
+    Missing the widget is a failure unless the component comment opts out
+    of ``figure-walkthroughs``. An explicit opt-out is a warning: the
+    paper's figures must still appear with number and caption.
+
+    :param source: Notebook source text.
+    """
+    if "FigureAnnotatorWidget" in source:
+        return [], []
+    if figure_walkthroughs_opted_out(source):
+        return [
+            "figure-walkthroughs omitted; still show each main-text figure "
+            "with its number and caption"
+        ], []
+    return [], [
+        "no FigureAnnotatorWidget usage; include figure walkthroughs, or "
+        f"opt out with {COMPONENT_HEADER.strip()} listing the other "
+        "components only"
+    ]
+
+
 def check_components(source: str) -> list[str]:
     """Return warning messages for included components that are missing.
 
@@ -383,6 +422,8 @@ def check_components(source: str) -> list[str]:
                 f"unknown component {name!r} in {COMPONENT_HEADER.strip()}"
             )
             continue
+        if name == "figure-walkthroughs":
+            continue  # check_figure_walkthroughs owns missing-widget failures
         marker = COMPONENT_MARKERS[name]
         if marker not in source:
             warnings.append(
@@ -456,6 +497,14 @@ def main() -> int:
         for message in grounding_warnings:
             print(f"WARN: {message}")
 
+    walkthrough_warnings, walkthrough_errors = check_figure_walkthroughs(source)
+    if walkthrough_warnings or walkthrough_errors:
+        print("[figure-walkthroughs]")
+        for message in walkthrough_warnings:
+            print(f"WARN: {message}")
+        for message in walkthrough_errors:
+            print(f"FAIL: {message}")
+
     notes: list[str] = []
     if visible:
         noun = "warning" if len(visible) == 1 else "warnings"
@@ -469,6 +518,14 @@ def main() -> int:
     if grounding_warnings:
         noun = "warning" if len(grounding_warnings) == 1 else "warnings"
         notes.append(f"{len(grounding_warnings)} paper-grounding {noun}")
+    if walkthrough_warnings:
+        noun = "warning" if len(walkthrough_warnings) == 1 else "warnings"
+        notes.append(f"{len(walkthrough_warnings)} figure-walkthrough {noun}")
+    if walkthrough_errors:
+        noun = "error" if len(walkthrough_errors) == 1 else "errors"
+        notes.append(f"{len(walkthrough_errors)} figure-walkthrough {noun}")
+        print(f"FAIL: {nb} ({', '.join(notes)})")
+        return 1
     if notes:
         print(f"OK: {nb} ({', '.join(notes)}; not a failure)")
     else:

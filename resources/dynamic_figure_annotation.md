@@ -4,7 +4,7 @@ Guide an agent to turn any static figure from a scientific paper (reaction schem
 
 ## Every main-text figure
 
-The notebook includes one `FigureAnnotatorWidget` walkthrough for **every main-text figure**, not a subset of the striking ones. A multi-panel figure is one figure: one tour that walks its panels, as the example notebook does for Figure 1. Supplementary figures are out of scope unless the user asks for them.
+These tours are part of the default build. Omit them only when the user opts out in the component question; if you cannot ask, include them. The notebook includes one `FigureAnnotatorWidget` walkthrough for **every main-text figure**, not a subset of the striking ones. A multi-panel figure is one figure: one tour that walks its panels, as the example notebook does for Figure 1. Supplementary figures are out of scope unless the user asks for them.
 
 A reproduced or simplified plot does not stand in for this tour. The tour is of the figure the paper printed.
 
