@@ -7,7 +7,8 @@
 Warnings only. Nothing here fails a run. The checks are the subset of
 `.agents/skills/processing-friendly-prose` that can be tested without a
 parser: very long sentences (a proxy for a subject far from its verb),
-very long paragraphs (packing), noun stacks of three or more, inanimate
+very long paragraphs (packing), clear noun stacks (four or more nouns,
+or a hyphenated compound stacked onto further nouns), inanimate
 subjects with person-verbs named in the skill, and the skill's ad-hoc
 denominal examples. Filler lists that the skill does not name (for
 example "delve" or em-dash counts) are out of scope.
@@ -27,8 +28,7 @@ from pathlib import Path
 
 LONG_SENTENCE_WORDS = 40
 LONG_PARAGRAPH_WORDS = 150
-NOUN_STACK_MIN = 3
-NOUN_STACK_UNHYPHENATED_MIN = 5
+NOUN_STACK_MIN = 4
 
 PROSE_KEYS = frozenset(
     {
@@ -64,6 +64,7 @@ _STOPWORDS = frozenset(
     above below further down up out off once
     one two three four five six seven eight nine ten
     first second third next last
+    must never almost again either enough
     """.split()
 )
 _COMMON_VERBS = frozenset(
@@ -72,7 +73,7 @@ _COMMON_VERBS = frozenset(
     take takes taken taking give gives given giving see sees seen seeing
     go goes went going come comes coming know known knowing think thinks
     thought thinking find found finding tell told telling call called calling
-    keep kept keeping let help try tried trying start started starting look
+    keep keeps kept keeping let help try tried trying start started starting look
     looks looking want wants wanting need needs needing seem seems seeming
     become became becoming leave left leaving put putting mean means meaning
     include includes including follow follows following report reports
@@ -83,6 +84,17 @@ _COMMON_VERBS = frozenset(
     replace replaces replaced replacing measure measures measured measuring
     open opens opened opening change changes changed changing
     retell retells retelling
+    print prints printed printing stand stands stood standing
+    sit sits sat sitting drop drops dropped dropping
+    slide slides sliding push pushes pushed pushing
+    produce produces produced producing compare compares compared comparing
+    reach reaches reached reaching born
+    """.split()
+)
+_MODIFIERS = frozenset(
+    """
+    smaller larger higher lower highest lowest high low full well
+    relative similar random main free total
     """.split()
 )
 _FAMILIAR_HYPHENS = frozenset(
@@ -331,13 +343,44 @@ def word_count(text: str) -> int:
     return len(cleaned.split())
 
 
-def _noun_units(token: str) -> list[str]:
-    """Split a token into noun units, keeping conventional hyphenations.
+def _looks_like_verb(part: str) -> bool:
+    """Return whether ``part`` is a listed verb or a regular 3sg form.
 
-    Hyphenated terms that contain a stopword (``state-of-the-art``) count
-    as one unit. Fresh noun-noun hyphens (``reader-patience``) count as
-    one unit per part. The skill's ``object-relative`` example stays one
-    unit.
+    :param part: lowercase token
+    :return: True when the token should not count as a noun
+    """
+    if part in _COMMON_VERBS:
+        return True
+    if part.endswith("es") and part[:-2] in _COMMON_VERBS:
+        return True
+    if part.endswith("s") and part[:-1] in _COMMON_VERBS:
+        return True
+    return False
+
+
+def _is_noun_part(part: str) -> bool:
+    """Return whether ``part`` looks like a noun rather than glue.
+
+    :param part: lowercase token or hyphen piece
+    :return: True when the piece should count in a noun run
+    """
+    return not (
+        len(part) < 3
+        or part in _STOPWORDS
+        or part in _MODIFIERS
+        or _looks_like_verb(part)
+        or part in _REF_TOKENS
+        or part.endswith("ly")
+    )
+
+
+def _noun_units(token: str) -> list[str]:
+    """Split a token into noun units.
+
+    A two-part hyphenated compound (``cage-escape``, ``excited-state``)
+    counts as one unit: that is ordinary scientific naming, not a stack.
+    Three or more hyphenated noun parts are a stacked compound, so each
+    part counts. Title-case runs (author names, headings) are ignored.
 
     :param token: a whitespace token, punctuation stripped
     :return: noun units inside the token, or empty if it is not a noun
@@ -360,27 +403,22 @@ def _noun_units(token: str) -> list[str]:
         return []
     if len(lower_parts) > 1 and any(part in _STOPWORDS for part in lower_parts):
         return [lower]
-    units: list[str] = []
-    for part in lower_parts:
-        if (
-            len(part) < 3
-            or part in _STOPWORDS
-            or part in _COMMON_VERBS
-            or part in _REF_TOKENS
-            or part.endswith("ly")
-        ):
-            continue
-        units.append(part)
-    return units
+    noun_parts = [part for part in lower_parts if _is_noun_part(part)]
+    if not noun_parts:
+        return []
+    if len(lower_parts) == 2:
+        return [lower]
+    return noun_parts
 
 
 def noun_stacks(text: str) -> list[str]:
-    """Return noun stacks the principles call out and a checker can see.
+    """Return clear noun stacks: four or more nouns, or a stacked hyphen.
 
-    A hyphenated noun-noun modifier plus a following noun matches the
-    skill's ``reader-patience budget`` example (three units). Unhyphenated
-    stacks need five or more units, matching ``unit test failure retry
-    policy``. Title-case runs (author names, headings) are ignored.
+    Ordinary two-part compounds plus a head noun (``cage-escape
+    efficiency``, ``excited-state reduction potential``) do not warn.
+    A hyphenated compound stacked onto enough further nouns to make four
+    units does, as does a single token with three or more noun parts
+    (``reader-patience-budget``).
 
     :param text: normalized prose
     :return: joined stacks
@@ -389,33 +427,34 @@ def noun_stacks(text: str) -> list[str]:
     tokens = normalize_prose(cleaned).split()
     stacks: list[str] = []
     current: list[str] = []
-    hyphenated = False
+    stacked_hyphen = False
     for token in tokens:
         units = _noun_units(token)
         if units:
             current.extend(units)
-            if "-" in token.strip(".,;:!?()[]{}\"'“”‘’"):
-                hyphenated = True
+            stripped = token.strip(".,;:!?()[]{}\"'“”‘’")
+            if "-" in stripped and len(units) >= 3:
+                stacked_hyphen = True
             continue
-        if _stack_hits_threshold(current, hyphenated):
+        if _stack_hits_threshold(current, stacked_hyphen):
             stacks.append(" ".join(current))
         current = []
-        hyphenated = False
-    if _stack_hits_threshold(current, hyphenated):
+        stacked_hyphen = False
+    if _stack_hits_threshold(current, stacked_hyphen):
         stacks.append(" ".join(current))
     return stacks
 
 
-def _stack_hits_threshold(units: list[str], hyphenated: bool) -> bool:
-    """Return whether a noun run is long enough to warn.
+def _stack_hits_threshold(units: list[str], stacked_hyphen: bool) -> bool:
+    """Return whether a noun run is a clear stack.
 
     :param units: consecutive noun units
-    :param hyphenated: whether a hyphenated token contributed
-    :return: True when the run matches a skill example shape
+    :param stacked_hyphen: whether a 3+ part hyphenated compound contributed
+    :return: True when the run should warn
     """
-    if hyphenated:
-        return len(units) >= NOUN_STACK_MIN
-    return len(units) >= NOUN_STACK_UNHYPHENATED_MIN
+    if stacked_hyphen:
+        return True
+    return len(units) >= NOUN_STACK_MIN
 
 
 def _clip(text: str, limit: int = 80) -> str:

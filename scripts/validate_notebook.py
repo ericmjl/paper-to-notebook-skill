@@ -41,7 +41,8 @@ by ``$A$``): write ``$\\rho_A$`` instead.
 
 After a successful parse, also warn, without failing, on mechanical
 processing-friendly-prose issues via :mod:`check_prose` (very long
-sentences or paragraphs, noun stacks, inanimate actors with person-verbs,
+sentences or paragraphs, clear noun stacks of four or more nouns or a
+hyphenated compound stacked onto further nouns, inanimate actors with person-verbs,
 ad-hoc denominal verbs from the skill's examples). Those warnings never
 fail the run.
 

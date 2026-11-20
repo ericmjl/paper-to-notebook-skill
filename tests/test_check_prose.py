@@ -41,20 +41,11 @@ def test_long_paragraph_warns() -> None:
     assert any(item.check == "long_paragraph" for item in warnings)
 
 
-def test_noun_stack_from_hyphenated_skill_example() -> None:
-    stacks = noun_stacks("the reader-patience budget")
-    assert stacks
-    assert any("reader" in stack and "patience" in stack for stack in stacks)
-
-
-def test_noun_stack_from_unhyphenated_skill_example() -> None:
-    stacks = noun_stacks("the unit test failure retry policy")
-    assert any(len(stack.split()) >= 3 for stack in stacks)
-
-
-def test_noun_stack_warns_in_markdown() -> None:
-    source = _md("Skip the unit test failure retry policy today.")
-    assert "noun_stack" in _checks(source)
+def test_ordinary_hyphenated_compound_plus_head_is_silent() -> None:
+    assert noun_stacks("the cage-escape efficiency") == []
+    assert noun_stacks("the excited-state reduction potential") == []
+    assert noun_stacks("the continuous-light model") == []
+    assert noun_stacks("the reader-patience budget") == []
 
 
 def test_familiar_hyphenated_term_alone_is_not_a_stack() -> None:
@@ -69,8 +60,43 @@ def test_three_unhyphenated_nouns_are_not_a_stack() -> None:
     assert noun_stacks("a fuzzy neighbour graph") == []
 
 
-def test_four_unhyphenated_nouns_are_not_a_stack() -> None:
-    assert noun_stacks("phenol cage escape efficiencies") == []
+def test_four_unhyphenated_nouns_are_a_stack() -> None:
+    stacks = noun_stacks("phenol cage escape efficiencies")
+    assert stacks
+    assert any(len(stack.split()) >= 4 for stack in stacks)
+
+
+def test_five_unhyphenated_nouns_are_a_stack() -> None:
+    stacks = noun_stacks("the unit test failure retry policy")
+    assert any(len(stack.split()) >= 4 for stack in stacks)
+
+
+def test_noun_stack_warns_in_markdown() -> None:
+    source = _md("Skip the unit test failure retry policy today.")
+    assert "noun_stack" in _checks(source)
+
+
+def test_hyphenated_compound_stacked_onto_further_nouns() -> None:
+    stacks = noun_stacks("the cage-escape quantum yield photoredox")
+    assert stacks
+
+
+def test_three_part_hyphenated_compound_is_a_stack() -> None:
+    stacks = noun_stacks("the reader-patience-budget")
+    assert stacks
+
+
+def test_hyphenated_name_with_stopword_is_not_a_stack() -> None:
+    assert noun_stacks("the paper-to-notebook-skill") == []
+
+
+def test_third_person_verb_breaks_a_noun_run() -> None:
+    assert noun_stacks("the free-radical quantum yield keeps falling") == []
+    assert noun_stacks("the main text never prints lifetimes") == []
+
+
+def test_comparative_does_not_pad_a_noun_run() -> None:
+    assert noun_stacks("more quencher, smaller radical signal") == []
 
 
 def test_inanimate_actor_from_skill_example() -> None:
