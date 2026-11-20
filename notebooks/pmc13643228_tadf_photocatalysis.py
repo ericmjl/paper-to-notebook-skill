@@ -5,7 +5,7 @@
 #     "anywidget>=0.9.0",
 #     "traitlets>=5.14.0",
 #     "plotly>=5.24.0",
-#     "wigglystuff>=0.5.13",
+#     "wigglystuff>=0.6.0",
 # ]
 # ///
 
@@ -170,7 +170,7 @@ def cell_tour():
                 {
                     "cell_name": "figure_tour",
                     "title": "Walk Figures 1 to 6",
-                    "description": "Hands-on section. One tab per figure. Use Prev and Next inside the open tab. Hover a colored badge to light the same region on the figure. The captions are the paper's. The words stay with what the main text states.",
+                    "description": "Hands-on section. One tab per figure, inside a panel you can drag. Use Prev and Next inside the open tab. Hover a colored badge to light the same region on the figure. The captions are the paper's. The words stay with what the main text states.",
                 },
                 {
                     "cell_name": "escape_ladder",
@@ -401,7 +401,7 @@ def figure_tour(
         r"""
         ## Figures 1–6
 
-        Figs. 1–6 are every main-text figure, one tab each. An image was obtained for each of them.
+        Figs. 1–6 are every main-text figure, one tab each, in a panel you can drag while you scroll. An image was obtained for each of them.
 
         Boxes stay hidden until you hover a badge or the drawing. Coordinates are the 100×100 percentage boxes from the repository's figure-annotation example, checked again with `scripts/figure_annotation_helper.py audit` before this notebook was written. The words on the badges were rewritten so they do not quote absorbances or quantum yields that the main text never prints. Equations (1), (3), and (4) are graphics in the PMC XML; they are not redrawn here.
         """
@@ -775,7 +775,8 @@ def figure_tour(
             ),
         },
     ]
-    mo.ui.tabs(
+    wigglystuff.FloatingPanel(
+        mo.ui.tabs(
         {
             "Figure 1. States, cage, catalyst, quenchers": fig1_annotator,
             "Figure 2. 450 nm traces and the yield inset": fig2_annotator,
@@ -817,7 +818,11 @@ def figure_tour(
                     fig6_annotator,
                 ]
             ),
-        }
+        },
+        ),
+        title="Figures 1–6",
+        corner="bottom-right",
+        width=880,
     )
     return
 
