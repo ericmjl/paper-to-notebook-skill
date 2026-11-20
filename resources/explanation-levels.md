@@ -156,11 +156,11 @@ The ladder covers the paper's main point. Other concepts get one explanation at 
 |---|---|---|
 | 1 · Child | 3–5 sentences, about 12 words each, none over 15 | Words a young child knows: no acronyms, no names of methods or datasets, no technical words, no numbers beyond small counts and comparisons |
 | 2 · Teen | 5–8 sentences, about 20 words each, none over 25 | 1–3 field terms, each defined from the paper; acronyms and names explained (below) |
-| 3 · Undergrad | 200–400 words in 2–4 short paragraphs, plus one displayed equation | Standard field vocabulary |
-| 4 · Grad student | One paragraph, 6–8 sentences, 150–220 words | The paper's notation; terms the profile doesn't assume defined in passing |
-| 5 · Expert | One paragraph, 4–6 sentences, 100–180 words | Standard field terms, undefined |
+| 3 · Undergrad | 200–400 words in 2–4 short paragraphs, plus one displayed equation; no sentence over 35 words | Standard field vocabulary |
+| 4 · Grad student | 2–3 short paragraphs, 6–8 sentences, 150–220 words; no sentence over 35 words | The paper's notation; terms the profile doesn't assume defined in passing |
+| 5 · Expert | 2–3 short paragraphs, 4–8 sentences, 100–180 words; no sentence over 35 words | Standard field terms, undefined |
 
-**How to count.** Count words in the level's text, leaving out locations in parentheses ("(§3.1, Table 2)", "(Appendix C)", "(Fig. 8)") and math. A sentence ends at a full stop, question mark, or exclamation mark. `uv run scripts/check_levels.py ladder.md` counts each level and flags anything over its cap.
+**How to count.** Count words in the level's text, leaving out locations in parentheses ("(§3.1, Table 2)", "(Appendix C)", "(Fig. 8)") and math. A sentence ends at a full stop, question mark, or exclamation mark. No sentence at any level may run over 35 words; Child stays at 15 and Teen at 25. Grad student and Expert use 2–3 short paragraphs that follow the five parts (question, what was done, what was found, why it matters, limits), the way a structured abstract reads. `uv run scripts/check_levels.py ladder.md` counts each level and flags anything over its cap.
 
 **Over the cap, cut; don't add notes.** Cut in this order: context, then secondary results, then design detail. Keep the main result with its anchor, the claim of novelty, and the main limit. If a level still runs over, teach fewer terms in it, not more briefly.
 
@@ -178,7 +178,7 @@ In our tests on three papers, an Undergrad level that introduced six untaught te
 
 ### Grad student and Expert read like abstracts
 
-Write these two levels the way a strong abstract is written: one paragraph, one job per sentence.
+Write these two levels the way a strong abstract is written: 2–3 short paragraphs, one job per sentence, covering the five parts.
 
 1. **Order:** context, the gap ("However, …"), one sentence that states what was done and matches the gap, the results, what they change compared with the prior work the paper discusses, and the implication with its limits.
 2. **The finding is the subject.** Lead with the method or result and put the action in the verb: "The Transformer replaces recurrence with attention alone (§3)."
