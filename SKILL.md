@@ -115,7 +115,7 @@ If the user supplied extra sources, use them only as background for a specific p
 Before writing cells for a **new** notebook, ask the user whether to include **all** of these components (the default offer) or to pick which ones:
 
 1. **Figure walkthroughs** — annotated tours of every main-text figure, in one `mo.ui.tabs` inside `wigglystuff.FloatingPanel` (`FigureAnnotatorWidget`; [`resources/dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md)). **Default on.** Omit only when the user explicitly opts out. If you cannot ask, include them.
-2. **Method diagrams** — a Materials-and-Methods flowchart of the paper's pipeline (`MermaidView`; [`resources/method_diagrams.md`](resources/method_diagrams.md)).
+2. **Method diagrams** — a Materials-and-Methods flowchart of the paper's pipeline (`MermaidView`; [`resources/method_diagrams.md`](resources/method_diagrams.md)). The flowchart is pannable and zoomable (drag, Ctrl/pinch zoom, +/− and Fit buttons).
 3. **Final quiz** — five multiple-choice questions at the end of the notebook (`PaperQuiz`; [`resources/final-quiz.md`](resources/final-quiz.md)).
 4. **Explain at five levels** — level picker, ladder tabs, and per-level checks (`ExplainLevels` in [`assets/explain_levels.py`](assets/explain_levels.py); [`resources/explanation-levels.md`](resources/explanation-levels.md)). The widget lands in a companion PR; until it does, use the inline pattern in that resource §9.
 
@@ -181,7 +181,7 @@ annotator.tour_steps = [{"title": "…", "target_ids": ["…"], "html": "…"}]
 
 #### Materials-and-methods flowchart (`MermaidView`)
 
-**For:** a pannable, zoomable ELK Mermaid drawing of **this paper's** pipeline, stepped with the reader's level.
+**For:** a pannable, zoomable ELK Mermaid drawing of **this paper's** pipeline (drag, Ctrl/pinch zoom, +/− and Fit buttons), stepped with the reader's level.
 
 **File:** [`assets/mermaid_view.py`](assets/mermaid_view.py). Copy it next to the notebook. Add `anywidget` and `traitlets`.
 
@@ -241,7 +241,7 @@ Other generation rules:
 - Equations: LaTeX in `mo.md`; widgets on parameters when that builds intuition.
 - **Figures first:** the paper's own main-text figures (images extracted from the paper) appear in the notebook regardless of which components were chosen. If figure walkthroughs are skipped, still show each figure with its caption and number. Missing figure images are reported; never silently replace them with unrelated plots. A reproduced or simplified plot is extra, and only when the paper's data allow — it does not stand in for the printed figure. Default plotting library is **Plotly** (`plotly.graph_objects` / `plotly.express`). Put `plotly` in the PEP 723 block. Use Plotly annotations, shapes, and hover text for callouts on recreated figures. Do not start from matplotlib or Altair unless the user asks. **TODO:** how far to go with vision-based estimates or reader-written figure interpretations in v1.
 - Figure walkthroughs (when included): every main-text figure gets an annotated tour (`FigureAnnotatorWidget`), not a subset. Enumerate the figures first and report any figure whose image you could not obtain instead of skipping it. Put every tour in one `mo.ui.tabs`, one tab per figure, and wrap that tab box in `wigglystuff.FloatingPanel` (`wigglystuff>=0.6.0`) so the reader can drag it while scrolling. Recreated plots stay in Plotly; the widget tours the paper's printed figure. Read [`resources/dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md) (`FigureAnnotatorWidget` plus a coordinate-audit helper in `scripts/`).
-- Method diagrams (when included): draw the paper's pipeline as a hand-drawn ELK Mermaid flowchart whose detail follows the reader's level, and step through it. Read [`resources/method_diagrams.md`](resources/method_diagrams.md) (`MermaidView` in `assets/`).
+- Method diagrams (when included): draw the paper's pipeline as a hand-drawn ELK Mermaid flowchart whose detail follows the reader's level, and step through it. The rendered view is pannable and zoomable (drag, Ctrl/pinch zoom, +/− and Fit buttons). Read [`resources/method_diagrams.md`](resources/method_diagrams.md) (`MermaidView` in `assets/`).
 - Explain at five levels (when included): core concepts (1–3 per notebook) get an explanation ladder via `ExplainLevels` ([Explaining at multiple levels](#explaining-at-multiple-levels); [Tools](#tools)). Until `assets/explain_levels.py` lands, follow [`resources/explanation-levels.md`](resources/explanation-levels.md) §9.
 - Informal checks: short questions, not graded assessment. Use the `show_check` pattern in `resources/explanation-levels.md` §9 (radio, a numeric answer with tolerance, or an open answer with a model answer).
 - Domain mode from step 2: coding exercises and method reconstruction for algorithm-like papers; agent-written visualization/widget explainers for concept-like papers (for example, a mechanism in a cell).
