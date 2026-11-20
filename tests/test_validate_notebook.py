@@ -11,7 +11,9 @@ sys.path.insert(0, str(SCRIPTS))
 from validate_notebook import (  # noqa: E402
     check_components,
     check_figure_walkthroughs,
+    explanation_warnings,
     parse_component_header,
+    quotes_from_notebook,
 )
 
 
@@ -170,3 +172,38 @@ def test_check_components_does_not_require_skipped_equations() -> None:
     source = f"{HEADER} final-quiz\nPaperQuiz\n"
     assert "TangleLatex" not in source
     assert check_components(source) == []
+
+
+def test_explanation_warnings_silent_without_inline_levels() -> None:
+    source = "from explain_levels import ExplainLevels\nExplainLevels\n"
+    assert explanation_warnings(source) == []
+
+
+def test_explanation_warnings_flag_short_inline_level() -> None:
+    source = '''
+levels = [{"name": "Child", "text": "Too short."}]
+'''
+    warnings = explanation_warnings(source)
+    assert any("Child:" in item for item in warnings)
+
+
+def test_quotes_from_notebook_skips_python_string_delimiters() -> None:
+    source = '''
+title = "this four word python string"
+levels = [{"name": "Child", "text": "It needs an algorithm “both scalable to massive data”."}]
+'''
+    quotes = quotes_from_notebook(source)
+    assert "this four word python string" not in quotes
+    assert "both scalable to massive data" in quotes
+
+
+def test_explanation_warnings_zero_quotes_in_inline_quiz() -> None:
+    source = '''
+questions = [{
+    "question": "What did the method find on the main task?",
+    "answer": "It matched the earlier tool on that task.",
+    "explain": "See the results section of the paper.",
+}]
+'''
+    warnings = explanation_warnings(source)
+    assert any("no quotes found" in item for item in warnings)
