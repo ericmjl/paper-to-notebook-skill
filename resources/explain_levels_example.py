@@ -177,7 +177,7 @@ Local connectivity gives $\rho_i$: every $x_i$ keeps an edge of weight 1 (Secs. 
 
 When assumptions fail: with no manifold structure, UMAP “can tend to find manifold structure within the noise of a dataset” (Sec. 6), and a small $n$ reads sampling noise as fine structure (Sec. 4.3). If density differences are signal, uniformity erases them by design (Sec. 6). Because it models local distance and topology, it does worse than MDS-like methods on metric-preservation measures (Sec. 6).
 
-**What we simplified, and what is true:** samples drawn as negatives are not exactly uniform. The formulation implies a vertex distribution $P(x_i)$, which the paper approximates as uniform for sufficiently large data sets (Sec. 4.1).
+**What we simplified, and what is true:** negative samples are not exactly uniform. The formulation implies a vertex distribution $P(x_i)$, which the paper approximates as uniform for sufficiently large data sets (Sec. 4.1).
 """,
             "check": {
                 "question": (
