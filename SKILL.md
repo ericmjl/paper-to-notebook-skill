@@ -22,10 +22,25 @@ This file is a skeleton. Lots of details will be filled in later. Items marked *
 | **Input** | A paper as PDF, HTML, or plain-text source (LaTeX, Markdown, etc.). Path, URL, or identifier is fine as long as full text can be obtained. |
 | **Output** | A runnable marimo notebook (`*.py`) the reader can open with `uvx marimo edit --sandbox …`. |
 
+### Stick to the paper
+
+The notebook teaches **this paper**. Every section is anchored to a specific part of the paper (section, equation, figure, or table number) and cites it.
+
+Outside material is allowed only as the minimum background a reader at the chosen level needs to follow a specific passage. Keep it brief. Label it as background. It never replaces paper content.
+
+- No tangents.
+- No surveys of related work.
+- No extra examples or datasets the paper doesn't use.
+- No content from other papers except a one-line pointer when the paper itself depends on it.
+
+The literature sample in [`resources/field-maturity.md`](resources/field-maturity.md) is only for classifying vocabulary. Do not turn it into notebook content.
+
+When in doubt, cut.
+
 Optional inputs to ask for if they are missing (do not block if the user only gives the paper):
 
 - Starting audience or “adapt as I go.” Default working assumption: undergrad through graduate student, plus working professionals new to this paper or field, with some general scientific knowledge. **TODO:** tighten the default.
-- Extra context: supporting information, cited papers, or other sources the user wants treated as grounding (not just general knowledge).
+- Extra context: supporting information the user supplies (SI, a cited paper this paper depends on). Use it only as the minimum background for a specific passage, labeled as background. It is not a license to survey the field.
 - Depth: full walkthrough vs. methods, results, or one figure.
 - Output path and runtime constraints.
 - Which notebook components to include (see [Choose notebook components](#choose-notebook-components)). Offer all three; the user may pick a subset.
@@ -73,6 +88,8 @@ Classify **field maturity** (established, emergent, interdisciplinary, or mixed)
 
 ### 3. Plan the learning path
 
+Before writing cells, build an outline. Map each planned section to its paper anchor (section, equation, figure, or table number). Drop any section that has none.
+
 Design a path a human can follow in one sitting. **TODO:** target duration.
 
 Do not lock the whole notebook to a single reading level. Plan for **adaptive explanation**: the reader should be able to get a simpler or more advanced account of a hard passage. **TODO:** default direction — start simple and add complexity, or start high and step down when the reader is confused. Both were proposed; neither was chosen. Core concepts get a full ladder (see [Explaining at multiple levels](#explaining-at-multiple-levels)).
@@ -91,7 +108,7 @@ Suggested spine (adjust per paper):
 
 **TODO:** how far critique, results-section analysis, and figure-interpretation prompts go in the first version, versus a plain guided walkthrough.
 
-If the user supplied extra sources, plan where those will be cited in the notebook and how sourced evidence will be distinguished from general knowledge. **TODO:** the mechanism for that distinction, and whether a small concept map or “knowledge wiki” belongs here later.
+If the user supplied extra sources, use them only as background for a specific paper passage, labeled as such. Do not plan a related-work survey. **TODO:** the mechanism for distinguishing sourced evidence from general knowledge, and whether a small concept map or “knowledge wiki” belongs here later.
 
 ### Choose notebook components
 
@@ -135,7 +152,7 @@ Other generation rules:
 
 - Hide code on nearly every cell: `@app.cell(hide_code=True)`, and the same flag on `@app.function` and `app.setup`. Readers see prose, figures, widgets, and outputs. Showing the code is the exception, and only for a cell whose code is itself the teaching point (a short snippet the reader is meant to read, if the notebook has one). When you leave a cell visible, say so in that cell's prose. Cell templates in `resources/` set `hide_code=True`.
 - Equations: LaTeX in `mo.md`; widgets on parameters when that builds intuition.
-- Figures: reproduce or simplify when data allow; link back to the paper's figure number. If data are not available, say so — do not invent plots. Default plotting library is **Plotly** (`plotly.graph_objects` / `plotly.express`). Put `plotly` in the PEP 723 block. Use Plotly annotations, shapes, and hover text for callouts on recreated figures. Do not start from matplotlib or Altair unless the user asks. A reproduced plot does not replace the annotated walkthrough of the paper's own figure. **TODO:** how far to go with vision-based estimates or reader-written figure interpretations in v1.
+- **Figures first:** the paper's own main-text figures (images extracted from the paper) appear in the notebook regardless of which components were chosen. If figure walkthroughs are skipped, still show each figure with its caption and number. Missing figure images are reported; never silently replace them with unrelated plots. A reproduced or simplified plot is extra, and only when the paper's data allow — it does not stand in for the printed figure. Default plotting library is **Plotly** (`plotly.graph_objects` / `plotly.express`). Put `plotly` in the PEP 723 block. Use Plotly annotations, shapes, and hover text for callouts on recreated figures. Do not start from matplotlib or Altair unless the user asks. **TODO:** how far to go with vision-based estimates or reader-written figure interpretations in v1.
 - Figure walkthroughs (when included): every main-text figure gets an annotated tour (`FigureAnnotatorWidget`), not a subset. Enumerate the figures first and report any figure whose image you could not obtain instead of skipping it. Put every tour in one `mo.ui.tabs`, one tab per figure, and wrap that tab box in `wigglystuff.FloatingPanel` (`wigglystuff>=0.6.0`) so the reader can drag it while scrolling. Recreated plots stay in Plotly; the widget tours the paper's printed figure. Read [`resources/dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md) (`FigureAnnotatorWidget` plus a coordinate-audit helper in `scripts/`).
 - Method diagrams (when included): draw the paper's pipeline as a hand-drawn ELK Mermaid flowchart whose detail follows the reader's level, and step through it. Read [`resources/method_diagrams.md`](resources/method_diagrams.md) (`MermaidView` in `assets/`).
 - Core concepts (1–3 per notebook) get an explanation ladder ([Explaining at multiple levels](#explaining-at-multiple-levels)).
@@ -154,12 +171,18 @@ uv run scripts/validate_notebook.py path/to/notebook.py --run
 
 It checks Python syntax, runs `marimo check --strict`, and with `--run` executes the notebook top to bottom. Fix every reported problem before delivery. It also warns, without failing, when a cell, `@app.function`, or `app.setup` block does not set `hide_code=True`. A warning names a cell you left visible because its code is the teaching point; any other visible cell should be hidden. When a notebook builds two or more figure tours, it warns, again without failing, if those tours are not all values of a single `mo.ui.tabs`. If the notebook has a `# paper-to-notebook-skill-components:` comment, the script also warns when an included component is missing; skipped components are not a failure.
 
+Before handoff, scan the notebook:
+
+- List any cell without a paper anchor and either anchor it or cut it.
+- Report the count and fraction of background cells.
+
 Tell the user:
 
 - Path to the notebook and the command to open it (`uvx marimo edit --sandbox …`).
 - Assumed audience and what was simplified.
 - TODOs and known gaps (including missing data, main-text figures whose images could not be obtained, or undefined terms).
 - Which of figure walkthroughs, method diagrams, and the final quiz were included, and that all three were used if you could not ask.
+- The background-cell count and fraction from the scan above.
 - Paper reference (title, authors, year, link).
 
 **Planned validation beyond “it runs” (not all required for a first sketch):**
