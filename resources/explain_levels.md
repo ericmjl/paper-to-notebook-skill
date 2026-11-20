@@ -137,9 +137,9 @@ def _(mo, umap_ladder):
     return
 ```
 
-### Shared picker across several ladders
+### One ladder per notebook
 
-One dropdown near the top of the notebook, same default as [`explanation-levels.md`](explanation-levels.md) §9. Each ladder cell reads `reader_level.value` and remounts on that rung. Clicking a widget's own buttons still updates that widget's `level` trait; it does not rewrite the dropdown unless you wire that yourself.
+[`explanation-levels.md`](explanation-levels.md) §6: one ladder, for the paper's main point. Other concepts get one explanation at the reader's level, not a second `ExplainLevels`. One dropdown near the top, same default as §9, drives that ladder and every other section (`level=reader_level.value`). Clicking the widget's own buttons still updates that widget's `level` trait; it does not rewrite the dropdown unless you wire that yourself.
 
 ```python
 @app.cell(hide_code=True)
@@ -156,29 +156,17 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(ExplainLevels, mo, reader_level):
-    graph_ladder = mo.ui.anywidget(ExplainLevels(
-        title="Fuzzy k-neighbour graph",
-        paper_ref="Sec. 3.1, Alg. 3",
+    paper_ladder = mo.ui.anywidget(ExplainLevels(
+        title="UMAP: Uniform Manifold Approximation and Projection",
+        paper_ref="Abstract, Secs. 1–3, 5–6",
+        summary=UMAP_SUMMARY,
+        tabs=False,
         level=reader_level.value,
-        levels=GRAPH_LEVELS,
+        levels=UMAP_LEVELS,
     ))
-    graph_ladder
-    return (graph_ladder,)
-
-
-@app.cell(hide_code=True)
-def _(ExplainLevels, mo, reader_level):
-    layout_ladder = mo.ui.anywidget(ExplainLevels(
-        title="Cross-entropy layout",
-        paper_ref="Sec. 3.2, Alg. 5",
-        level=reader_level.value,
-        levels=LAYOUT_LEVELS,
-    ))
-    layout_ladder
-    return (layout_ladder,)
+    paper_ladder
+    return (paper_ladder,)
 ```
-
-Remounting from the picker rebuilds the widget, so committed check answers on that instance reset. Answers survive tab changes *inside* one mounted widget.
 
 ---
 

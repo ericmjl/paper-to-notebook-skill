@@ -264,7 +264,7 @@ def _():
 
 ```python
 @app.cell(hide_code=True)
-def _(reader_level):
+def _(ExplainLevels, reader_level):
     paper_ladder = mo.ui.anywidget(ExplainLevels(
         title="...",  # the paper's title
         paper_ref="...",  # the sections the spine draws on
