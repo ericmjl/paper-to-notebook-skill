@@ -205,13 +205,13 @@ From *Attention Is All You Need* (Vaswani et al., 2017).
 
 ## 9. Notebook pattern
 
-Prefer `ExplainLevels` from [`assets/explain_levels.py`](../assets/explain_levels.py) when that file is present (companion PR). Until then, use the cells below.
+Use `ExplainLevels` from [`assets/explain_levels.py`](../assets/explain_levels.py). Copy it next to the notebook, add `anywidget` and `traitlets`, wrap with `mo.ui.anywidget`, and pass `paper_ref` (a section, figure, equation, or algorithm of this paper). Trait schema and snippets: [`explain_levels.md`](explain_levels.md). Demo: [`explain_levels_example.py`](explain_levels_example.py).
 
 This section covers what is specific to ladders. For general cell conventions (PEP 723 metadata, naming, `marimo check`), follow marimo-team's [`marimo-notebook`](https://github.com/marimo-team/skills/tree/main/skills/marimo-notebook) skill, and Eric Ma's [`marimo`](https://github.com/ericmjl/skills/tree/main/skills/marimo) skill where installed. Following Eric's preference, the examples use descriptive names rather than `_`-prefixed ones.
 
-**Hide the code.** Every cell below is `@app.cell(hide_code=True)`. The reader sees the level picker, the tabs, and the check. Leave a cell's code visible only when that code is itself the teaching point, and say so in the prose beside it.
+**Hide the code.** Every cell below is `@app.cell(hide_code=True)`. The reader sees the level picker and the widget. Leave a cell's code visible only when that code is itself the teaching point, and say so in the prose beside it.
 
-**One level picker near the top.** Its default comes from the reader's mapped level.
+**One level picker near the top.** Its default comes from the reader's mapped level. Pass `level=reader_level.value` into each `ExplainLevels` so one picker drives every ladder.
 
 ```python
 @app.cell(hide_code=True)
@@ -225,6 +225,39 @@ def _(mo):
     reader_level
     return LEVELS, reader_level
 ```
+
+**Each ladder is an `ExplainLevels` widget.** Checks live on the rung (`question`, `why`, and either `options`, a numeric `correct`, or open `correct=None`).
+
+```python
+@app.cell(hide_code=True)
+def _(ExplainLevels, mo, reader_level):
+    attention_ladder = mo.ui.anywidget(ExplainLevels(
+        title="Self-attention lets every word look at every other word",
+        paper_ref="Sec. 3.2.1, Eq. 1",
+        level=reader_level.value,
+        levels=[
+            {
+                "name": "Child",
+                "text": "In *The dog chased its tail*, you know whose tail it is by looking back at *dog*. …",
+                "check": {
+                    "question": "Which is closest to what attention does?",
+                    "options": [
+                        "It reads the words one by one, in order",
+                        "For each word, it decides which other words to look at, and how much",
+                        "It counts how often each word appears",
+                    ],
+                    "correct": "For each word, it decides which other words to look at, and how much",
+                    "why": "That's the mechanism. Reading in order is how older recurrent models work.",
+                },
+            },
+            # Teen, Undergrad, Grad student, Expert — same names as LEVELS
+        ],
+    ))
+    attention_ladder
+    return (attention_ladder,)
+```
+
+The cells below are the inline equivalent (tabs + `show_check`) if you need to see the content model without the widget.
 
 **A check helper, defined once.** It shows the check for whichever tab is open, and gives feedback once the reader answers.
 
