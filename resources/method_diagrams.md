@@ -9,7 +9,7 @@ Draw **what the paper did** (its method or analysis pipeline) as a hand-drawn Me
 
 ## 1. Stage graph
 
-Extract the method as data before drawing, so every level's view comes from one source. Write it as a Python literal (a dict with `stages` and `edges` lists) in its own cell with `hide_code=True`, named descriptively (`method_graph`), so the notebook stays one file. Put the helpers that draw and check it in `@app.function` cells.
+Extract the method as data before drawing, so every level's view comes from one source. Write it as a Python literal (a dict with `stages` and `edges` lists) in its own cell with `hide_code=True`, named descriptively (`method_graph`), so the notebook stays one file. Put the helpers that draw and check it in `@app.function(hide_code=True)` cells.
 
 **Stage fields:** `id` (a valid identifier, not a Mermaid keyword such as `end` or `class`), `label` (short verb phrase), `group` (the phase), `ref` (section, figure, or table), or `inferred` (`true` or a reason) when the paper doesn't state the step, `what` (two or three sentences), `params` (settings, each with its condition), and optionally `input` and `pools` (§3) and `demo` (what our demo does here).
 

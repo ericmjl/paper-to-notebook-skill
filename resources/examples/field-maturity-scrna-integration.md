@@ -24,10 +24,12 @@ vocabulary_onboarding_plan:
 
 ## Notebook mock
 
+Cells hide their code. The reader sees the vocabulary, not the Python.
+
 ### Cell: Disambiguation (required)
 
 ```python
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(
         """
@@ -53,7 +55,7 @@ def _(mo):
 ### Cell: Glossary
 
 ```python
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.accordion({
         "Glossary": mo.md(
@@ -72,7 +74,7 @@ def _(mo):
 ### Cell: Search further
 
 ```python
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(
         """
@@ -91,7 +93,7 @@ def _(mo):
 ### Cell: Check
 
 ```python
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.ui.radio(
         options=[

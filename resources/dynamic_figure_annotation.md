@@ -104,38 +104,39 @@ Read `/tmp/centering_audit_sheet.png` with your multimodal image reader (`read_f
 
 ### Step 4: Render in Marimo with `FigureAnnotatorWidget`
 
-Instantiate `FigureAnnotatorWidget`, load the figure image, set `.caption`, assign the verified `.annotations` and `.tour_steps`, and validate the notebook:
+Import `FigureAnnotatorWidget` in the import cell. Instantiate it in its own cell with the code hidden: the reader sees the tour, not the coordinates. Load the figure image, set `.caption`, assign the verified `.annotations` and `.tour_steps`, and validate the notebook:
 
 ```python
-from pathlib import Path
-from figure_annotator_widget import FigureAnnotatorWidget
+@app.cell(hide_code=True)
+def _(FigureAnnotatorWidget, Path):
+    annotator = FigureAnnotatorWidget()
+    annotator.load_image_from_path(Path("resources/figures/fig1.webp"))
+    annotator.caption = "Fig. 1. (A) Spin-dependent pathways..."
 
-annotator = FigureAnnotatorWidget()
-annotator.load_image_from_path(Path("resources/figures/fig1.webp"))
-annotator.caption = "Fig. 1. (A) Spin-dependent pathways..."
+    annotator.annotations = [
+        {
+            "id": "ground_state",
+            "label": "¹PC (Ground S₀)",
+            "box": [35.56, 43.19, 5.44, 5.47],
+            "color": "#0284c7",
+            "description": "Unexcited ground state",
+        },
+        # ...
+    ]
 
-annotator.annotations = [
-    {
-        "id": "ground_state",
-        "label": "¹PC (Ground S₀)",
-        "box": [35.56, 43.19, 5.44, 5.47],
-        "color": "#0284c7",
-        "description": "Unexcited ground state",
-    },
-    # ...
-]
-
-annotator.tour_steps = [
-    {
-        "title": "1. Ground State vs. Singlet Excitation",
-        "target_ids": ["ground_state", "absorption", "singlet_excited"],
-        "html": (
-            '<p>The unexcited catalyst begins at '
-            '<a class="fig-ref" data-target="ground_state">¹PC Ground State (S₀)</a>...</p>'
-        ),
-    },
-    # ...
-]
+    annotator.tour_steps = [
+        {
+            "title": "1. Ground State vs. Singlet Excitation",
+            "target_ids": ["ground_state", "absorption", "singlet_excited"],
+            "html": (
+                '<p>The unexcited catalyst begins at '
+                '<a class="fig-ref" data-target="ground_state">¹PC Ground State (S₀)</a>...</p>'
+            ),
+        },
+        # ...
+    ]
+    annotator
+    return
 ```
 
 Validate the generated Marimo notebook before handoff:

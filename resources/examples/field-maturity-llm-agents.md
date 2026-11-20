@@ -24,10 +24,12 @@ vocabulary_onboarding_plan:
 
 ## Notebook mock
 
+Cells hide their code. The reader sees the vocabulary, not the Python.
+
 ### Cell: Terminology in flux
 
 ```python
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(
         """
@@ -50,7 +52,7 @@ def _(mo):
 ### Cell: Search / read further
 
 ```python
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(
         """
@@ -70,7 +72,7 @@ def _(mo):
 ### Cell: Glossary (branded + generic)
 
 ```python
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.accordion({
         "Glossary": mo.md(
@@ -89,7 +91,7 @@ def _(mo):
 ### Cell: Check
 
 ```python
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.ui.radio(
         options=[

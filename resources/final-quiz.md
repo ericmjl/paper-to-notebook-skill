@@ -49,6 +49,8 @@ It shuffles the options, marks the chosen answer right or wrong, shows the expla
 
 ## The final cells
 
+Hide both cells. The reader sees the heading and the quiz; the Python is not the teaching point.
+
 ```python
 @app.cell(hide_code=True)
 def _(mo):

@@ -14,7 +14,7 @@ __generated_with = "0.25.2"
 app = marimo.App(width="medium")
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _():
     import base64
     from pathlib import Path
@@ -40,7 +40,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(List, Optional, Path, anywidget, base64, traitlets):
     ESM_CODE = """
     export function render({ model, el }) {
