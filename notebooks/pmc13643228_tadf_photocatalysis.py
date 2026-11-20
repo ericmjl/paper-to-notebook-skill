@@ -2215,7 +2215,7 @@ def materials_methods():
     mo.md(r"""
     ## Materials and methods
 
-    This is the pipeline in the paper and its SI, not a figure they printed. The boxes follow the Mainz photophysics, the Dortmund synthesis, the Bologna continuous-light code, and the one flask reaction. Nothing here is inferred: every arrow cites a section.
+    This is the pipeline in the paper and its SI, not a figure they printed. The boxes follow SI S1 (Mainz TAS and Dortmund synthesis), SI S2.1–S2.7 (Fig. 2, $\Phi_{\mathrm{r,tot}}$ and Table 1 cage escape), Fig. 4 (kinetic model), SI S2.9 (Fig. 5, continuous light), and SI S3 (Fig. 6, other catalysts). Nothing here is inferred: every arrow cites a section.
 
     The level picker at the top of the notebook sets the amount of detail. Child and Teen see the phases. Undergrad sees every stage. Grad student and Expert see short settings on the boxes and the full settings in the side panel.
 
