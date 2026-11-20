@@ -104,3 +104,29 @@ def test_included_figure_walkthroughs_without_widget_fails() -> None:
     assert warnings == []
     assert len(errors) == 1
     assert "FigureAnnotatorWidget" in errors[0]
+
+
+def test_parse_component_header_includes_explain_levels() -> None:
+    source = (
+        f"{HEADER} figure-walkthroughs, method-diagrams, "
+        "final-quiz, explain-levels\n"
+    )
+    assert parse_component_header(source) == [
+        "figure-walkthroughs",
+        "method-diagrams",
+        "final-quiz",
+        "explain-levels",
+    ]
+
+
+def test_check_components_warns_on_missing_explain_levels() -> None:
+    source = f"{HEADER} explain-levels, final-quiz\nPaperQuiz\n"
+    warnings = check_components(source)
+    assert len(warnings) == 1
+    assert "explain-levels" in warnings[0]
+    assert "ExplainLevels" in warnings[0]
+
+
+def test_check_components_explain_levels_present() -> None:
+    source = f"{HEADER} explain-levels\nfrom explain_levels import ExplainLevels\n"
+    assert check_components(source) == []

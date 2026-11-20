@@ -205,6 +205,8 @@ From *Attention Is All You Need* (Vaswani et al., 2017).
 
 ## 9. Notebook pattern
 
+Prefer `ExplainLevels` from [`assets/explain_levels.py`](../assets/explain_levels.py) when that file is present (companion PR). Until then, use the cells below.
+
 This section covers what is specific to ladders. For general cell conventions (PEP 723 metadata, naming, `marimo check`), follow marimo-team's [`marimo-notebook`](https://github.com/marimo-team/skills/tree/main/skills/marimo-notebook) skill, and Eric Ma's [`marimo`](https://github.com/ericmjl/skills/tree/main/skills/marimo) skill where installed. Following Eric's preference, the examples use descriptive names rather than `_`-prefixed ones.
 
 **Hide the code.** Every cell below is `@app.cell(hide_code=True)`. The reader sees the level picker, the tabs, and the check. Leave a cell's code visible only when that code is itself the teaching point, and say so in the prose beside it.
