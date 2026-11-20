@@ -97,11 +97,11 @@ Start from an `assets/` template when one exists (**TODO:** add `assets/notebook
 
 Follow the marimo skills installed in `.agents/skills/` (one `import marimo as mo` cell; unique top-level names; widgets that drive exploration, not decoration):
 
-- [`marimo-notebook-patterns`](.agents/skills/marimo-notebook-patterns/SKILL.md): read before writing or editing any notebook cell (import and cell-parameter rules, unique variables, widget API signatures, common errors).
+- [`marimo-notebook-patterns`](.agents/skills/marimo-notebook-patterns/SKILL.md): read before writing or editing any notebook cell (import and cell-parameter rules, unique variables, widget API signatures, common errors). For charts, follow its `plotly-over-matplotlib` rule: Plotly is the default.
 - [`marimo`](.agents/skills/marimo/SKILL.md): broader authoring reference, including live pairing and embedding notebooks on the web.
 - [`awesome-marimo-notebook`](.agents/skills/awesome-marimo-notebook/SKILL.md): how to make a paper or dataset explainer engaging and polished.
 
-Declare dependencies in a [PEP 723](https://peps.python.org/pep-0723/) inline script metadata block at the top of the file (`# /// script` … `# ///`), listing `marimo` and every package the notebook imports, each with a lower-bound version (e.g. `numpy>=2.0`). This lets `uv run` and `marimo edit --sandbox` install them.
+Declare dependencies in a [PEP 723](https://peps.python.org/pep-0723/) inline script metadata block at the top of the file (`# /// script` … `# ///`), listing `marimo`, `plotly`, and every other package the notebook imports, each with a lower-bound version (e.g. `numpy>=2.0`, `plotly>=5.24.0`). This lets `uv run` and `marimo edit --sandbox` install them.
 
 End the notebook with the five-question quiz described under [Final quiz](#final-quiz).
 
@@ -115,8 +115,8 @@ Other generation rules:
 
 - Hide code on nearly every cell: `@app.cell(hide_code=True)`, and the same flag on `@app.function` and `app.setup`. Readers see prose, figures, widgets, and outputs. Showing the code is the exception, and only for a cell whose code is itself the teaching point (a short snippet the reader is meant to read, if the notebook has one). When you leave a cell visible, say so in that cell's prose. Cell templates in `resources/` set `hide_code=True`.
 - Equations: LaTeX in `mo.md`; widgets on parameters when that builds intuition.
-- Figures: reproduce or simplify when data allow; link back to the paper's figure number. If data are not available, say so — do not invent plots. A reproduced plot does not replace the annotated walkthrough of the paper's own figure. **TODO:** how far to go with vision-based estimates or reader-written figure interpretations in v1.
-- Figure walkthroughs: every main-text figure gets an annotated tour (`FigureAnnotatorWidget`), not a subset. Enumerate the figures first and report any figure whose image you could not obtain instead of skipping it. Put every tour in one `mo.ui.tabs`, one tab per figure, and wrap that tab box in `wigglystuff.FloatingPanel` (`wigglystuff>=0.6.0`) so the reader can drag it while scrolling. Read [`resources/dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md).
+- Figures: reproduce or simplify when data allow; link back to the paper's figure number. If data are not available, say so — do not invent plots. Default plotting library is **Plotly** (`plotly.graph_objects` / `plotly.express`). Put `plotly` in the PEP 723 block. Use Plotly annotations, shapes, and hover text for callouts on recreated figures. Do not start from matplotlib or Altair unless the user asks. A reproduced plot does not replace the annotated walkthrough of the paper's own figure. **TODO:** how far to go with vision-based estimates or reader-written figure interpretations in v1.
+- Figure walkthroughs: every main-text figure gets an annotated tour (`FigureAnnotatorWidget`), not a subset. Enumerate the figures first and report any figure whose image you could not obtain instead of skipping it. Put every tour in one `mo.ui.tabs`, one tab per figure, and wrap that tab box in `wigglystuff.FloatingPanel` (`wigglystuff>=0.6.0`) so the reader can drag it while scrolling. Recreated plots stay in Plotly; the widget tours the paper's printed figure. Read [`resources/dynamic_figure_annotation.md`](resources/dynamic_figure_annotation.md) (`FigureAnnotatorWidget` plus a coordinate-audit helper in `scripts/`).
 - Method diagrams: draw the paper's pipeline as a hand-drawn ELK Mermaid flowchart whose detail follows the reader's level, and step through it. Read [`resources/method_diagrams.md`](resources/method_diagrams.md) (`MermaidView` in `assets/`).
 - Core concepts (1–3 per notebook) get an explanation ladder ([Explaining at multiple levels](#explaining-at-multiple-levels)).
 - Informal checks: short questions, not graded assessment. Use the `show_check` pattern in `resources/explanation-levels.md` §9 (radio, a numeric answer with tolerance, or an open answer with a model answer).
@@ -213,7 +213,6 @@ Quiz the substance, not the machinery: the paper's claims, what it found, why th
 - Eval suite, criteria scaffold, and test-paper list.
 - License for the skill and for generated notebooks.
 - Whether to mandate `wigglystuff.CellTour` for every notebook.
-- Standard library set for math plots (plotly vs. matplotlib).
 - i18n and accessibility requirements.
 
 ## Related work at hackathon

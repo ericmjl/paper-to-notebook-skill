@@ -211,3 +211,17 @@ uv run scripts/validate_notebook.py resources/figure_annotator_example.py --run
 2. **Edge-Aware Badge Placement**:
    - When an annotation sits near the top edge of the figure (`y < 6%`), flip `.annot-badge` below the box (`top: calc(100% + 5px); bottom: auto;`) so the pill is not clipped by the top border.
    - When an annotation sits near the left edge (`x + w/2 < 12%`, such as a vertical y-axis label) or right edge (`x + w/2 > 88%`), anchor `.annot-badge` inward (`left: 0; transform: none;` or `right: 0; left: auto; transform: none;`) so long labels never clip horizontally.
+
+---
+
+## Recreated plots (Plotly)
+
+`FigureAnnotatorWidget` tours the paper's printed figure (an image). When you also **recreate** a figure from data, use **Plotly** (`go.Figure` / `plotly.express`), not matplotlib or Altair, unless the user asks otherwise. That is the skill default.
+
+On the Plotly figure, put the teaching labels in the figure itself:
+
+- **Hover text:** `hovertemplate` (or `text` + `hoverinfo`) so a reader can inspect a point without leaving the plot.
+- **Annotations:** `fig.add_annotation(...)` for a named callout (a peak, a regime, a paper label).
+- **Shapes:** `fig.add_shape(...)` for a region, threshold, or highlighted interval.
+
+Give each Plotly figure a unique variable name (see `plotly-over-matplotlib` in [`.agents/skills/marimo-notebook-patterns/SKILL.md`](../.agents/skills/marimo-notebook-patterns/SKILL.md)). A recreated Plotly plot does not replace the image tour of the paper's own figure.
