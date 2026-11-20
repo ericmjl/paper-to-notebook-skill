@@ -1,6 +1,6 @@
 # Worked example: UMAP
 
-**Paper:** McInnes, L., Healy, J. & Melville, J. (2018). *UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction.* arXiv:1802.03426.
+**Paper:** McInnes, L., Healy, J. & Melville, J. (2018). *UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction.* arXiv:1802.03426v3.
 
 **How it was made:** a fresh agent, given only [`explanation-levels.md`](../explanation-levels.md), the levels section of [`SKILL.md`](../../SKILL.md), and the paper's arXiv text, wrote everything below. Quotes pass `scripts/check_quotes.py` and every level passes `scripts/check_levels.py`. The matching level-matched quiz is [`quiz-umap.json`](quiz-umap.json). Check both against the paper before reusing them.
 
