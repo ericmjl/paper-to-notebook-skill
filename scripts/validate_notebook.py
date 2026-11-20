@@ -39,6 +39,12 @@ It also warns when a Greek TeX command is closed and then a subscript
 letter is written outside the span (``$\\rho$ A`` or a Unicode ρ followed
 by ``$A$``): write ``$\\rho_A$`` instead.
 
+After a successful parse, also warn, without failing, on mechanical
+processing-friendly-prose issues via :mod:`check_prose` (very long
+sentences or paragraphs, noun stacks, inanimate actors with person-verbs,
+ad-hoc denominal verbs from the skill's examples). Those warnings never
+fail the run.
+
 Missing ``FigureAnnotatorWidget`` is a **failure** unless the component
 comment opts out of ``figure-walkthroughs``. An explicit opt-out warns
 instead of failing. Other warnings never fail the run.
@@ -55,6 +61,8 @@ import re
 import subprocess
 import sys
 from pathlib import Path
+
+from check_prose import format_warning, prose_warnings
 
 _APP_BLOCK_KINDS = frozenset({"cell", "function", "setup"})
 COMPONENT_HEADER = "# paper-to-notebook-skill-components:"
@@ -536,6 +544,12 @@ def main() -> int:
         for message in math_span_warnings:
             print(f"WARN: {message}")
 
+    writing_warnings = prose_warnings(source)
+    if writing_warnings:
+        print("[prose]")
+        for warning in writing_warnings:
+            print(f"WARN: {format_warning(warning)}")
+
     walkthrough_warnings, walkthrough_errors = check_figure_walkthroughs(source)
     if walkthrough_warnings or walkthrough_errors:
         print("[figure-walkthroughs]")
@@ -560,6 +574,9 @@ def main() -> int:
     if math_span_warnings:
         noun = "warning" if len(math_span_warnings) == 1 else "warnings"
         notes.append(f"{len(math_span_warnings)} math-span {noun}")
+    if writing_warnings:
+        noun = "warning" if len(writing_warnings) == 1 else "warnings"
+        notes.append(f"{len(writing_warnings)} prose {noun}")
     if walkthrough_warnings:
         noun = "warning" if len(walkthrough_warnings) == 1 else "warnings"
         notes.append(f"{len(walkthrough_warnings)} figure-walkthrough {noun}")
