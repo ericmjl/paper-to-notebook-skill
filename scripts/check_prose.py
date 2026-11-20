@@ -4,7 +4,14 @@
 # ///
 """Mechanical processing-friendly-prose warnings for notebook source.
 
-Warnings only. Nothing here fails a run. The checks are the subset of
+Warnings only. Nothing here fails a run. A warning marks a sentence to
+look at again. It does not mean you must rewrite that sentence. Rewrite
+only when the new wording is clearer. Keep wording that is already
+clear and natural, including ordinary scientific terms, even if it
+stays flagged. Do not rewrite a clear sentence just to shorten the
+warning list.
+
+The checks are the subset of
 `.agents/skills/processing-friendly-prose` that can be tested without a
 parser: very long sentences (a proxy for a subject far from its verb),
 very long paragraphs (packing), clear noun stacks (four or more nouns,
@@ -589,7 +596,7 @@ def main() -> int:
         return 1
     warnings = prose_warnings(source)
     if warnings:
-        print("[prose]")
+        print("[prose] Look at these sentences again. Rewrite only if the change is clearer.")
         for warning in warnings:
             print(f"WARN: {format_warning(warning)}")
         noun = "warning" if len(warnings) == 1 else "warnings"

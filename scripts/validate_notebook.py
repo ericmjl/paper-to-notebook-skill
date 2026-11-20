@@ -44,7 +44,9 @@ processing-friendly-prose issues via :mod:`check_prose` (very long
 sentences or paragraphs, clear noun stacks of four or more nouns or a
 hyphenated compound stacked onto further nouns, inanimate actors with person-verbs,
 ad-hoc denominal verbs from the skill's examples). Those warnings never
-fail the run.
+fail the run. Each one points to a sentence to look at again, not a
+sentence that must be rewritten. Keep clear wording, including ordinary
+scientific terms, even if it stays flagged.
 
 Missing ``FigureAnnotatorWidget`` is a **failure** unless the component
 comment opts out of ``figure-walkthroughs``. An explicit opt-out warns
@@ -547,7 +549,7 @@ def main() -> int:
 
     writing_warnings = prose_warnings(source)
     if writing_warnings:
-        print("[prose]")
+        print("[prose] Look at these sentences again. Rewrite only if the change is clearer.")
         for warning in writing_warnings:
             print(f"WARN: {format_warning(warning)}")
 
