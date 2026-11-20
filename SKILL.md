@@ -169,7 +169,7 @@ Other generation rules:
 uv run scripts/validate_notebook.py path/to/notebook.py --run
 ```
 
-It checks Python syntax, runs `marimo check --strict`, and with `--run` executes the notebook top to bottom. Fix every reported problem before delivery. It also warns, without failing, when a cell, `@app.function`, or `app.setup` block does not set `hide_code=True`. A warning names a cell you left visible because its code is the teaching point; any other visible cell should be hidden. When a notebook builds two or more figure tours, it warns, again without failing, if those tours are not all values of a single `mo.ui.tabs`. If the notebook has a `# paper-to-notebook-skill-components:` comment, the script also warns when an included component is missing; skipped components are not a failure.
+It checks Python syntax, runs `marimo check --strict`, and with `--run` executes the notebook top to bottom. Fix every reported problem before delivery. It also warns, without failing, when a cell, `@app.function`, or `app.setup` block does not set `hide_code=True`. A warning names a cell you left visible because its code is the teaching point; any other visible cell should be hidden. When a notebook builds two or more figure tours, it warns, again without failing, if those tours are not all values of a single `mo.ui.tabs`. If the notebook has a `# paper-to-notebook-skill-components:` comment, the script also warns when an included component is missing; skipped components are not a failure. It warns, without failing, when no paper figure image is embedded or referenced, and when more than half of the long markdown cells cite no paper anchor (Fig./Figure/Eq./Table/Section/§).
 
 Before handoff, scan the notebook:
 
