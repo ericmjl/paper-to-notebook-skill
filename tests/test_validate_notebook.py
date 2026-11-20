@@ -130,3 +130,43 @@ def test_check_components_warns_on_missing_explain_levels() -> None:
 def test_check_components_explain_levels_present() -> None:
     source = f"{HEADER} explain-levels\nfrom explain_levels import ExplainLevels\n"
     assert check_components(source) == []
+
+
+def test_parse_component_header_includes_equations() -> None:
+    source = (
+        f"{HEADER} figure-walkthroughs, method-diagrams, "
+        "final-quiz, explain-levels, equations\n"
+    )
+    assert parse_component_header(source) == [
+        "figure-walkthroughs",
+        "method-diagrams",
+        "final-quiz",
+        "explain-levels",
+        "equations",
+    ]
+
+
+def test_check_components_warns_on_missing_tangle_latex() -> None:
+    source = f"{HEADER} equations, final-quiz\nPaperQuiz\n"
+    warnings = check_components(source)
+    assert len(warnings) == 1
+    assert "equations" in warnings[0]
+    assert "TangleLatex" in warnings[0]
+
+
+def test_check_components_equations_present() -> None:
+    source = f"{HEADER} equations\nfrom wigglystuff import TangleLatex\n"
+    assert check_components(source) == []
+
+
+def test_check_components_equations_is_not_unknown() -> None:
+    source = f"{HEADER} equations\nTangleLatex\n"
+    warnings = check_components(source)
+    assert warnings == []
+    assert not any("unknown" in warning for warning in warnings)
+
+
+def test_check_components_does_not_require_skipped_equations() -> None:
+    source = f"{HEADER} final-quiz\nPaperQuiz\n"
+    assert "TangleLatex" not in source
+    assert check_components(source) == []
