@@ -18,6 +18,13 @@ whose code is itself the teaching point may stay visible, and failing the
 run would reject that exception. The warning names each block so a visible
 cell is a choice rather than an omission.
 
+When the notebook assigns ``FigureAnnotatorWidget()`` at least twice, the
+script also warns, without failing, unless every such name appears inside
+one ``mo.ui.tabs`` call. One figure needs no tab box, so a single tour is
+silent. The check looks only at names assigned from that constructor and at
+dict values of ``something.ui.tabs(...)``. Explanation-level tabs, which
+do not hold those names, are ignored.
+
 Usage:
     uv run scripts/validate_notebook.py path/to/notebook.py [--run]
 """
@@ -98,6 +105,119 @@ def visible_code_blocks(tree: ast.AST) -> list[tuple[int, str]]:
     return found
 
 
+def _is_annotator_call(node: ast.expr) -> bool:
+    """Return whether ``node`` constructs a ``FigureAnnotatorWidget``.
+
+    :param node: expression on the right of an assignment
+    :return: True when ``node`` calls the name ``FigureAnnotatorWidget``
+    """
+    return (
+        isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id == "FigureAnnotatorWidget"
+    )
+
+
+def _is_ui_tabs(node: ast.Call) -> bool:
+    """Return whether ``node`` is a ``something.ui.tabs`` call.
+
+    :param node: call expression
+    :return: True for ``mo.ui.tabs(...)`` and the same shape under another name
+    """
+    func = node.func
+    return (
+        isinstance(func, ast.Attribute)
+        and func.attr == "tabs"
+        and isinstance(func.value, ast.Attribute)
+        and func.value.attr == "ui"
+    )
+
+
+def _annotator_names(tree: ast.AST) -> list[tuple[int, str]]:
+    """List names assigned from ``FigureAnnotatorWidget()``.
+
+    :param tree: parsed notebook module
+    :return: ``(lineno, name)`` pairs in source order
+    """
+    found: list[tuple[int, str]] = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Assign) or not _is_annotator_call(node.value):
+            continue
+        for target in node.targets:
+            if isinstance(target, ast.Name):
+                found.append((target.lineno, target.id))
+    found.sort(key=lambda pair: pair[0])
+    return found
+
+
+def _tabs_holding(tree: ast.AST, names: set[str]) -> list[tuple[int, set[str]]]:
+    """List ``mo.ui.tabs`` calls whose dict values mention figure tours.
+
+    :param tree: parsed notebook module
+    :param names: assigned ``FigureAnnotatorWidget`` names
+    :return: ``(lineno, names found in that call)`` for tabs that hold at least one
+    """
+    found: list[tuple[int, set[str]]] = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call) or not _is_ui_tabs(node) or not node.args:
+            continue
+        argument = node.args[0]
+        if not isinstance(argument, ast.Dict):
+            continue
+        held = {
+            child.id
+            for child in ast.walk(argument)
+            if isinstance(child, ast.Name) and child.id in names
+        }
+        if held:
+            found.append((node.lineno, held))
+    found.sort(key=lambda pair: pair[0])
+    return found
+
+
+def split_figure_tours(tree: ast.AST) -> list[tuple[int, str]]:
+    """List figure tours that are not all inside one ``mo.ui.tabs``.
+
+    :param tree: parsed notebook module
+    :return: ``(lineno, label)`` pairs, empty when the tours share one tab box
+    """
+    assigned = _annotator_names(tree)
+    if len(assigned) < 2:
+        return []
+    names = {name for _, name in assigned}
+    boxes = _tabs_holding(tree, names)
+    if len(boxes) == 1 and boxes[0][1] == names:
+        return []
+    if not boxes:
+        return [(lineno, name) for lineno, name in assigned]
+    covered = set().union(*(held for _, held in boxes))
+    missing = [
+        (lineno, name) for lineno, name in assigned if name not in covered
+    ]
+    if len(boxes) > 1:
+        return [(lineno, f"mo.ui.tabs ({len(held)} tours)") for lineno, held in boxes] + missing
+    return missing or [(assigned[0][0], "figure tours are split across tabs")]
+
+
+def report_figure_tabs(blocks: list[tuple[int, str]], tour_count: int) -> None:
+    """Print the one-tab-box scan. Warnings do not fail the run.
+
+    :param blocks: ``(lineno, label)`` pairs from :func:`split_figure_tours`
+    :param tour_count: how many ``FigureAnnotatorWidget`` names were assigned
+    """
+    if tour_count < 2:
+        return
+    if not blocks:
+        print("[figures] figure tours share one mo.ui.tabs")
+        return
+    print(
+        "[figures] WARN: figure tours do not share one mo.ui.tabs "
+        "(one tab per figure):"
+    )
+    for lineno, label in blocks:
+        print(f"  line {lineno}: {label}")
+
+
 def report_visible_code(blocks: list[tuple[int, str]]) -> None:
     """Print the hide-code scan. Warnings do not fail the run.
 
@@ -143,6 +263,9 @@ def main() -> int:
         return 1
     visible = visible_code_blocks(tree)
     report_visible_code(visible)
+    tours = _annotator_names(tree)
+    split = split_figure_tours(tree)
+    report_figure_tabs(split, len(tours))
 
     print("[2/3] marimo check --strict")
     result = subprocess.run(
@@ -165,9 +288,15 @@ def main() -> int:
     else:
         print("[3/3] smoke run skipped (pass --run to enable)")
 
+    notes: list[str] = []
     if visible:
         noun = "warning" if len(visible) == 1 else "warnings"
-        print(f"OK: {nb} ({len(visible)} hide_code {noun}; not a failure)")
+        notes.append(f"{len(visible)} hide_code {noun}")
+    if split:
+        noun = "warning" if len(split) == 1 else "warnings"
+        notes.append(f"{len(split)} figure-tab {noun}")
+    if notes:
+        print(f"OK: {nb} ({', '.join(notes)}; not a failure)")
     else:
         print(f"OK: {nb}")
     return 0

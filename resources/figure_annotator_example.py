@@ -36,6 +36,7 @@ def _(mo):
     - **Color-Matched Explanation Badges**: Inline `.fig-ref` hover badges automatically match the color of their corresponding diagram overlay boxes.
     - **Just-In-Time (JIT) Visibility & Click-to-Step Navigation**: Overlay boxes remain hidden at rest so the figure is never cluttered, light up on hover, and jump to their associated tour step when clicked.
     - **Top-to-Bottom Pedagogical Layout**: Step Navigator $\rightarrow$ Explanation Card $\rightarrow$ Interactive Diagram $\rightarrow$ Original Figure Caption.
+    - **One tab box**: a paper notebook puts every main-text figure in a single `mo.ui.tabs`, one tab per figure. The two tabs below are that box.
     """)
     return
 

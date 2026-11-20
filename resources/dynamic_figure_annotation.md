@@ -16,6 +16,16 @@ Enumerate the figures before writing any annotation cell:
 2. Obtain an image for each label. When an image cannot be fetched or cropped out, **report that label** — a short note in the notebook where the tour would have been, and the same label in the handoff. Do not drop it from the list and continue.
 3. Build a walkthrough for every figure that has an image, using the steps below.
 
+## One tab box
+
+All of a paper's figure walkthroughs go in **one** `mo.ui.tabs`. One tab per figure. The label is the figure number and a short title, for example `Figure 3. Spectra, the averaging window, and the actinometer`.
+
+Build each tour in its own cell with `hide_code=True`, and return the widget from that cell so it does not also render as its own section. One display cell holds the tab box. Do not give each figure its own heading, and do not split the tours across two tab boxes or an accordion.
+
+A figure whose image could not be obtained still gets a tab. The tab body is the short note that the image is missing.
+
+The runnable example already uses this box for the two figures it tours.
+
 ---
 
 ## Dependencies & Related Resources
@@ -118,7 +128,7 @@ Read `/tmp/centering_audit_sheet.png` with your multimodal image reader (`read_f
 
 ### Step 4: Render in Marimo with `FigureAnnotatorWidget`
 
-Import `FigureAnnotatorWidget` in the import cell. Instantiate it in its own cell with the code hidden: the reader sees the tour, not the coordinates. Load the figure image, set `.caption`, assign the verified `.annotations` and `.tour_steps`, and validate the notebook:
+Import `FigureAnnotatorWidget` in the import cell. Instantiate each figure in its own cell with the code hidden: the reader sees the tour, not the coordinates. Load the figure image, set `.caption`, assign the verified `.annotations` and `.tour_steps`, return the widget, and validate the notebook. The cell below is one figure. A later cell puts every figure in the single tab box from [One tab box](#one-tab-box).
 
 ```python
 @app.cell(hide_code=True)
@@ -149,8 +159,17 @@ def _(FigureAnnotatorWidget, Path):
         },
         # ...
     ]
-    annotator
-    return
+    return (annotator,)
+
+
+@app.cell(hide_code=True)
+def _(fig1_annotator, fig2_annotator, mo):
+    mo.ui.tabs(
+        {
+            "Figure 1. States, cage, catalyst, quenchers": fig1_annotator,
+            "Figure 2. 450 nm traces and the yield inset": fig2_annotator,
+        }
+    )
 ```
 
 Validate the generated Marimo notebook before handoff:
