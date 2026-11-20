@@ -683,14 +683,14 @@ def _(FigureAnnotatorWidget, Path, mo):
             "label": "CR (Spin-Allowed Recombination)",
             "box": [27.06, 32.37, 6.12, 10.5],
             "color": "#ea580c",
-            "description": "Fast back electron transfer that is spin-allowed",
+            "description": "Fast spin-allowed back electron transfer",
         },
         {
             "id": "cr_right",
             "label": "CR (Spin-Forbidden Recombination)",
             "box": [49.25, 28.89, 6.12, 10.5],
             "color": "#d97706",
-            "description": "Slow back electron transfer that is spin-forbidden",
+            "description": "Slow spin-forbidden back electron transfer",
         },
         {
             "id": "pc_structure",
@@ -757,7 +757,7 @@ def _(FigureAnnotatorWidget, Path, mo):
         {
             "title": "3. Panel A: Singlet vs. Triplet Solvent Cages",
             "target_ids": ["singlet_quenching", "triplet_quenching"],
-            "html": '<p>Quenching by electron donor Q produces a radical pair trapped in a solvent cage. Electron transfer from S₁ forms the <a class="fig-ref" data-target="singlet_quenching">¹[Qᵒˣ ... PCʳᵉᵈ] Singlet Pair</a>. Electron transfer from T₁ forms the <a class="fig-ref" data-target="triplet_quenching">³[Qᵒˣ ... PCʳᵉᵈ] Triplet Pair</a>.</p>',
+            "html": '<p>Quenching by electron donor Q produces a solvent-caged radical pair. Electron transfer from S₁ forms the <a class="fig-ref" data-target="singlet_quenching">¹[Qᵒˣ ... PCʳᵉᵈ] Singlet Pair</a>. Electron transfer from T₁ forms the <a class="fig-ref" data-target="triplet_quenching">³[Qᵒˣ ... PCʳᵉᵈ] Triplet Pair</a>.</p>',
         },
         {
             "title": "4. Panel A: Cage Escape (CE) vs. Charge Recombination (CR)",
@@ -778,7 +778,7 @@ def _(FigureAnnotatorWidget, Path, mo):
                 "pc_lifetimes",
                 "pc_phi_isc",
             ],
-            "html": '<p>Panel B details the dicationic <a class="fig-ref" data-target="pc_structure">PC²⁺ catalyst structure</a> in acetonitrile.</p><p>Both <a class="fig-ref" data-target="pc_redox_s1">S₁ (+2.0 V vs SCE)</a> and <a class="fig-ref" data-target="pc_redox_t1">T₁ (+1.8 V vs SCE)</a> are strong oxidants, separated by just 0.2 V.</p><p>Look at the <a class="fig-ref" data-target="pc_lifetimes">lifetimes of the excited states (17 ns vs 44 μs)</a>: T₁ lives <b>~2,600× longer</b> than S₁ and forms with <a class="fig-ref" data-target="pc_phi_isc">Φ_isc = 0.68</a>. Low quencher concentrations can then harvest T₁ on its own.</p>',
+            "html": '<p>Panel B details the dicationic <a class="fig-ref" data-target="pc_structure">PC²⁺ catalyst structure</a> in acetonitrile.</p><p>Both <a class="fig-ref" data-target="pc_redox_s1">S₁ (+2.0 V vs SCE)</a> and <a class="fig-ref" data-target="pc_redox_t1">T₁ (+1.8 V vs SCE)</a> are strong oxidants, separated by just 0.2 V.</p><p>Look at the <a class="fig-ref" data-target="pc_lifetimes">excited-state lifetimes (17 ns vs 44 μs)</a>: T₁ lives <b>~2,600× longer</b> than S₁ and forms with <a class="fig-ref" data-target="pc_phi_isc">Φ_isc = 0.68</a>, so low quencher concentrations can selectively harvest T₁.</p>',
         },
         {
             "title": "6. Panel C: Electron-Donor Quenchers (Q)",
@@ -888,7 +888,7 @@ def _(FigureAnnotatorWidget, Path, mo):
         {
             "title": "2. The Concentration Paradox: 0.3 mM (Blue) vs. 13 mM (Red)",
             "target_ids": ["blue_trace", "red_trace", "legend_box"],
-            "html": '<p>Compare the two kinetic traces.</p><p>The <a class="fig-ref" data-target="blue_trace">0.3 mM blue trace (low [Q])</a> rises gradually over ~2 μs, from diffusional quenching of long-lived <b>T₁</b>, to a high plateau (<b>ΔA ≈ 0.023</b>).</p><p>The <a class="fig-ref" data-target="red_trace">13 mM red trace (43× higher [Q])</a> rises immediately within the laser pulse, intercepting short-lived <b>S₁</b>. It still reaches less than half the signal (<b>ΔA ≈ 0.009</b>), because pairs born from the singlet recombine quickly by a spin-allowed path.</p>',
+            "html": '<p>Compare the two kinetic traces.</p><p>The <a class="fig-ref" data-target="blue_trace">0.3 mM blue trace (low [Q])</a> rises gradually over ~2 μs, from diffusional quenching of long-lived <b>T₁</b>, to a high plateau (<b>ΔA ≈ 0.023</b>).</p><p>The <a class="fig-ref" data-target="red_trace">13 mM red trace (43× higher [Q])</a> rises immediately within the laser pulse, intercepting short-lived <b>S₁</b>. It still reaches less than half the signal (<b>ΔA ≈ 0.009</b>), because singlet radical pairs recombine quickly by spin-allowed charge recombination.</p>',
         },
         {
             "title": "3. Connecting the Kinetic Traces to the Inset Quantum Yields",
@@ -898,12 +898,12 @@ def _(FigureAnnotatorWidget, Path, mo):
                 "inset_blue_pt",
                 "inset_red_pt",
             ],
-            "html": '<p>The inset plots <a class="fig-ref" data-target="inset_y_axis">Φ_r,tot, the quantum yield of free radicals</a> against <a class="fig-ref" data-target="inset_x_axis">[Q] / M, the molarity of the quencher</a>.</p><p>The <a class="fig-ref" data-target="inset_blue_pt">blue data point (0.3 mM)</a> sits near the maximum quantum yield (<b>Φ_r,tot ≈ 0.28</b>), matching the blue trace.</p><p>The <a class="fig-ref" data-target="inset_red_pt">red data point (13 mM)</a> drops to <b>Φ_r,tot ≈ 0.13</b>, matching the red trace.</p>',
+            "html": '<p>The inset plots <a class="fig-ref" data-target="inset_y_axis">Φ_r,tot (free-radical quantum yield)</a> against <a class="fig-ref" data-target="inset_x_axis">[Q] / M (quencher molarity)</a>.</p><p>The <a class="fig-ref" data-target="inset_blue_pt">blue data point (0.3 mM)</a> sits near the maximum quantum yield (<b>Φ_r,tot ≈ 0.28</b>), matching the blue trace.</p><p>The <a class="fig-ref" data-target="inset_red_pt">red data point (13 mM)</a> drops to <b>Φ_r,tot ≈ 0.13</b>, matching the red trace.</p>',
         },
         {
             "title": "4. High-[Q] Regime: Singlet Interception Outcompetes ISC",
             "target_ids": ["inset_high_q_decay", "inset_blue_pt", "inset_red_pt"],
-            "html": '<p>As the concentration of the quencher rises across the <a class="fig-ref" data-target="inset_high_q_decay">high-[Q] regime (0.02 M to 0.18 M)</a>, bimolecular collisions with <b>¹PC*</b> become faster than intersystem crossing (k_ISC). Quenching then shifts. It starts on the productive triplet channel (<a class="fig-ref" data-target="inset_blue_pt">0.3 mM peak</a>), crosses at the intermediate point (<a class="fig-ref" data-target="inset_red_pt">13 mM</a>), and ends on the low-efficiency singlet channel (Φ_r,tot → 0.04).</p>',
+            "html": '<p>As quencher concentration increases across the <a class="fig-ref" data-target="inset_high_q_decay">High-[Q] Regime (0.02 M to 0.18 M)</a>, bimolecular collisions with <b>¹PC*</b> become faster than intersystem crossing (k_ISC). Consequently, quenching shifts from the productive triplet channel (<a class="fig-ref" data-target="inset_blue_pt">0.3 mM Peak</a>) through the intermediate crossover (<a class="fig-ref" data-target="inset_red_pt">13 mM</a>) toward the low-efficiency singlet channel (Φ_r,tot → 0.04).</p>',
         },
     ]
 

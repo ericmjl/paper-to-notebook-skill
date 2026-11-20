@@ -373,7 +373,7 @@ def disambiguation():
 def disambiguation_ask():
     yield_choice = mo.ui.radio(
         options=[
-            "The quantum yield of free radicals, counted per excited state",
+            "The free-radical quantum yield, radicals per excited state",
             "The isolated mass yield of a worked-up organic product",
             "The fluorescence quantum yield of the catalyst with no quencher present",
         ],
@@ -387,7 +387,7 @@ def disambiguation_ask():
 def disambiguation_feedback(yield_choice):
     plain_feedback(
         yield_choice,
-        "The quantum yield of free radicals, counted per excited state",
+        "The free-radical quantum yield, radicals per excited state",
         "Fig. 2's inset is $\\Phi_{\\mathrm{r,tot}}$ against quencher concentration. "
         "Equation (1)'s prose defines that quantity as free radicals per excited state produced by absorption. "
         "The ~50% preparative comparison is a different experiment (Section S3.2), on a different catalyst.",
@@ -1011,7 +1011,7 @@ def figure_4(notebook_dir):
                 "The <a class='fig-ref' data-target='legend_right'>legend</a> "
                 "keeps singlet, triplet, and total, and adds the measured yields. "
                 "The <a class='fig-ref' data-target='measured'>yellow points</a> "
-                "are the quantum yields of free radicals that were measured from 0.1 mM to 200 mM, "
+                "are the experimental free-radical quantum yields from 0.1 mM to 200 mM, "
                 "the same comparison as the Fig. 2 inset. "
                 "Below about 0.1 mM the text says the yield is limited by triplet quenching "
                 "that has not finished. The decline sets in above about 1 mM, where singlet "
@@ -1083,7 +1083,7 @@ def figure_5(notebook_dir):
             "target_ids": ["model_plot", "progress", "legend5"],
             "html": (
                 "<p>The model uses the same conditions as the rest of the continuous-light "
-                "section. Those conditions are 10 mM substrate, [PC<sup>2+</sup>] = 1 mM, "
+                "section: 10 mM substrate, [PC<sup>2+</sup>] = 1 mM, "
                 "ε = 1 × 10<sup>4</sup> M<sup>−1</sup> cm<sup>−1</sup> at 440 nm, "
                 "and a photon flux of 1 × 10<sup>−3</sup> einstein s<sup>−1</sup>. "
                 "The <a class='fig-ref' data-target='legend5'>three traces</a> "
@@ -1170,7 +1170,7 @@ def figure_6(notebook_dir):
             "label": "SO2TDS2−",
             "box": [15.28, 34.9, 73.2, 11.17],
             "color": "#b91c1c",
-            "description": "An organic photocatalyst that is not TADF. It dissolves in water.",
+            "description": "A non-TADF organic photocatalyst, soluble in water",
         },
         {
             "id": "hasc",
@@ -1254,7 +1254,7 @@ def figure_6(notebook_dir):
             "title": "3. Less is more in both systems",
             "target_ids": ["legend_c", "cz_curve", "so2_curve", "ratio_125", "ratio_115"],
             "html": (
-                "<p>Panel C plots the relative yield of radicals against the concentration of the quencher. "
+                "<p>Panel C plots relative radical yield against quencher concentration. "
                 "<a class='fig-ref' data-target='legend_c'>Blue is 4CzIPN, red is "
                 "SO<sub>2</sub>TDS<sup>2−</sup></a>. Both fall as the quencher gets more "
                 "concentrated. The fit of eqn (2)–(4) gives "
@@ -1345,7 +1345,7 @@ def escape_ladder(reader_level):
             ),
             "Expert": mo.md(
                 r"""
-                What is new is a spectroscopic $\eta_{\mathrm{ce,S}}$ and $\eta_{\mathrm{ce,T}}$ on one TADF catalyst. The same direction of effect holds for three further pairs. One is naphthalene with PC$^{2+}$ ($\eta_{\mathrm{ce,T}} = 0.46 \pm 0.03$ at 0.12 mM, $\eta_{\mathrm{ce,S}} = 0.07 \pm 0.01$ at 120 mM). Another is 4CzIPN with DMA in toluene (ratio of cage-escape efficiencies 125). The third is non-TADF SO$_2$TDS$^{2-}$ with ascorbate in water (ratio 11.5). Solvents are acetonitrile, toluene, and water. The 4CzIPN curve is predicted to drop by about an order of magnitude in reaction quantum yield from 10 mM to 200 mM DMA, and the relative radical signal "drops almost to zero" at high DMA (Fig. 6C discussion).
+                What is new is a spectroscopic $\eta_{\mathrm{ce,S}}$ and $\eta_{\mathrm{ce,T}}$ on one TADF catalyst, plus the same direction of effect for three further pairs: naphthalene with PC$^{2+}$ ($\eta_{\mathrm{ce,T}} = 0.46 \pm 0.03$ at 0.12 mM, $\eta_{\mathrm{ce,S}} = 0.07 \pm 0.01$ at 120 mM), 4CzIPN with DMA in toluene (ratio of cage-escape efficiencies 125), and non-TADF SO$_2$TDS$^{2-}$ with ascorbate in water (ratio 11.5). Solvents are acetonitrile, toluene, and water. The 4CzIPN curve is predicted to drop by about an order of magnitude in reaction quantum yield from 10 mM to 200 mM DMA, and the relative radical signal "drops almost to zero" at high DMA (Fig. 6C discussion).
 
                 The preparative test is narrower than that sentence. One pinacol coupling of acetophenone (15.7 mM) with SO$_2$TDS$^{2-}$ and HAsc$^-$, 390 nm LEDs, is about 50% higher in performance at 19.2 mM ascorbate than at 96.9 mM (Section S3.2). The continuous-irradiation model (their earlier Python framework: Bellatreccia, Fina, and Ceroni, *Photochem. Photobiol. Sci.* **2026**, DOI [10.1007/s43630-026-00901-4](https://doi.org/10.1007/s43630-026-00901-4), Crossref; this paper's ref. 68) uses [substrate] = 10 mM, [PC$^{2+}$] = 1 mM, $\varepsilon = 1 \times 10^{4}\,\mathrm{M^{-1}\,cm^{-1}}$ at 440 nm, and a photon flux of $1 \times 10^{-3}$ einstein s$^{-1}$. It puts the highest quantum yield near 1 mM and still requires a stoichiometric 10 mM of quencher for full conversion (Fig. 5 compares 10, 20, and 100 mM).
 
@@ -1404,7 +1404,7 @@ def escape_ask():
         },
         "Teen": {
             "correct": "Fewer free radicals from that event",
-            "why": "About 2.8% of pairs born from the singlet escape, against about 42% of pairs born from the triplet (phenol, acetonitrile, central values in the text after Table 1). One electron is transferred either way; most singlet pairs then recombine inside the cage.",
+            "why": "About 2.8% of singlet-born pairs escape, against about 42% of triplet-born pairs (phenol, acetonitrile, central values in the text after Table 1). One electron is transferred either way; most singlet pairs then recombine inside the cage.",
         },
         "Undergrad": {
             "correct": 15.0,
@@ -2424,7 +2424,7 @@ def critique(reader_level):
         r"""
         The spectroscopic question — which spin state frees more radicals, and does concentration pick the state — is the one the transient-absorption design can answer. Iso-absorbing samples, actinometry, a microsecond window before bulk recombination, and a laser-power check are all aimed at that question. Four pairs and three solvents (acetonitrile, toluene, water) are the width of the claim as written.
 
-        The preparative question is thinner. One pinacol coupling, reported as “about 50% higher” performance, is the only flask result in the main text. The continuous-light curves are a model. They use a stated photon flux, an absorption coefficient along the path length, and a sacrificial-donor mechanism (Fig. S26 is the scheme; the numbers used are those quoted above). A reader who came for a general synthetic rule has to supply the leap from $\Phi_{\mathrm{r,tot}}$ to isolated yield, catalyst death, and side reactions. The authors flag the last of these: a less efficient reaction needs more re-excitation and, they say, more chance of degradation. They do not measure that degradation here.
+        The preparative question is thinner. One pinacol coupling, reported as “about 50% higher” performance, is the only flask result in the main text. The continuous-light curves are a model with a stated photon flux, path-length absorption coefficient, and a sacrificial-donor mechanism (Fig. S26 is the scheme; the numbers used are those quoted above). A reader who came for a general synthetic rule has to supply the leap from $\Phi_{\mathrm{r,tot}}$ to isolated yield, catalyst death, and side reactions. The authors flag the last of these: a less efficient reaction needs more re-excitation and, they say, more chance of degradation. They do not measure that degradation here.
 
         Two assumptions are easy to miss. The pair is born with the spin of the precursor (they cite this as expected). And the 450 nm signal is entirely PC•+, which they argue by ruling out the oxidized phenol at that wavelength (SI Section S2.6) rather than by a measurement the main text plots.
 
@@ -2478,8 +2478,8 @@ def quiz_cell():
                     "explain": "Abstract and Conclusions. The authors call this “less is more” and tie it to spin-dependent cage escape. It is not a claim about absorbing more photons.",
                     "distractors": {
                         "Higher quencher concentrations raise the free-radical quantum yield, because a Stern–Volmer experiment shows that more of the excited state is quenched.": "This is the habit the introduction says is intuitive and that Fig. 2 rejects. Between 0.3 mM and 13 mM phenol, total quenching goes up and the radical signal goes down.",
-                        "Diluting the quencher raises the yield because the photocatalyst then absorbs a larger fraction of the incident light.": "The comparison in Fig. 2 is of iso-absorbing solutions of 5 µM PC2+. The effect is which excited state gets quenched, not the optical density.",
-                        "The yield rises at low quencher concentration because reverse intersystem crossing recycles the singlet, so each photon is used several times.": "The section on the approximation that ignores TADF says the exact TADF treatment, which includes that recycling, gives the same cage-escape efficiencies, and that repopulation is not what makes the triplet more productive in the systems they studied.",
+                        "Diluting the quencher raises the yield because the photocatalyst then absorbs a larger fraction of the incident light.": "Fig. 2 compares iso-absorbing solutions of 5 µM PC2+. The effect is which excited state gets quenched, not the optical density.",
+                        "The yield rises at low quencher concentration because reverse intersystem crossing recycles the singlet, so each photon is used several times.": "The non-TADF approximation section says the exact TADF treatment, which includes that recycling, gives the same cage-escape efficiencies, and that repopulation is not what makes the triplet more productive in the systems they studied.",
                     },
                 },
                 {
