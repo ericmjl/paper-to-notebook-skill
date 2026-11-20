@@ -31,7 +31,7 @@ Build a skill an AI agent can follow to:
 | [`scripts/`](scripts/) | Helper scripts (e.g. validate a generated notebook). |
 | [`evals/`](evals/) | Promptfoo test cases, a synthetic paper, and runnable marimo fixtures. |
 
-Style and patterns for marimo work also live in Eric's skill collection: [github.com/ericmjl/skills](https://github.com/ericmjl/skills) (e.g. `marimo`, `marimo-notebook-patterns`, `awesome-marimo-notebook`).
+Style and patterns for marimo work come from Eric's skill collection, [github.com/ericmjl/skills](https://github.com/ericmjl/skills). The `marimo`, `marimo-notebook-patterns`, and `awesome-marimo-notebook` skills are installed in [`.agents/skills/`](.agents/skills/) and pinned in `skills-lock.json`; refresh them with `npx skills update`.
 
 ## Run the notebook eval
 
