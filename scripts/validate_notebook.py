@@ -106,9 +106,12 @@ def report_visible_code(blocks: list[tuple[int, str]]) -> None:
     if not blocks:
         print("[hide_code] all cells set hide_code=True")
         return
-    noun = "block" if len(blocks) == 1 else "blocks"
+    if len(blocks) == 1:
+        summary = "1 block leaves code visible."
+    else:
+        summary = f"{len(blocks)} blocks leave code visible."
     print(
-        f"[hide_code] WARN: {len(blocks)} {noun} leave code visible. "
+        f"[hide_code] WARN: {summary} "
         "Use hide_code=True unless the code itself is the teaching point:"
     )
     for lineno, label in blocks:
