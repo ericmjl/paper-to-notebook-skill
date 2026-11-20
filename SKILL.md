@@ -1,5 +1,5 @@
 ---
-name: paper-to-notebook
+name: paper-to-notebook-skill
 description: >
   Turn a research paper — provided as a PDF, HTML, or plain-text source
   (LaTeX, Markdown, or similar) — into a guided, runnable marimo learning
