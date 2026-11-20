@@ -81,11 +81,11 @@ A neighbour-graph method built from topology, UMAP was competitive with t-SNE on
 >
 > Its arguably better global structure owes much to the spectral initialisation, and UMAP can find structure in noise and can embed suboptimally below 500 samples (§6).
 
-> **5 · Expert.** Neighbour-graph methods such as t-SNE and LargeVis rest their graph and layout choices on heuristics or task-focused experimentation, and Laplacian-eigenmap theory needs uniformly distributed data or infinite samples (§2, §2.1, §3). UMAP applies Spivak's fuzzy singular-set functor to per-point extended-pseudo-metrics normalised by $\rho_i$ and $\sigma_i$, unions the local fuzzy simplicial sets with the probabilistic t-conorm, and minimises fuzzy-set cross-entropy on the 1-skeleton (§2.2, §3, §4.1).
+> **5 · Expert.** t-SNE and LargeVis rest their graph and layout choices on heuristics or task-focused experimentation, and Laplacian-eigenmap theory needs uniformly distributed data or infinite samples (§2, §2.1, §3). UMAP applies Spivak's fuzzy singular-set functor to per-point extended-pseudo-metrics normalised by $\rho_i$ and $\sigma_i$, unions local fuzzy simplicial sets with probabilistic t-conorm, and minimises fuzzy-set cross-entropy on the 1-skeleton (§2.2, §3, §4.1).
 >
-> kNN accuracy matched t-SNE and LargeVis at small $k$ and exceeded the best baseline at large $k$ on COIL-20 (0.803 vs 0.616 at $k=160$) and Shuttle (0.957 vs 0.895 for Laplacian eigenmaps at $k=3200$) (Tables 1–2). It trailed t-SNE on Fashion-MNIST for $k$ from 100 to 800 (Tables 1–2). Single-core UMAP ran MNIST in 87 s against 292 s for multi-core FIt-SNE, scaled linearly in embedding dimension, and embedded 30 million points in about 1.8 million dimensions (Table 3, §5.4).
+> kNN accuracy matched t-SNE and LargeVis at small $k$ and exceeded the best baseline at large $k$ on COIL-20 (0.803 vs 0.616 at $k=160$) and Shuttle (0.957 vs 0.895 for Laplacian eigenmaps at $k=3200$) (Tables 1–2). It trailed t-SNE on Fashion-MNIST for $k$ from 100 to 800 (Tables 1–2). Single-core UMAP ran MNIST in 87 s against 292 s for multi-core FIt-SNE, scaling linearly in embedding dimension (Table 3, §5.4). It embedded 30 million points in 1.8 million dimensions in about 2 weeks on a large-memory machine (§5.4.3).
 >
-> The arguable global-structure gain is partly the spectral initialisation, with which t-SNE matches UMAP on one measure, and global structure preservation still lacks objective definitions (§6, §7). UMAP can find structure in noise, can embed suboptimally below 500 samples, and preserves metric structure less well than MDS (§6).
+> The arguable global-structure gain is partly the spectral initialisation; t-SNE matches UMAP on one measure with it, and global structure preservation lacks objective definitions (§6, §7). UMAP can find structure in noise, embed suboptimally below 500 samples, and preserve metric structure less well than MDS (§6).
 
 ## Simplification ledger
 
