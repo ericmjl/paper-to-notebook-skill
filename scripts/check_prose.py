@@ -62,6 +62,7 @@ _STOPWORDS = frozenset(
     few many much other another same own     via per vs versus using used use than
     there here than too very rather quite around
     above below further down up out off once
+    through across toward towards along onto against
     one two three four five six seven eight nine ten
     first second third next last
     must never almost again either enough
@@ -89,12 +90,14 @@ _COMMON_VERBS = frozenset(
     slide slides sliding push pushes pushed pushing
     produce produces produced producing compare compares compared comparing
     reach reaches reached reaching born
+    increase increases increased increasing
+    recombine recombines recombined recombining
     """.split()
 )
 _MODIFIERS = frozenset(
     """
     smaller larger higher lower highest lowest high low full well
-    relative similar random main free total
+    relative similar random main free total experimental soluble
     """.split()
 )
 _FAMILIAR_HYPHENS = frozenset(
@@ -401,6 +404,11 @@ def _noun_units(token: str) -> list[str]:
     lower_parts = [part.lower() for part in parts if part]
     if not lower_parts:
         return []
+    last = lower_parts[-1]
+    if len(lower_parts) >= 2 and (
+        last.endswith(("ed", "ing")) or last in {"allowed", "forbidden", "born"}
+    ):
+        return []
     if len(lower_parts) > 1 and any(part in _STOPWORDS for part in lower_parts):
         return [lower]
     noun_parts = [part for part in lower_parts if _is_noun_part(part)]
@@ -435,11 +443,16 @@ def noun_stacks(text: str) -> list[str]:
             stripped = token.strip(".,;:!?()[]{}\"'“”‘’")
             if "-" in stripped and len(units) >= 3:
                 stacked_hyphen = True
-            continue
-        if _stack_hits_threshold(current, stacked_hyphen):
-            stacks.append(" ".join(current))
-        current = []
-        stacked_hyphen = False
+        else:
+            if _stack_hits_threshold(current, stacked_hyphen):
+                stacks.append(" ".join(current))
+            current = []
+            stacked_hyphen = False
+        if re.search(r"[,:;]", token):
+            if _stack_hits_threshold(current, stacked_hyphen):
+                stacks.append(" ".join(current))
+            current = []
+            stacked_hyphen = False
     if _stack_hits_threshold(current, stacked_hyphen):
         stacks.append(" ".join(current))
     return stacks
