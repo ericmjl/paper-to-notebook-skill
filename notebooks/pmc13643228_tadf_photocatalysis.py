@@ -169,13 +169,8 @@ def cell_tour():
                 },
                 {
                     "cell_name": "figure_tour",
-                    "title": "Walk Figure 1, then Figure 2",
-                    "description": "Hands-on section. Use Prev and Next. Hover a colored badge to light the same region on the figure. The captions are the paper's. Figures 3 to 6 are the next cells.",
-                },
-                {
-                    "cell_name": "figure_3",
-                    "title": "Figures 3 to 6",
-                    "description": "Hands-on section. One tour each for the spectra, the quenching model, the continuous-light prediction, and the two other catalyst pairs. Hover a badge. The words stay with what the main text states.",
+                    "title": "Walk Figures 1 to 6",
+                    "description": "Hands-on section. One tab per figure. Use Prev and Next inside the open tab. Hover a colored badge to light the same region on the figure. The captions are the paper's. The words stay with what the main text states.",
                 },
                 {
                     "cell_name": "escape_ladder",
@@ -399,12 +394,14 @@ def notebook_paths():
 
 
 @app.cell(hide_code=True)
-def figure_tour(notebook_dir):
+def figure_tour(
+    notebook_dir, fig3_annotator, fig4_annotator, fig5_annotator, fig6_annotator
+):
     mo.md(
         r"""
-        ## Figure 1, then the result in Figure 2
+        ## Figures 1–6
 
-        Figs. 1–6 are every main-text figure. Figs. 3–6 follow in their own cells. An image was obtained for each of them.
+        Figs. 1–6 are every main-text figure, one tab each. An image was obtained for each of them.
 
         Boxes stay hidden until you hover a badge or the drawing. Coordinates are the 100×100 percentage boxes from the repository's figure-annotation example, checked again with `scripts/figure_annotation_helper.py audit` before this notebook was written. The words on the badges were rewritten so they do not quote absorbances or quantum yields that the main text never prints. Equations (1), (3), and (4) are graphics in the PMC XML; they are not redrawn here.
         """
@@ -782,6 +779,44 @@ def figure_tour(notebook_dir):
         {
             "Figure 1. States, cage, catalyst, quenchers": fig1_annotator,
             "Figure 2. 450 nm traces and the yield inset": fig2_annotator,
+            "Figure 3. Spectra, the averaging window, and the actinometer": mo.vstack(
+                [
+                    mo.md(
+                        "This is the measurement behind the yields in Fig. 2. "
+                        "The radical concentration comes from ΔA at 450 nm, and the "
+                        "number of excited states comes from the ruthenium actinometer."
+                    ),
+                    fig3_annotator,
+                ]
+            ),
+            "Figure 4. Quenching only, then quenching times cage escape": mo.vstack(
+                [
+                    mo.md(
+                        r"The curves are the paper's prediction for phenol with PC$^{2+}$. "
+                        "This notebook does not recompute them. The rate constants are not in the main text."
+                    ),
+                    fig4_annotator,
+                ]
+            ),
+            "Figure 5. The same idea under continuous light": mo.vstack(
+                [
+                    mo.md(
+                        "The quencher is consumed as the reaction runs, so the system slides "
+                        "along the Fig. 4 curve instead of sitting at one concentration."
+                    ),
+                    fig5_annotator,
+                ]
+            ),
+            "Figure 6. Two more pairs, and the only flask result": mo.vstack(
+                [
+                    mo.md(
+                        r"4CzIPN with DMA in toluene, and SO$_2$TDS$^{2-}$ with ascorbate in water. "
+                        "The ratios 125 and 11.5 are stated in the text. Digits that appear only "
+                        "inside the property boxes are left on the figure."
+                    ),
+                    fig6_annotator,
+                ]
+            ),
         }
     )
     return
@@ -890,19 +925,7 @@ def figure_3(notebook_dir):
             ),
         },
     ]
-    mo.vstack(
-        [
-            mo.md(
-                r"""
-                ## Figure 3. Spectra, the averaging window, and the actinometer
-
-                This is the measurement behind the yields in Fig. 2. The radical concentration comes from ΔA at 450 nm, and the number of excited states comes from the ruthenium actinometer.
-                """
-            ),
-            fig3_annotator,
-        ]
-    )
-    return
+    return (fig3_annotator,)
 
 
 @app.cell(hide_code=True)
@@ -984,19 +1007,7 @@ def figure_4(notebook_dir):
             ),
         },
     ]
-    mo.vstack(
-        [
-            mo.md(
-                r"""
-                ## Figure 4. Quenching only, then quenching times cage escape
-
-                The curves are the paper's prediction for phenol with PC$^{2+}$. This notebook does not recompute them. The rate constants are not in the main text.
-                """
-            ),
-            fig4_annotator,
-        ]
-    )
-    return
+    return (fig4_annotator,)
 
 
 @app.cell(hide_code=True)
@@ -1096,19 +1107,7 @@ def figure_5(notebook_dir):
             ),
         },
     ]
-    mo.vstack(
-        [
-            mo.md(
-                r"""
-                ## Figure 5. The same idea under continuous light
-
-                The quencher is consumed as the reaction runs, so the system slides along the Fig. 4 curve instead of sitting at one concentration.
-                """
-            ),
-            fig5_annotator,
-        ]
-    )
-    return
+    return (fig5_annotator,)
 
 
 @app.cell(hide_code=True)
@@ -1257,19 +1256,7 @@ def figure_6(notebook_dir):
             ),
         },
     ]
-    mo.vstack(
-        [
-            mo.md(
-                r"""
-                ## Figure 6. Two more pairs, and the only flask result
-
-                4CzIPN with DMA in toluene, and SO$_2$TDS$^{2-}$ with ascorbate in water. The ratios 125 and 11.5 are stated in the text. Digits that appear only inside the property boxes are left on the figure.
-                """
-            ),
-            fig6_annotator,
-        ]
-    )
-    return
+    return (fig6_annotator,)
 
 
 
