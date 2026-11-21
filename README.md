@@ -73,8 +73,10 @@ uvx marimo edit --sandbox path/to/notebook.py
 ## Help wanted
 
 - **marimo widgets** — sliders, anywidgets, and math-friendly interactions.
-- **Teaching and learning design** — pacing, scaffolding, comprehension checks.
-- **Visualizing math** — pairs with a sibling *Visual LaTeX* hackathon idea.
+- **Teaching and learning design** — pacing, scaffolding, and quiz questions that test understanding at each reading level.
+- **Visualizing math** — pairs with a sibling *Visual LaTeX* hackathon idea. Notebooks already use `TangleLatex` for interactive equations (#19).
+- **Paper ingest** — how to fetch and parse PDF, HTML, and LaTeX sources. These steps are still **TODO** in `SKILL.md`.
+- **Evals** — automating the checklist in `SKILL.md`'s "What a good notebook looks like" section (see [`evals/`](evals/)).
 
 Interested collaborators (from the attendee doc): Daina Bouquin, Ben Lear, Josh Starmer, Leland McInnes, Erik Welch, Leon Johnson, Carol Willing, Matthew Feickert, Konstantin Taletskiy, Ariana Mendible.
 
@@ -82,10 +84,12 @@ Interested collaborators (from the attendee doc): Daina Bouquin, Ben Lear, Josh 
 
 Issues and PRs welcome during and after the hackathon.
 
-1. Open an issue to discuss scope, or grab a **TODO** in `SKILL.md` / this README.
+1. Open an issue to discuss scope, or grab a **TODO** in `SKILL.md` / this README. For ideas to explore after the hackathon, use the **Future idea** issue template.
 2. Keep changes focused; match the tone of existing docs.
 3. Prefer `uv run` for Python commands; do not document global `pip install` as the default path.
 4. When adding marimo guidance, link or mirror relevant notes in `resources/` rather than duplicating long references in `SKILL.md`.
+5. Run the tests before you open a PR: `uv run --with pytest --with anywidget pytest tests/`.
+6. Notebook prose follows the vendored [`processing-friendly-prose`](.agents/skills/processing-friendly-prose/SKILL.md) skill. Treat a `[prose]` warning from the validator as a sentence to reread. Rewrite it only when the new wording is clearer (#20, #21).
 
 **Open decisions (TODO):**
 
