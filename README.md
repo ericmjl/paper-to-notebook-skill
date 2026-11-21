@@ -1,6 +1,6 @@
 # Paper to guided marimo learning notebook
 
-A reusable **agent skill** that turns a published research paper into a [marimo](https://marimo.io) notebook: plain-language explanations, interactive widgets for key equations and figures, and checks for understanding along the way.
+A reusable **agent skill** that turns a published research paper into a [marimo](https://marimo.io) notebook: plain-language explanations, interactive widgets for key equations and figures, and a final quiz matched to the reader's level.
 
 Born at the **snake_case 2026** hackathon (Posit, Austin, Nov 19–20, 2026). This repo is a collaborative workspace for [Eric Ma](https://github.com/ericmjl)'s project idea.
 
@@ -16,10 +16,24 @@ Build a skill an AI agent can follow to:
 
 1. Read a paper and identify what a learner must understand.
 2. Plan a guided path through concepts, equations, and figures.
-3. Generate a marimo notebook with explanations, interactive widgets, and comprehension checks.
+3. Generate a marimo notebook with explanations, interactive widgets, and a final quiz.
 4. Validate that the notebook runs end-to-end.
 
-**Hackathon stretch (two days):** a working first version of the skill, plus notebooks generated from a few real papers. Exact paper list: **TODO.**
+**Hackathon stretch (two days):** a working first version of the skill, plus notebooks generated from a few real papers. The first one is in [`notebooks/`](notebooks/): an open-access TADF photocatalysis paper (PMC13643228, #12). The rest of the paper list is **TODO.**
+
+## What the skill produces
+
+The skill produces one runnable marimo notebook per paper. Every section cites the part of the paper that it teaches (a section, equation, figure, or table), and code cells are hidden by default. The notebook opens with a banner that shows the paper's title, authors, year, link, and a one-line summary.
+
+Before the agent writes any cells, it asks which of these components to include. If nobody answers, it includes all of them:
+
+- **Figure walkthroughs** (`FigureAnnotatorWidget`): a step-by-step tour of every main-text figure, one tab per figure. The boxes mark the results that the paper's text discusses, not axis labels.
+- **Method diagrams** (`MermaidView`): a hand-drawn flowchart of the paper's method that you can pan.
+- **Explain at five levels** (`ExplainLevels`): the paper's main point as a one-line summary, then an explanation at the level the reader picks, from Child to Expert. The reader sees only their own level.
+- **Final quiz** (`PaperQuiz`): five multiple-choice questions that match the reader's level. Without the five levels, the quiz is one set of five questions for a general reader.
+- **Interactive equations** (`TangleLatex`): drag a variable in a key equation and see how the result changes. The agent includes this one by default only when the paper has equations worth exploring.
+
+`scripts/validate_notebook.py` checks that the notebook parses and passes `marimo check --strict`, and with `--run` it runs the notebook top to bottom. It also warns, without failing, about visible code, missing components, explanation levels that run long, quiz answers that give themselves away by length, and writing that is hard to read. With `--paper paper.txt`, it also warns about quotes that it can't find in the paper. A `[prose]` warning means "reread this sentence", not "rewrite it".
 
 ## How this repo is laid out
 
