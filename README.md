@@ -31,33 +31,28 @@ Build a skill an AI agent can follow to:
 | [`scripts/`](scripts/) | Helper scripts (e.g. validate a generated notebook). |
 | [`evals/`](evals/) | Promptfoo test cases, a synthetic paper, and runnable marimo fixtures. |
 
-Style and patterns for marimo work come from Eric's skill collection, [github.com/ericmjl/skills](https://github.com/ericmjl/skills). The `marimo`, `marimo-notebook-patterns`, and `awesome-marimo-notebook` skills are installed in [`.agents/skills/`](.agents/skills/) and pinned in `skills-lock.json`; refresh them with `npx skills update`.
+Style and patterns for marimo work come from Eric's skill collection, [github.com/ericmjl/skills](https://github.com/ericmjl/skills). The `marimo`, `marimo-notebook-patterns`, `awesome-marimo-notebook`, and `processing-friendly-prose` skills are installed in [`.agents/skills/`](.agents/skills/) and pinned in `skills-lock.json`; refresh them with `npx skills update`.
 
 ## Run the notebook eval
 
 Start with the [eval setup instructions](evals/README.md#set-up-the-evals). The first run checks table accuracy and needs no API key. A separate local check covers widget behavior, and an optional model judge checks whether the paper supports the notebook's explanation.
 
-## Try it with an agent
+## Install the skill
 
-**TODO:** pin exact install paths for Cursor, Claude Code, and other hosts.
+This skill uses the open [Agent Skills](https://agentskills.io) format. An agent installs it by copying the folder from https://github.com/ericmjl/paper-to-notebook-skill into wherever the harness keeps skills. Include `SKILL.md`, plus `scripts/`, `assets/`, `resources/`, and the vendored skills in `.agents/skills/`. Clone the repo or download the files.
 
-Placeholder workflow:
+```bash
+git clone https://github.com/ericmjl/paper-to-notebook-skill path/to/skills/paper-to-notebook-skill
+```
 
-1. Clone this repo (or add it as a skill path).
-2. Point your agent at `SKILL.md` when you want a guided learning notebook for a paper.
-3. Provide the paper (PDF, URL, or arXiv id).
-4. Ask the agent to follow the skill and write the notebook to a path you choose.
-5. Validate and run the notebook:
+Optional: `npx skills add ericmjl/paper-to-notebook-skill`.
 
-   ```bash
-   uv run scripts/validate_notebook.py path/to/notebook.py --run
-   ```
+Give the agent a paper (PDF, URL, or arXiv id). When the notebook is ready, validate it from the skill folder, then open it:
 
-6. Open the notebook:
-
-   ```bash
-   uvx marimo edit --sandbox path/to/notebook.py
-   ```
+```bash
+uv run scripts/validate_notebook.py path/to/notebook.py --run
+uvx marimo edit --sandbox path/to/notebook.py
+```
 
 ## Help wanted
 
@@ -97,7 +92,7 @@ Specific adaptations are credited in each resource file's **Credits** section.
 - [marimo-team/skills](https://github.com/marimo-team/skills) (Apache-2.0): `implement-paper`'s reader-background step, which the prerequisite profile extends.
 - [Eric Ma's skills](https://github.com/ericmjl/skills) (MIT): `marimo` patterns and naming conventions.
 - [K-Dense claude-scientific-skills](https://github.com/K-Dense-AI/claude-scientific-skills) (MIT): the anthropomorphism rule.
-- Anderson & Krathwohl (2001): the revised Bloom's taxonomy behind the per-level checks.
+- Anderson & Krathwohl (2001): the revised Bloom's taxonomy behind the level-matched quiz.
 - **Worked-example papers:**
   - Vaswani et al. (2017);
   - McInnes, Healy & Melville (2018), arXiv:1802.03426;
