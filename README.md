@@ -91,10 +91,14 @@ Issues and PRs welcome during and after the hackathon.
 5. Run the tests before you open a PR: `uv run --with pytest --with anywidget pytest tests/`.
 6. Notebook prose follows the vendored [`processing-friendly-prose`](.agents/skills/processing-friendly-prose/SKILL.md) skill. Treat a `[prose]` warning from the validator as a sentence to reread. Rewrite it only when the new wording is clearer (#20, #21).
 
+**Decisions so far:**
+
+- **Audience level:** the reader picks a level instead of getting one default. `ExplainLevels` offers five levels, from Child to Expert, and the final quiz follows that choice (#17, #23). `SKILL.md` still lists the starting level and the direction of adaptation as open.
+- **Plots:** new notebooks use Plotly (#15).
+
 **Open decisions (TODO):**
 
-- Single megaskill vs. split skills (e.g. paper ingestion, pedagogy, marimo build).
-- Default audience level (undergrad, grad, practitioner).
+- Single megaskill vs. split skills (e.g. paper ingestion, pedagogy, marimo build). For now it is one skill with opt-in components (#16).
 - Licensing for generated notebooks vs. skill metadata.
 
 ## Acknowledgments
