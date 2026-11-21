@@ -40,10 +40,12 @@ Before the agent writes any cells, it asks which of these components to include.
 | Path | Role |
 |------|------|
 | [`SKILL.md`](SKILL.md) | Agent skill entry point (Agent Skills format). |
-| [`assets/`](assets/) | Templates and static files (e.g. notebook starter). |
-| [`resources/`](resources/) | Reference material the agent should read (marimo widgets, pedagogy). |
-| [`scripts/`](scripts/) | Helper scripts (e.g. validate a generated notebook). |
+| [`assets/`](assets/) | Widgets the agent copies next to a notebook (`PaperQuiz`, `MermaidView`, `ExplainLevels`). |
+| [`resources/`](resources/) | Reference material the agent should read (explanation levels, figure walkthroughs, method diagrams, the quiz, the banner, field maturity) and runnable example notebooks. |
+| [`scripts/`](scripts/) | Helper scripts: the notebook validator and the prose, level, and quote checks that it runs. |
 | [`evals/`](evals/) | Promptfoo test cases, a synthetic paper, and runnable marimo fixtures. |
+| [`notebooks/`](notebooks/) | Notebooks generated with the skill. |
+| [`tests/`](tests/) | pytest tests for the validator, the writing checks, and `ExplainLevels`. |
 
 Style and patterns for marimo work come from Eric's skill collection, [github.com/ericmjl/skills](https://github.com/ericmjl/skills). The `marimo`, `marimo-notebook-patterns`, `awesome-marimo-notebook`, and `processing-friendly-prose` skills are installed in [`.agents/skills/`](.agents/skills/) and pinned in `skills-lock.json`; refresh them with `npx skills update`.
 
