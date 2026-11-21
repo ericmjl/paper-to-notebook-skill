@@ -33,7 +33,7 @@ Before the agent writes any cells, it asks which of these components to include.
 - **Final quiz** (`PaperQuiz`): five multiple-choice questions that match the reader's level. Without the five levels, the quiz is one set of five questions for a general reader.
 - **Interactive equations** (`TangleLatex`): drag a variable in a key equation and see how the result changes. The agent includes this one by default only when the paper has equations worth exploring.
 
-`scripts/validate_notebook.py` checks that the notebook parses and passes `marimo check --strict`, and with `--run` it runs the notebook top to bottom. It also warns, without failing, about visible code, missing components, explanation levels that run long, quiz answers that give themselves away by length, and writing that is hard to read. With `--paper paper.txt`, it also warns about quotes that it can't find in the paper. A `[prose]` warning means "reread this sentence", not "rewrite it".
+`scripts/validate_notebook.py` checks that the notebook parses and passes `marimo check --strict`, and with `--run` it runs the notebook top to bottom. It also warns, without failing, about visible code, missing components, explanation levels that run long, and quiz answers that give themselves away by length. With `--paper paper.txt`, it also warns about quotes that it can't find in the paper. Finally, it flags sentences that may be hard to read. A `[prose]` warning means "reread this sentence", not "rewrite it".
 
 ## How this repo is laid out
 
@@ -42,7 +42,7 @@ Before the agent writes any cells, it asks which of these components to include.
 | [`SKILL.md`](SKILL.md) | Agent skill entry point (Agent Skills format). |
 | [`assets/`](assets/) | Widgets the agent copies next to a notebook (`PaperQuiz`, `MermaidView`, `ExplainLevels`). |
 | [`resources/`](resources/) | Reference material the agent should read (explanation levels, figure walkthroughs, method diagrams, the quiz, the banner, field maturity) and runnable example notebooks. |
-| [`scripts/`](scripts/) | Helper scripts: the notebook validator and the prose, level, and quote checks that it runs. |
+| [`scripts/`](scripts/) | Helper scripts: the notebook validator; the prose, level, and quote checks that it runs; and a figure-annotation helper. |
 | [`evals/`](evals/) | Promptfoo test cases, a synthetic paper, and runnable marimo fixtures. |
 | [`notebooks/`](notebooks/) | Notebooks generated with the skill. |
 | [`tests/`](tests/) | pytest tests for the validator, the writing checks, and `ExplainLevels`. |
@@ -89,7 +89,7 @@ Issues and PRs welcome during and after the hackathon.
 3. Prefer `uv run` for Python commands; do not document global `pip install` as the default path.
 4. When adding marimo guidance, link or mirror relevant notes in `resources/` rather than duplicating long references in `SKILL.md`.
 5. Run the tests before you open a PR: `uv run --with pytest --with anywidget pytest tests/`.
-6. Notebook prose follows the vendored [`processing-friendly-prose`](.agents/skills/processing-friendly-prose/SKILL.md) skill. Treat a `[prose]` warning from the validator as a sentence to reread. Rewrite it only when the new wording is clearer (#20, #21).
+6. Notebook prose follows the vendored [`processing-friendly-prose`](.agents/skills/processing-friendly-prose/SKILL.md) skill. When the validator flags a sentence, rewrite it only if the new wording is clearer (#20, #21).
 
 **Decisions so far:**
 
